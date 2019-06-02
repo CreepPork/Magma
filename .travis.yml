@@ -8,8 +8,6 @@ before_script:
   - npm i -g codecov
 
 script:
-  - ./../../bin/run --version
-  - ./../../bin/run --help
   - npm run test
 
 notifications:
