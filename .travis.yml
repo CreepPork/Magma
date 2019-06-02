@@ -4,9 +4,12 @@ node_js:
 
 cache: npm
 
+before_script:
+  - npm i -g codecov
+
 script:
-  - .\bin\run --version
-  - .\bin\run --help
+  - ./bin/run --version
+  - ./bin/run --help
   - npm run test
 
 notifications:
@@ -17,5 +20,4 @@ notifications:
     on_success: change
 
 after_success:
-  - .\node_modules\.bin\nyc report --reporter text-lcov > coverage.lcov
-  - bash < (curl -s https://codecov.io/bash)
+  - codecov
