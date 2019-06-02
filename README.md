@@ -17,7 +17,7 @@ A CLI app that is a mod updater for LinuxGSM powered Arma 3 servers.
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g Magma
+$ npm install -g magma
 $ magma COMMAND
 running command...
 $ magma (-v|--version|version)
