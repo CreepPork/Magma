@@ -37,20 +37,6 @@ export default class Initialize extends Command {
             }
         }
 
-        const credentials: Record<keyof ISteamCredentials, string> = await inquirer.prompt([{
-            message: 'Steam username',
-            name: 'username',
-            type: 'input',
-            validate: name => name !== '',
-        },
-        {
-            mask: '*',
-            message: 'Steam password',
-            name: 'password',
-            type: 'password',
-            validate: pass => pass !== '',
-        }]);
-
         const selectedMods: { mods: string[] } = await inquirer.prompt({
             choices: popularMods,
             message: 'Do you want any of these mods?',
