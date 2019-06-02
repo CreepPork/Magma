@@ -121,8 +121,3 @@ export default class Initialize extends Command {
         this.log('Initialize procedure completed.');
     }
 }
-
-export interface ISteamCredentials {
-    username: string;
-    password: string;
-}
