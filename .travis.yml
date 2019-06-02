@@ -1,0 +1,21 @@
+language: node_js
+node_js:
+  - node
+
+cache: npm
+
+script:
+  - .\bin\run --version
+  - .\bin\run --help
+  - npm run test
+
+notifications:
+  email: false
+  webhooks:
+    urls:
+      - https://mechilles.garkaklis.com/
+    on_success: change
+
+after_success:
+  - .\node_modules\.bin\nyc report --reporter text-lcov > coverage.lcov
+  - bash < (curl -s https://codecov.io/bash)

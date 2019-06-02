@@ -1,0 +1,62 @@
+{
+  "name": "magma",
+  "description": "A CLI app that is a mod updater for LinuxGSM powered Arma 3 servers.",
+  "version": "0.0.0",
+  "author": "CreepPork",
+  "bin": {
+    "magma": "./bin/run"
+  },
+  "bugs": "https://github.com/CreepPork/Magma/issues",
+  "dependencies": {
+    "@oclif/command": "^1.5.14",
+    "@oclif/config": "^1.13.0",
+    "@oclif/plugin-help": "^2.2.0",
+    "tslib": "^1.9.3"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1.22.0",
+    "@oclif/test": "^1.2.4",
+    "@oclif/tslint": "^3.1.1",
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^10.14.8",
+    "chai": "^4.2.0",
+    "globby": "^8.0.2",
+    "mocha": "^5.2.0",
+    "nyc": "^13.3.0",
+    "ts-node": "^8.2.0",
+    "tslint": "^5.17.0",
+    "typescript": "^3.5.1"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/bin",
+    "/lib",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "homepage": "https://github.com/CreepPork/Magma",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "oclif": {
+    "commands": "./lib/commands",
+    "bin": "magma",
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
+  },
+  "repository": "CreepPork/Magma",
+  "scripts": {
+    "postpack": "rm -f oclif.manifest.json",
+    "posttest": "tslint -p test -t stylish",
+    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+    "version": "oclif-dev readme && git add README.md"
+  },
+  "types": "lib/index.d.ts"
+}
