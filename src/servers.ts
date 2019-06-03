@@ -1,3 +1,5 @@
+import * as _ from 'lodash';
+
 export const supportedServers: ISupportedServer[] = [
     {
         executableName: 'arma3server',
@@ -6,6 +8,10 @@ export const supportedServers: ISupportedServer[] = [
         serverAppId: 233780,
     },
 ];
+
+export function getGame(gameAppId: number): ISupportedServer {
+    return _.find(supportedServers, { gameAppId }) as ISupportedServer;
+}
 
 export interface ISupportedServer {
     gameAppId: number;
