@@ -129,7 +129,7 @@ export default class Initialize extends Command {
                         },
                     );
 
-                    axiosSpinner.stop();
+                    axiosSpinner.succeed();
 
                     mods.push({
                         gameId: serverType.gameAppId,
@@ -137,7 +137,7 @@ export default class Initialize extends Command {
                         name: request.data.response.publishedfiledetails[0].title,
                     });
                 } catch (error) {
-                    axiosSpinner.stop();
+                    axiosSpinner.fail();
                     this.warn('Failed to retrieve data from Steam Workshop. Adding only ID.');
 
                     mods.push({
