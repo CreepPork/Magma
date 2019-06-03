@@ -6,13 +6,13 @@ import Command from '../command';
 import File from '../file';
 import { ISteamPublishedFile } from '../interfaces/steamPublishedFile';
 import { IMod, popularMods } from '../popularMods';
+import { ISupportedServer, supportedServers } from '../servers';
 import Settings, { ISettings } from '../settings';
 import Login from './login';
 
 import * as inquirer from 'inquirer';
 import * as _ from 'lodash';
 import * as qs from 'qs';
-import { supportedServers, ISupportedServer } from '../servers';
 
 export default class Initialize extends Command {
     public static description = 'Initializes servers configuration data.';
