@@ -1,6 +1,7 @@
 import ora from 'ora';
 
 import Command from '../command';
+import Crypto from '../cypto';
 import Settings from '../settings';
 import SteamCmd, { LoginEvents } from '../steamcmd';
 
@@ -50,7 +51,7 @@ export default class Login extends Command {
             this.log(`User '${credentials.username}' has been logged in.`);
 
             Settings.write('steamCredentials', {
-                password: credentials.password,
+                password: new Crypto().encrypt(credentials.password),
                 username: credentials.username,
             });
         }).catch((error: Error) => {
