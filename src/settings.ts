@@ -62,4 +62,6 @@ export interface ISettings {
     steamCmdPath: string;
     armaServerPath: string;
     steamCredentials: ISteamCredentials;
+    encryptionKey: string;
+    ivKey: string;
 }
