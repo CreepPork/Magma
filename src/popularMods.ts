@@ -1,63 +1,78 @@
 export const popularMods: IMod[] = [
     {
-        id: 463939057,
+        gameId: 107410,
+        itemId: 463939057,
         name: 'ace',
     },
     {
-        id: 723217262,
+        gameId: 107410,
+        itemId: 723217262,
         name: 'Achilles',
     },
     {
-        id: 713709341,
+        gameId: 107410,
+        itemId: 713709341,
         name: 'Advanced Rappelling',
     },
     {
-        id: 450814997,
+        gameId: 107410,
+        itemId: 450814997,
         name: 'CBA_A3',
     },
     {
-        id: 583496184,
+        gameId: 107410,
+        itemId: 583496184,
         name: 'CUP Terrains - Core',
     },
     {
-        id: 583544987,
+        gameId: 107410,
+        itemId: 583544987,
         name: 'CUP Terrains - Maps',
     },
     {
-        id: 497661914,
+        gameId: 107410,
+        itemId: 497661914,
         name: 'CUP Units',
     },
     {
-        id: 541888371,
+        gameId: 107410,
+        itemId: 541888371,
         name: 'CUP Vehicles',
     },
     {
-        id: 497660133,
+        gameId: 107410,
+        itemId: 497660133,
         name: 'CUP Weapons',
     },
     {
-        id: 843425103,
+        gameId: 107410,
+        itemId: 843425103,
         name: 'RHSAFRF',
     },
     {
-        id: 843593391,
+        gameId: 107410,
+        itemId: 843593391,
         name: 'RHSGREF',
     },
     {
-        id: 843632231,
+        gameId: 107410,
+        itemId: 843632231,
         name: 'RHSSAF',
     },
     {
-        id: 843577117,
+        gameId: 107410,
+        itemId: 843577117,
         name: 'RHSUSAF',
     },
     {
-        id: 620019431,
+        gameId: 107410,
+        itemId: 620019431,
         name: 'task_force_radio',
     },
 ];
 
 export interface IMod {
-    id: number;
+    gameId: number;
+    itemId: number;
     name: string;
 }

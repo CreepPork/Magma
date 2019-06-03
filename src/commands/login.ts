@@ -30,7 +30,7 @@ export default class Login extends Command {
 
         const cmd = new SteamCmd(credentials.username, credentials.password);
 
-        const loginSpinner = ora(`Logging in user '${credentials.username}'`).start();
+        const loginSpinner = ora(`Logging in as user '${credentials.username}'`).start();
 
         cmd.on('steamGuardRequired' as LoginEvents, async () => {
             loginSpinner.stop();

@@ -12,6 +12,7 @@ import Login from './login';
 import * as inquirer from 'inquirer';
 import * as _ from 'lodash';
 import * as qs from 'qs';
+import { supportedServers, ISupportedServer } from '../servers';
 
 export default class Initialize extends Command {
     public static description = 'Initializes servers configuration data.';
@@ -40,34 +41,46 @@ export default class Initialize extends Command {
             }
         }
 
+        const server: { type: string } = await inquirer.prompt({
+            choices: supportedServers,
+            message: 'What server are you going to use?',
+            name: 'type',
+            type: 'list',
+        });
+
+        const serverType = _.find(supportedServers, { name: server.type }) as ISupportedServer;
+
         const steamCmd: { path: string } = await inquirer.prompt({
-            message: 'Path to SteamCMD executable or script',
+            message: 'Path to SteamCMD executable or script (including file itself)',
             name: 'path',
             type: 'input',
             validate: path => File.isFile(path) && File.getFilenameNoExt(path) === 'steamcmd',
         });
 
-        const armaServer: { path: string } = await inquirer.prompt({
-            message: 'Path to Arma 3 server directory',
+        const gameServer: { path: string } = await inquirer.prompt({
+            message: 'Path to server directory',
             name: 'path',
             type: 'input',
-            validate: path => File.isDirectory(path) && File.directoryContains(path, 'arma3server'),
-        });
-
-        const selectedMods: { mods: string[] } = await inquirer.prompt({
-            choices: popularMods,
-            message: 'Do you want any of these mods?',
-            name: 'mods',
-            type: 'checkbox',
+            validate: path => File.isDirectory(path) && File.directoryContains(path, serverType.executableName),
         });
 
         const mods: IMod[] = [];
+        const availableMods = popularMods.filter(mod => mod.gameId === serverType.gameAppId);
 
-        for (const mod of selectedMods.mods) {
-            const value = _.find(popularMods, { name: mod });
+        if (availableMods.length > 0) {
+            const selectedMods: { mods: string[] } = await inquirer.prompt({
+                choices: availableMods,
+                message: 'Do you want any of these mods?',
+                name: 'mods',
+                type: 'checkbox',
+            });
 
-            if (value) {
-                mods.push(value);
+            for (const mod of selectedMods.mods) {
+                const value = _.find(popularMods, { name: mod });
+
+                if (value) {
+                    mods.push(value);
+                }
             }
         }
 
@@ -119,7 +132,8 @@ export default class Initialize extends Command {
                     axiosSpinner.stop();
 
                     mods.push({
-                        id: parseInt(id.toString(), 10),
+                        gameId: serverType.gameAppId,
+                        itemId: parseInt(id.toString(), 10),
                         name: request.data.response.publishedfiledetails[0].title,
                     });
                 } catch (error) {
@@ -127,7 +141,8 @@ export default class Initialize extends Command {
                     this.warn('Failed to retrieve data from Steam Workshop. Adding only ID.');
 
                     mods.push({
-                        id: parseInt(id.toString(), 10),
+                        gameId: serverType.gameAppId,
+                        itemId: parseInt(id.toString(), 10),
                         name: `Unknown Addon (${id})`,
                     });
                 }
@@ -135,7 +150,12 @@ export default class Initialize extends Command {
         }
 
         Settings.createFile();
-        Settings.writeAll({ mods, steamCmdPath: steamCmd.path, armaServerPath: armaServer.path } as ISettings);
+        Settings.writeAll({
+            gameServerPath: gameServer.path,
+            mods,
+            server: serverType,
+            steamCmdPath: steamCmd.path,
+        } as ISettings);
 
         await Login.run();
 

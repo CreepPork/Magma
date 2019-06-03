@@ -1,5 +1,6 @@
 import { ISteamCredentials } from './commands/login';
 import { IMod } from './popularMods';
+import { ISupportedServer } from './servers';
 
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -58,9 +59,10 @@ export default class Settings {
 }
 
 export interface ISettings {
+    server: ISupportedServer;
     mods: IMod[];
     steamCmdPath: string;
-    armaServerPath: string;
+    gameServerPath: string;
     steamCredentials: ISteamCredentials;
     encryptionKey: string;
     ivKey: string;

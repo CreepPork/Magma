@@ -67,6 +67,12 @@ export default class SteamCmd extends EventEmitter {
             });
         });
     }
+
+    public downloadWorkshopItem(itemId: number, toWhere: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            //
+        });
+    }
 }
 
 export type LoginEvents = 'steamGuardRequired' | 'steamGuardSent';
