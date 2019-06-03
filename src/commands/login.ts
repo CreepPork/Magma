@@ -17,15 +17,16 @@ export default class Login extends Command {
             message: 'Steam username',
             name: 'username',
             type: 'input',
-            validate: name => name !== '',
         },
         {
             mask: '*',
             message: 'Steam password',
             name: 'password',
             type: 'password',
-            validate: pass => pass !== '',
         }]);
+
+        credentials.username = credentials.username !== '' ? credentials.username : 'anonymous';
+        credentials.password = credentials.password !== '' ? credentials.password : '';
 
         const cmd = new SteamCmd(credentials.username, credentials.password);
 

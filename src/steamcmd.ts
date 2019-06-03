@@ -13,11 +13,11 @@ export default class SteamCmd extends EventEmitter {
 
     private timeout?: NodeJS.Timeout;
 
-    constructor(user: string, password: string) {
+    constructor(user?: string, password?: string) {
         super();
 
-        this.username = user;
-        this.password = password;
+        this.username = user ? user : 'anonymous';
+        this.password = password ? password : '';
 
         this.cmdPath = Settings.get('steamCmdPath');
     }
@@ -53,7 +53,7 @@ export default class SteamCmd extends EventEmitter {
                         }
                     }
                 } else {
-                    if (text.includes('Logging in user')) {
+                    if (text.includes('Logging in user') || text.includes('Connecting anonymously to')) {
                         hasTriedToLogin = true;
 
                         this.timeout = setTimeout(() => {
