@@ -1,13 +1,17 @@
-import Command from '@oclif/command';
 import ora from 'ora';
 
+import Command from '../command';
 import Settings from '../settings';
 import SteamCmd, { LoginEvents } from '../steamcmd';
 
 import * as inquirer from 'inquirer';
 
 export default class Login extends Command {
+    public static description = 'Logs into SteamCMD.';
+
     public async run(): Promise<void> {
+        this.checkIfInitialized();
+
         const credentials: Record<keyof ISteamCredentials, string> = await inquirer.prompt([{
             message: 'Steam username',
             name: 'username',
@@ -22,28 +26,13 @@ export default class Login extends Command {
             validate: pass => pass !== '',
         }]);
 
-        const hasGuard: { answer: boolean } = await inquirer.prompt({
-            default: false,
-            message: `Does this account have Steam Guard / You haven't signed in before?`,
-            name: 'answer',
-            type: 'confirm',
-        });
-
-        if (hasGuard.answer) {
-            const auth: { code: string } = await inquirer.prompt({
-                message: 'Steam Guard code',
-                name: 'code',
-                type: 'input',
-            });
-
-            credentials.authCode = auth.code;
-        }
-
-        const cmd = new SteamCmd(credentials.username, credentials.password, credentials.authCode);
+        const cmd = new SteamCmd(credentials.username, credentials.password);
 
         const loginSpinner = ora(`Logging in user '${credentials.username}'`).start();
 
         cmd.on('steamGuardRequired' as LoginEvents, async () => {
+            loginSpinner.stop();
+
             const auth: { code: string } = await inquirer.prompt({
                 message: 'Steam Guard code',
                 name: 'code',
@@ -51,10 +40,12 @@ export default class Login extends Command {
                 validate: code => code !== '',
             });
 
-            cmd.emit('steamGuardSent', auth.code);
+            cmd.emit('steamGuardSent' as LoginEvents, auth.code);
+
+            loginSpinner.start();
         });
 
-        cmd.login().then(() => {
+        return cmd.login().then(() => {
             loginSpinner.stop();
             this.log(`User '${credentials.username}' has been logged in.`);
 
@@ -74,5 +65,4 @@ export default class Login extends Command {
 export interface ISteamCredentials {
     username: string;
     password: string;
-    authCode?: string;
 }

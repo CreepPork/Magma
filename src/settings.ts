@@ -3,6 +3,7 @@ import { IMod } from './popularMods';
 
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as process from 'process';
 
 export default class Settings {
     public static has<T extends keyof ISettings>(key: T): boolean {
@@ -42,22 +43,23 @@ export default class Settings {
     }
 
     public static fileExists(): boolean {
-        return fs.existsSync(path.join(__dirname, '..', 'settings.json'));
+        return fs.existsSync(this.getFile());
+    }
+
+    public static createFile() {
+        if (! fs.existsSync(this.getFile())) {
+            fs.writeFileSync(this.getFile(), '');
+        }
     }
 
     private static getFile(): string {
-        const file = path.join(__dirname, '..', 'settings.json');
-        if (! fs.existsSync(file)) {
-            fs.writeFileSync(file, '');
-        }
-
-        return file;
+        return path.join(process.cwd(), 'magma.json');
     }
 }
 
 export interface ISettings {
-    mods?: IMod[];
-    steamCmdPath?: string;
-    armaServerPath?: string;
-    steamCredentials?: ISteamCredentials;
+    mods: IMod[];
+    steamCmdPath: string;
+    armaServerPath: string;
+    steamCredentials: ISteamCredentials;
 }

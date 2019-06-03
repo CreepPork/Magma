@@ -9,16 +9,14 @@ import { Readable, Writable } from 'stream';
 export default class SteamCmd extends EventEmitter {
     private username: string;
     private password: string;
-    private authCode?: string;
 
     private cmdPath: string;
 
-    constructor(user: string, password: string, authCode?: string) {
+    constructor(user: string, password: string) {
         super();
 
         this.username = user;
         this.password = password;
-        this.authCode = authCode;
 
         this.cmdPath = Settings.get('steamCmdPath');
     }
@@ -28,7 +26,7 @@ export default class SteamCmd extends EventEmitter {
             let hasTriedToLogin = false;
             let okTimes = 0;
 
-            const cmd = execa(this.cmdPath);
+            const cmd = execa(this.cmdPath, [`+login ${this.username} ${this.password}`, '+quit']);
             cmd.catch(error => reject(error));
 
             const stdout = cmd.stdout as Readable;
@@ -37,48 +35,33 @@ export default class SteamCmd extends EventEmitter {
             stdout.on('data', (data: Buffer) => {
                 const text = data.toString();
 
-                if (text.includes('Steam>')) {
-                    if (! hasTriedToLogin) {
-                        stdin.write(`login ${this.username} ${this.password} ${this.authCode ? this.authCode : ''}\n`);
+                if (hasTriedToLogin) {
+                    if (text.includes('FAILED login with result code')) {
+                        reject(new Error(text.split('\n')[0]));
+                    }
+
+                    if (text.includes('OK')) {
+                        okTimes++;
+
+                        if (okTimes >= 2) {
+                            resolve();
+                        }
+                    }
+                } else {
+                    if (text.includes('Logging in user')) {
                         hasTriedToLogin = true;
 
-                        this.emit('loginTriggered');
+                        setTimeout(() => {
+                            this.on('steamGuardSent' as LoginEvents, (code: string) => {
+                                stdin.write(`${code}\n`);
+                            });
+                            this.emit('steamGuardRequired' as LoginEvents);
+                        }, 7 * 1000);
                     }
-
-                    if (hasTriedToLogin) {
-                        if (text.includes('FAILED login with result code')) {
-                            this.emit('error');
-
-                            stdin.write('quit\n');
-                            kill(cmd.pid);
-
-                            reject(new Error(text.split('\n')[0]));
-                        }
-
-                        if (text.includes('OK')) {
-                            okTimes++;
-
-                            if (okTimes >= 2) {
-                                this.emit('loggedIn');
-
-                                stdin.write('quit\n');
-                                kill(cmd.pid);
-
-                                resolve();
-                            }
-                        }
-                    }
-                }
-
-                if (text.includes('Steam Guard code:')) {
-                    this.on('steamGuardSent', (code: string) => {
-                        stdin.write(`${code}\n`);
-                    });
-                    this.emit('steamGuardRequired');
                 }
             });
         });
     }
 }
 
-export type LoginEvents = 'loginTriggered' | 'loggedIn' | 'steamGuardRequired' | 'error';
+export type LoginEvents = 'steamGuardRequired' | 'steamGuardSent';

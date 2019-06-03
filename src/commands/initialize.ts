@@ -1,11 +1,13 @@
-import { Command, flags } from '@oclif/command';
+import { flags } from '@oclif/command';
 import axios, { AxiosResponse } from 'axios';
 import ora from 'ora';
+import Command from '../command';
 
 import File from '../file';
 import { ISteamPublishedFile } from '../interfaces/steamPublishedFile';
 import { IMod, popularMods } from '../popularMods';
-import Settings from '../settings';
+import Settings, { ISettings } from '../settings';
+import Login from './login';
 
 import * as inquirer from 'inquirer';
 import * as _ from 'lodash';
@@ -132,7 +134,11 @@ export default class Initialize extends Command {
             }
         }
 
-        Settings.writeAll({ mods, steamCmdPath: steamCmd.path, armaServerPath: armaServer.path });
+        Settings.createFile();
+        Settings.writeAll({ mods, steamCmdPath: steamCmd.path, armaServerPath: armaServer.path } as ISettings);
+
+        await Login.run();
+
         this.log('Initialize procedure completed.');
     }
 }
