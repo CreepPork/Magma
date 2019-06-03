@@ -1,6 +1,7 @@
 import Command from '@oclif/command';
 import ora from 'ora';
 
+import Settings from '../settings';
 import SteamCmd, { LoginEvents } from '../steamcmd';
 
 import * as inquirer from 'inquirer';
@@ -56,6 +57,11 @@ export default class Login extends Command {
         cmd.login().then(() => {
             loginSpinner.stop();
             this.log(`User '${credentials.username}' has been logged in.`);
+
+            Settings.write('steamCredentials', {
+                password: credentials.password,
+                username: credentials.username,
+            });
         }).catch((error: Error) => {
             loginSpinner.stop();
             this.error(error.message, {

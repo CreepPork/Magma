@@ -1,10 +1,11 @@
+import { ISteamCredentials } from './commands/login';
 import { IMod } from './popularMods';
 
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
 export default class Settings {
-    public static has<T extends keyof ISettings, K extends ISettings[T]>(key: T): boolean {
+    public static has<T extends keyof ISettings>(key: T): boolean {
         try {
             this.get(key);
 
@@ -58,4 +59,5 @@ export interface ISettings {
     mods?: IMod[];
     steamCmdPath?: string;
     armaServerPath?: string;
+    steamCredentials?: ISteamCredentials;
 }
