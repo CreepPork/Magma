@@ -1,7 +1,7 @@
 import ora from 'ora';
 
 import Command from '../command';
-import Crypto from '../cypto';
+import Crypto from '../crypto';
 import Settings from '../settings';
 import SteamCmd, { SteamCmdEvents } from '../steamcmd';
 

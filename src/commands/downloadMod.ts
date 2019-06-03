@@ -1,7 +1,7 @@
 import { IArg } from '@oclif/parser/lib/args';
 
 import Command from '../command';
-import Crypto from '../cypto';
+import Crypto from '../crypto';
 import Mod from '../mod';
 import Settings from '../settings';
 import SteamCmd, { SteamCmdEvents } from '../steamcmd';
