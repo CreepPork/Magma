@@ -3,17 +3,22 @@ import Settings from './settings';
 import * as execa from 'execa';
 import * as kill from 'tree-kill';
 
+import { EventEmitter } from 'events';
 import { Readable, Writable } from 'stream';
 
-export default class SteamCmd {
+export default class SteamCmd extends EventEmitter {
     private username: string;
     private password: string;
+    private authCode?: string;
 
     private cmdPath: string;
 
-    constructor(user: string, password: string) {
+    constructor(user: string, password: string, authCode?: string) {
+        super();
+
         this.username = user;
         this.password = password;
+        this.authCode = authCode;
 
         this.cmdPath = Settings.get('steamCmdPath');
     }
@@ -34,12 +39,16 @@ export default class SteamCmd {
 
                 if (text.includes('Steam>')) {
                     if (! hasTriedToLogin) {
-                        stdin.write(`login ${this.username} ${this.password}\n`);
+                        stdin.write(`login ${this.username} ${this.password} ${this.authCode ? this.authCode : ''}\n`);
                         hasTriedToLogin = true;
+
+                        this.emit('loginTriggered');
                     }
 
                     if (hasTriedToLogin) {
                         if (text.includes('FAILED login with result code')) {
+                            this.emit('error');
+
                             stdin.write('quit\n');
                             kill(cmd.pid);
 
@@ -50,6 +59,8 @@ export default class SteamCmd {
                             okTimes++;
 
                             if (okTimes >= 2) {
+                                this.emit('loggedIn');
+
                                 stdin.write('quit\n');
                                 kill(cmd.pid);
 
@@ -58,7 +69,16 @@ export default class SteamCmd {
                         }
                     }
                 }
+
+                if (text.includes('Steam Guard code:')) {
+                    this.on('steamGuardSent', (code: string) => {
+                        stdin.write(`${code}\n`);
+                    });
+                    this.emit('steamGuardRequired');
+                }
             });
         });
     }
 }
+
+export type LoginEvents = 'loginTriggered' | 'loggedIn' | 'steamGuardRequired' | 'error';
