@@ -1,7 +1,6 @@
 import Settings from './settings';
 
 import * as execa from 'execa';
-import * as kill from 'tree-kill';
 
 import { EventEmitter } from 'events';
 import { Readable, Writable } from 'stream';
@@ -11,6 +10,8 @@ export default class SteamCmd extends EventEmitter {
     private password: string;
 
     private cmdPath: string;
+
+    private timeout?: NodeJS.Timeout;
 
     constructor(user: string, password: string) {
         super();
@@ -44,6 +45,10 @@ export default class SteamCmd extends EventEmitter {
                         okTimes++;
 
                         if (okTimes >= 2) {
+                            if (this.timeout) {
+                                clearTimeout(this.timeout);
+                            }
+
                             resolve();
                         }
                     }
@@ -51,12 +56,12 @@ export default class SteamCmd extends EventEmitter {
                     if (text.includes('Logging in user')) {
                         hasTriedToLogin = true;
 
-                        setTimeout(() => {
+                        this.timeout = setTimeout(() => {
                             this.on('steamGuardSent' as LoginEvents, (code: string) => {
                                 stdin.write(`${code}\n`);
                             });
                             this.emit('steamGuardRequired' as LoginEvents);
-                        }, 7 * 1000);
+                        }, 10 * 1000);
                     }
                 }
             });
