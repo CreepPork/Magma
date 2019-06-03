@@ -56,4 +56,6 @@ export default class Settings {
 
 export interface ISettings {
     mods?: IMod[];
+    steamCmdPath?: string;
+    armaServerPath?: string;
 }

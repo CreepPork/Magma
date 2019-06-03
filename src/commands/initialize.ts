@@ -2,6 +2,7 @@ import { Command, flags } from '@oclif/command';
 import axios, { AxiosResponse } from 'axios';
 import ora from 'ora';
 
+import File from '../file';
 import { ISteamPublishedFile } from '../interfaces/steamPublishedFile';
 import { IMod, popularMods } from '../popularMods';
 import Settings from '../settings';
@@ -36,6 +37,20 @@ export default class Initialize extends Command {
                 this.exit();
             }
         }
+
+        const steamCmd: { path: string } = await inquirer.prompt({
+            message: 'Path to SteamCMD executable or script',
+            name: 'path',
+            type: 'input',
+            validate: path => File.isFile(path) && File.getFilenameNoExt(path) === 'steamcmd',
+        });
+
+        const armaServer: { path: string } = await inquirer.prompt({
+            message: 'Path to Arma 3 server directory',
+            name: 'path',
+            type: 'input',
+            validate: path => File.isDirectory(path) && File.directoryContains(path, 'arma3server'),
+        });
 
         const selectedMods: { mods: string[] } = await inquirer.prompt({
             choices: popularMods,
@@ -117,7 +132,7 @@ export default class Initialize extends Command {
             }
         }
 
-        Settings.writeAll({ mods });
+        Settings.writeAll({ mods, steamCmdPath: steamCmd.path, armaServerPath: armaServer.path });
         this.log('Initialize procedure completed.');
     }
 }
