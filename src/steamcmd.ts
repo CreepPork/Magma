@@ -140,7 +140,6 @@ export default class SteamCmd extends EventEmitter {
             });
         }
 
-
         this.emit('itemReady' as SteamCmdEvents);
 
         // ToDo: Find and update keys
@@ -152,7 +151,7 @@ export default class SteamCmd extends EventEmitter {
     }
 }
 
-export type SteamCmdEvents = 'steamGuardRequired'|
+export type SteamCmdEvents = 'steamGuardRequired' |
     'steamGuardSent' |
     'loggedIn' |
     'steamDownloaded' |
