@@ -1,3 +1,4 @@
+import File from './file';
 import { IMod } from './popularMods';
 import Settings from './settings';
 
@@ -97,16 +98,16 @@ export default class SteamCmd extends EventEmitter {
 
     public async downloadWorkshopItem(mod: IMod): Promise<void> {
         const settings = Settings.getAll();
-        const modDownloadDir = path.join(settings.gameServerPath, 'mods');
+        const modDir = path.join(settings.gameServerPath, 'mods');
         const itemDir = path.join(settings.gameServerPath, `steamapps/workshop/content/${mod.gameId}/${mod.itemId}`);
 
-        if (! fs.existsSync(modDownloadDir)) {
-            fs.mkdirsSync(modDownloadDir);
+        if (! fs.existsSync(modDir)) {
+            fs.mkdirsSync(modDir);
         }
 
         const args = [];
 
-        args.push(`+force_install_dir "${settings.gameServerPath}"`);
+        args.push(`+force_install_dir ${settings.gameServerPath}`);
         args.push(`+workshop_download_item ${mod.gameId} ${mod.itemId}`);
 
         await this.login(args);
@@ -115,18 +116,47 @@ export default class SteamCmd extends EventEmitter {
 
         // @my_awesome_mod
         const dirName = `@${_.snakeCase(mod.name)}`;
+        const modDownloadDir = path.join(modDir, dirName);
 
-        fs.copySync(itemDir, path.join(modDownloadDir, dirName));
+        if (! fs.existsSync(modDownloadDir)) {
+            this.emit('itemCopying' as SteamCmdEvents);
+
+            fs.copySync(itemDir, modDownloadDir);
+        } else {
+            this.emit('itemComparing' as SteamCmdEvents);
+
+            const changedFiles = await File.compareFiles(itemDir, modDownloadDir);
+
+            if (changedFiles.length === 0) {
+                this.emit('itemNotUpdated' as SteamCmdEvents);
+            }
+
+            changedFiles.forEach(file => {
+                if (file.includes(modDownloadDir)) {
+                    fs.unlinkSync(file);
+                } else {
+                    fs.copySync(file, path.join(modDownloadDir, path.relative(itemDir, file)));
+                }
+            });
+        }
+
 
         this.emit('itemReady' as SteamCmdEvents);
 
-        // ToDo: Copy only changed files
         // ToDo: Find and update keys
         // ToDo: Add multiple item download without closing SteamCMD
         // ToDo: Check Steam API time_updated epoch timestamp if to run this method
         // ToDo: If first time installed, update server configuration to start mod
         // ToDo: Server mod support
+        // ToDo: Optional mod support (only add keys)
     }
 }
 
-export type SteamCmdEvents = 'steamGuardRequired' | 'steamGuardSent' | 'loggedIn' | 'steamDownloaded' | 'itemReady';
+export type SteamCmdEvents = 'steamGuardRequired'|
+    'steamGuardSent' |
+    'loggedIn' |
+    'steamDownloaded' |
+    'itemCopying' |
+    'itemComparing' |
+    'itemNotUpdated' |
+    'itemReady';
