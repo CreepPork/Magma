@@ -10,7 +10,7 @@ import SteamCmd from '../steam/cmd';
 import ora from 'ora';
 
 export default class Download extends Command {
-    public static description = 'Downloads a Steam Workshop item.';
+    public static description = 'Downloads Steam Workshop items and updates keys.';
 
     public static args = [
         {
