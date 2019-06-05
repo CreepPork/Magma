@@ -19,7 +19,7 @@ export default class Install extends Command {
         const settings = Settings.getAll();
 
         // Install and update all mods
-        Download.run(settings.mods.map(mod => mod.itemId.toString()));
+        await Download.run(settings.mods.map(mod => mod.itemId.toString()));
 
         // If on Linux then find LinuxGSM config file
         if (process.platform !== 'linux') { return; }
