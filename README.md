@@ -29,17 +29,14 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-- [Magma](#magma)
-- [Usage](#usage)
-- [Commands](#commands)
-  - [`magma add ITEMID`](#magma-add-itemid)
-  - [`magma download ITEMID`](#magma-download-itemid)
-  - [`magma help [COMMAND]`](#magma-help-command)
-  - [`magma initialize`](#magma-initialize)
-  - [`magma install`](#magma-install)
-  - [`magma login`](#magma-login)
-  - [`magma remove`](#magma-remove)
-  - [`magma update`](#magma-update)
+* [`magma add ITEMID`](#magma-add-itemid)
+* [`magma download ITEMID`](#magma-download-itemid)
+* [`magma help [COMMAND]`](#magma-help-command)
+* [`magma initialize`](#magma-initialize)
+* [`magma install`](#magma-install)
+* [`magma login`](#magma-login)
+* [`magma remove`](#magma-remove)
+* [`magma update`](#magma-update)
 
 ## `magma add ITEMID`
 
