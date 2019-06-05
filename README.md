@@ -78,7 +78,7 @@ USAGE
   $ magma initialize
 
 OPTIONS
-  -f, --force  Skip a check if the settings file already exists.
+  -f, --force  Skip the check for a settings file. If exists, it will be overwritten.
 
 ALIASES
   $ magma init

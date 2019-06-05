@@ -23,7 +23,7 @@ export default class Initialize extends Command {
     public static flags = {
         force: flags.boolean({
             char: 'f',
-            description: 'Skip a check if the settings file already exists.',
+            description: 'Skip the check for a settings file. If exists, it will be overwritten.',
         }),
     };
 
