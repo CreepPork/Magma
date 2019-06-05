@@ -7,14 +7,17 @@ import Mod from '../mod';
 import Settings from '../settings';
 import SteamCmd from '../steam/cmd';
 
+import * as _ from 'lodash';
+
 import ora from 'ora';
 
 export default class Download extends Command {
     public static description = 'Downloads Steam Workshop items and updates keys.';
 
+    public static strict = false;
     public static args = [
         {
-            description: 'Steam Workshop item ID. Can be found in the URL.',
+            description: 'Steam Workshop item IDs. Chaining them will download all of them at once.',
             name: 'itemId',
             required: true,
         },
@@ -34,77 +37,83 @@ export default class Download extends Command {
     public async run() {
         this.checkIfInitialized();
         // tslint:disable-next-line: no-shadowed-variable
-        const { args, flags } = this.parse(Download);
-        const itemId = parseInt((args as { itemId: string }).itemId, 10);
+        const { argv, flags } = this.parse(Download);
+
+        const appId = flags.gameAppId ? flags.gameAppId : Settings.get('server').gameAppId;
+        const itemIds = argv.map(arg => parseInt(arg, 10));
+
+        const mods = [];
+        const spinner = ora('Fetching information about the items').start();
+        for (const itemId of itemIds) {
+            mods.push(await Mod.generateModFromId(appId, itemId));
+        }
+        spinner.succeed();
 
         const credentials = Settings.get('steamCredentials');
         const cmd = new SteamCmd(credentials.username, new Crypto().decrypt(credentials.password));
 
-        const spinner = ora('Fetching information about the item').start();
-        const mod = await Mod.generateModFromId(
-            flags.gameAppId ? flags.gameAppId : Settings.get('server').gameAppId,
-            itemId,
-        );
-        spinner.succeed();
+        if (mods.length === 1) {
+            cmd.on('loggedIn', () => {
+                spinner.succeed();
+                spinner.start('Downloading item');
+            });
 
-        cmd.on('itemComparingTimestamp', () => {
+            cmd.on('steamDownloaded', () => {
+                spinner.succeed();
+                spinner.start('Processing item');
+            });
+
+            cmd.on('itemCopying', () => {
+                spinner.succeed();
+                spinner.start('Copying item');
+            });
+
+            cmd.on('itemComparing', () => {
+                spinner.succeed();
+                spinner.start('Comparing signatures and updating mod data');
+            });
+
+            cmd.on('itemUpdatingKeys', () => {
+                if (spinner.isSpinning) {
+                    spinner.succeed();
+                }
+
+                spinner.start('Updating mod keys');
+            });
+        } else {
+            cmd.on('loggedIn', () => {
+                spinner.succeed();
+                spinner.start('Processing your request');
+            });
+        }
+
+        cmd.on('itemComparingTimestamp', (id: number, name: string) => {
             if (flags.force) {
-                spinner.start('Refreshing time updated timestamp');
+                spinner.start(`Refreshing time updated timestamp for ${name} (${id})`);
             } else {
-                spinner.start('Comparing time updated timestamps');
+                spinner.start(`Comparing time updated timestamps for ${name} (${id})`);
             }
         });
 
-        cmd.on('itemTimestampEqual', () => {
-            spinner.info('Time updated timestamps are equal, exiting');
+        cmd.on('itemTimestampCompared', () => {
+            spinner.succeed();
+        })
+
+        cmd.on('itemTimestampEqual', (id: number, name: string) => {
+            spinner.info(`Time updated timestamps are equal, skipping ${name} (${id})`);
         });
 
         cmd.on('loggingIn', () => {
-            spinner.succeed();
             spinner.start('Logging in');
         });
 
-        cmd.on('loggedIn', () => {
-            spinner.succeed();
-            spinner.start('Downloading item');
-        });
-
-        cmd.on('steamDownloaded', () => {
-            spinner.succeed();
-            spinner.start('Processing item');
-        });
-
-        cmd.on('itemCopying', () => {
-            spinner.succeed();
-            spinner.start('Copying item');
-        });
-
-        cmd.on('itemComparing', () => {
-            spinner.succeed();
-            spinner.start('Comparing signatures and updating mod data');
-        });
-
-        cmd.on('itemNotUpdated', () => {
-            spinner.succeed();
-            spinner.info('Nothing new, did not update mod files');
-        });
-
-        cmd.on('itemUpdatingKeys', () => {
-            const message = 'Updating mod keys';
-
+        cmd.on('allItemsReady', () => {
             if (spinner.isSpinning) {
                 spinner.succeed();
-                spinner.start(message);
-            } else {
-                spinner.start(message);
             }
         });
 
-        cmd.on('itemReady', () => {
-            spinner.succeed();
-        });
-
         spinner.start('Logging in');
-        await cmd.downloadMod(mod, flags.force);
+        await cmd.downloadMods(mods, flags.force);
     }
 }

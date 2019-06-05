@@ -93,58 +93,68 @@ export default class SteamCmd extends EventEmitter {
         });
     }
 
-    public async downloadWorkshopItem(gameId: number, itemId: number) {
-        await this.downloadWorkshopItems(gameId, [itemId]);
+    public async downloadWorkshopItem(mod: IMod) {
+        await this.downloadWorkshopItems([mod]);
     }
 
-    public async downloadWorkshopItems(gameId: number, itemId: number[]) {
-        const gameServerPath = Settings.get('gameServerPath');
+    public async downloadWorkshopItems(mods: IMod[]) {
+        if (mods.length > 0) {
+            const gameServerPath = Settings.get('gameServerPath');
 
-        const args = [];
+            const args = [];
 
-        // For some reason SteamCMD doesn't download correctly to the asked path
-        if (process.platform === 'win32') {
-            args.push(`+force_install_dir "${gameServerPath}"`);
-        } else {
-            args.push(`+force_install_dir ${gameServerPath}`);
+            // For some reason SteamCMD doesn't download correctly to the asked path
+            if (process.platform === 'win32') {
+                args.push(`+force_install_dir "${gameServerPath}"`);
+            } else {
+                args.push(`+force_install_dir ${gameServerPath}`);
+            }
+
+            mods.forEach(mod => {
+                args.push(`+workshop_download_item ${mod.gameId} ${mod.itemId}`);
+            });
+
+            await this.login(args);
+
+            this.emit('steamDownloaded');
         }
-
-        itemId.forEach(id => {
-            args.push(`+workshop_download_item ${gameId} ${id}`);
-        });
-
-        await this.login(args);
-
-        this.emit('steamDownloaded');
     }
 
-    public async downloadMod(mod: IMod, forceUpdate?: boolean): Promise<void> {
+    public async downloadMods(mods: IMod[], forceUpdate?: boolean): Promise<void> {
         const gameServerPath = Settings.get('gameServerPath');
         const modDir = path.join(gameServerPath, 'mods');
-        const itemDir = path.join(gameServerPath, `steamapps/workshop/content/${mod.gameId}/${mod.itemId}`);
 
-        const updatedAt = await this.compareTimestamps(mod, forceUpdate);
+        // Remove any mods that don't need to be processed
+        const filteredMods = [];
+        for (const mod of mods) {
+            const timestamp = await this.compareTimestamps(mod, forceUpdate);
 
-        if (! updatedAt) {
-            return;
+            if (timestamp) {
+                filteredMods.push(mod);
+            }
         }
 
-        if (! fs.existsSync(modDir)) {
-            fs.mkdirsSync(modDir);
+        await this.downloadWorkshopItems(filteredMods);
+
+        for (const mod of filteredMods) {
+            const itemDir = path.join(gameServerPath, `steamapps/workshop/content/${mod.gameId}/${mod.itemId}`);
+
+            if (! fs.existsSync(modDir)) {
+                fs.mkdirsSync(modDir);
+            }
+
+            // @my_awesome_mod
+            const dirName = `@${_.snakeCase(mod.name)}`;
+            const modDownloadDir = path.join(modDir, dirName);
+
+            await this.updateFiles(itemDir, modDownloadDir);
+
+            await this.updateKeys(mod, modDownloadDir);
+
+            this.emit('itemReady');
         }
 
-        await this.downloadWorkshopItem(mod.gameId, mod.itemId);
-
-        // @my_awesome_mod
-        const dirName = `@${_.snakeCase(mod.name)}`;
-        const modDownloadDir = path.join(modDir, dirName);
-
-        await this.updateFiles(itemDir, modDownloadDir);
-
-        await this.updateKeys(mod, modDownloadDir);
-
-        this.emit('itemReady');
-
+        this.emit('allItemsReady');
         // ToDo: If first time installed, update server configuration to start mod
     }
 
@@ -158,7 +168,7 @@ export default class SteamCmd extends EventEmitter {
         const gameServerPath = Settings.get('gameServerPath');
         const itemDir = path.join(gameServerPath, `steamapps/workshop/content/${mod.gameId}/${mod.itemId}`);
 
-        await this.downloadWorkshopItem(mod.gameId, mod.itemId);
+        await this.downloadWorkshopItem(mod);
 
         await this.updateKeys(mod, itemDir);
 
@@ -180,7 +190,7 @@ export default class SteamCmd extends EventEmitter {
             fs.mkdirsSync(modDir);
         }
 
-        await this.downloadWorkshopItem(mod.gameId, mod.itemId);
+        await this.downloadWorkshopItem(mod);
 
         // @my_awesome_mod
         const dirName = `@${_.snakeCase(mod.name)}`;
@@ -192,7 +202,7 @@ export default class SteamCmd extends EventEmitter {
     }
 
     private async compareTimestamps(mod: IMod, forceUpdate?: boolean): Promise<number | undefined> {
-        this.emit('itemComparingTimestamp');
+        this.emit('itemComparingTimestamp', mod.itemId, mod.name);
 
         const data = await SteamApi.getPublishedItemDetails(mod.itemId);
 
@@ -200,11 +210,13 @@ export default class SteamCmd extends EventEmitter {
 
         if (mod.updatedAt && ! forceUpdate) {
             if (updatedAt === mod.updatedAt) {
-                this.emit('itemTimestampEqual');
+                this.emit('itemTimestampEqual', mod.itemId, mod.name);
 
                 return;
             }
         }
+
+        this.emit('itemTimestampCompared');
 
         return updatedAt;
     }
@@ -273,16 +285,3 @@ export default class SteamCmd extends EventEmitter {
         Settings.write('mods', mods);
     }
 }
-
-export type SteamCmdEvents = 'steamGuardRequired' |
-    'steamGuardSent' |
-    'loggingIn' |
-    'loggedIn' |
-    'itemComparingTimestamp' |
-    'itemTimestampEqual' |
-    'steamDownloaded' |
-    'itemCopying' |
-    'itemComparing' |
-    'itemNotUpdated' |
-    'itemUpdatingKeys' |
-    'itemReady';
