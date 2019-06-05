@@ -97,7 +97,7 @@ export default class Download extends Command {
 
         cmd.on('itemTimestampCompared', () => {
             spinner.succeed();
-        })
+        });
 
         cmd.on('itemTimestampEqual', (id: number, name: string) => {
             spinner.info(`Time updated timestamps are equal, skipping ${name} (${id})`);
