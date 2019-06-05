@@ -93,7 +93,11 @@ export default class SteamCmd extends EventEmitter {
         });
     }
 
-    public async downloadWorkshopItem(gameId: number, itemId: number): Promise<void> {
+    public async downloadWorkshopItem(gameId: number, itemId: number) {
+        await this.downloadWorkshopItems(gameId, [itemId]);
+    }
+
+    public async downloadWorkshopItems(gameId: number, itemId: number[]) {
         const gameServerPath = Settings.get('gameServerPath');
 
         const args = [];
@@ -102,8 +106,12 @@ export default class SteamCmd extends EventEmitter {
         if (process.platform === 'win32') {
             args.push(`+force_install_dir "${gameServerPath}"`);
         } else {
-        args.push(`+force_install_dir ${gameServerPath}`);
+            args.push(`+force_install_dir ${gameServerPath}`);
         }
+
+        itemId.forEach(id => {
+            args.push(`+workshop_download_item ${gameId} ${id}`);
+        });
 
         await this.login(args);
 
@@ -137,7 +145,6 @@ export default class SteamCmd extends EventEmitter {
 
         this.emit('itemReady');
 
-        // ToDo: Add multiple item download without closing SteamCMD
         // ToDo: If first time installed, update server configuration to start mod
     }
 
