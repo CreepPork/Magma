@@ -1,7 +1,6 @@
 import { ISteamPublishedFile } from './interfaces/steamPublishedFile';
 import { IMod } from './popularMods';
 import Settings from './settings';
-import Time from './time';
 
 import axios, { AxiosResponse } from 'axios';
 import * as _ from 'lodash';

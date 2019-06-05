@@ -2,7 +2,6 @@ import File from './file';
 import { ISteamPublishedFile } from './interfaces/steamPublishedFile';
 import { IMod } from './popularMods';
 import Settings from './settings';
-import Time from './time';
 
 import * as execa from 'execa';
 import * as fs from 'fs-extra';
