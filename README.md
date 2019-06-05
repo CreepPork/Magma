@@ -30,14 +30,40 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`magma add ITEMID`](#magma-add-itemid)
 * [`magma download ITEMID`](#magma-download-itemid)
 * [`magma help [COMMAND]`](#magma-help-command)
 * [`magma initialize`](#magma-initialize)
+* [`magma install`](#magma-install)
 * [`magma login`](#magma-login)
+* [`magma remove`](#magma-remove)
+* [`magma update`](#magma-update)
+
+## `magma add ITEMID`
+
+Adds Steam Workshop item data to the config file.
+
+```
+USAGE
+  $ magma add ITEMID
+
+ARGUMENTS
+  ITEMID  Steam Workshop item IDs. Chaining them will add all of them at once.
+
+OPTIONS
+  -g, --gameAppId=gameAppId  Steam game app ID. Can be found at SteamDB or in the URL.
+
+EXAMPLES
+  magma add 723217262
+  magma add 450814997 723217262 713709341
+  magma add 430091721 -g 4000
+```
+
+_See code: [src\commands\add.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src\commands\add.ts)_
 
 ## `magma download ITEMID`
 
-Downloads Steam Workshop items and updates keys.
+Downloads Steam Workshop items, moves keys and updates mods.
 
 ```
 USAGE
@@ -49,6 +75,11 @@ ARGUMENTS
 OPTIONS
   -f, --force                Ignores time updated timestamp from Steam Workshop.
   -g, --gameAppId=gameAppId  Steam game app ID. Can be found at SteamDB or in the URL.
+
+EXAMPLES
+  magma download 723217262
+  magma download 450814997 723217262 713709341 -f
+  magma download 430091721 -g 4000
 ```
 
 _See code: [src\commands\download.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src\commands\download.ts)_
@@ -87,6 +118,17 @@ ALIASES
 
 _See code: [src\commands\initialize.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src\commands\initialize.ts)_
 
+## `magma install`
+
+Installs and updates all mods that are present in your configuration file.
+
+```
+USAGE
+  $ magma install
+```
+
+_See code: [src\commands\install.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src\commands\install.ts)_
+
 ## `magma login`
 
 Logs into SteamCMD.
@@ -97,4 +139,26 @@ USAGE
 ```
 
 _See code: [src\commands\login.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src\commands\login.ts)_
+
+## `magma remove`
+
+Removes selected mods from disk completely and their keys.
+
+```
+USAGE
+  $ magma remove
+```
+
+_See code: [src\commands\remove.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src\commands\remove.ts)_
+
+## `magma update`
+
+Updates installed mods to their latest versions.
+
+```
+USAGE
+  $ magma update
+```
+
+_See code: [src\commands\update.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src\commands\update.ts)_
 <!-- commandsstop -->
