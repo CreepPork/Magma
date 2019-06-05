@@ -65,13 +65,22 @@ export default class DownloadMod extends Command {
 
         cmd.on('itemNotUpdated' as SteamCmdEvents, () => {
             spinner.succeed();
-            spinner.info('Nothing new, did not update');
+            spinner.info('Nothing new, did not update mod files');
+        });
+
+        cmd.on('itemUpdatingKeys' as SteamCmdEvents, () => {
+            const message = 'Updating mod keys';
+
+            if (spinner.isSpinning) {
+                spinner.succeed();
+                spinner.start(message);
+            } else {
+                spinner.start(message);
+            }
         });
 
         cmd.on('itemReady' as SteamCmdEvents, () => {
-            if (spinner.isSpinning) {
-                spinner.succeed();
-            }
+            spinner.succeed();
         });
 
         spinner.start('Logging in');

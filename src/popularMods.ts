@@ -75,4 +75,5 @@ export interface IMod {
     gameId: number;
     itemId: number;
     name: string;
+    keys?: string[];
 }

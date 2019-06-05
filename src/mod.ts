@@ -8,11 +8,13 @@ import * as qs from 'qs';
 
 export default class Mod {
     public static async generateModFromId(appId: number, itemId: number): Promise<IMod> {
-        // Find if item already exists in mod list in magma.json
-        const mods = _.find(Settings.get('mods'), { itemId });
+        const mods = Settings.get('mods');
 
-        if (mods) {
-            return mods;
+        // Find if item already exists in mod list in magma.json
+        const existingMod = _.find(mods, { itemId });
+
+        if (existingMod) {
+            return existingMod;
         }
 
         // If not gen a new mod and append to magma.json
@@ -30,10 +32,15 @@ export default class Mod {
 
         const data = response.data;
 
-        return {
+        const mod = {
             gameId: appId,
             itemId,
             name: data.response.publishedfiledetails[0].title,
         } as IMod;
+
+        mods.push(mod);
+        Settings.write('mods', mods);
+
+        return mod;
     }
 }

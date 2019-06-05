@@ -88,6 +88,10 @@ export default class File {
 
         return differentFiles;
     }
+
+    public static findFiles(dir: string, extension: string): string[] {
+        return this.getAllFilesRecursively(dir).filter(file => file.includes(extension));
+    }
 }
 
 export interface IChecksumFile {

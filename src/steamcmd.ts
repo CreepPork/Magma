@@ -140,9 +140,42 @@ export default class SteamCmd extends EventEmitter {
             });
         }
 
+        this.emit('itemUpdatingKeys' as SteamCmdEvents);
+
+        const keyDir = path.join(settings.gameServerPath, 'keys');
+        if (! fs.existsSync(keyDir)) {
+            fs.mkdirsSync(keyDir);
+        }
+
+        // Remove old keys if present
+        if (mod.keys) {
+            mod.keys.forEach(key => {
+                if (fs.existsSync(key)) {
+                    fs.unlinkSync(key);
+                } else {
+                    _.remove(mod.keys as string[], key);
+                }
+            });
+        }
+
+        // Add new keys
+        const keys = File.findFiles(modDownloadDir, '.bikey');
+
+        keys.forEach(key => {
+            fs.copyFile(key, path.join(keyDir, File.getFilename(key)));
+        });
+
+        // Change keys paths from mod dir to keys dir
+        mod.keys = keys.map(key => path.join(keyDir, File.getFilename(key)));
+
+        // Update keys in settings
+        const modIndex = settings.mods.findIndex(el => el.itemId === mod.itemId);
+        Object.assign(settings.mods[modIndex], mod);
+
+        Settings.write('mods', settings.mods);
+
         this.emit('itemReady' as SteamCmdEvents);
 
-        // ToDo: Find and update keys
         // ToDo: Add multiple item download without closing SteamCMD
         // ToDo: Check Steam API time_updated epoch timestamp if to run this method
         // ToDo: If first time installed, update server configuration to start mod
@@ -158,4 +191,5 @@ export type SteamCmdEvents = 'steamGuardRequired' |
     'itemCopying' |
     'itemComparing' |
     'itemNotUpdated' |
+    'itemUpdatingKeys' |
     'itemReady';
