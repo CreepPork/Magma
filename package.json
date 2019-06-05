@@ -73,7 +73,7 @@
     "posttest": "tslint -c tslint.json -t stylish 'src/**/*.ts'",
     "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
     "test": "./node_modules/.bin/jest",
-    "version": "oclif-dev readme && git add README.md"
+    "version": "oclif-dev readme"
   },
   "types": "lib/index.d.ts"
 }

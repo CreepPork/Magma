@@ -30,31 +30,27 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`magma downloadMod ITEMID`](#magma-downloadmod-itemid)
+* [`magma download ITEMID`](#magma-download-itemid)
 * [`magma help [COMMAND]`](#magma-help-command)
 * [`magma initialize`](#magma-initialize)
 * [`magma login`](#magma-login)
-* [`magma test`](#magma-test)
 
-## `magma downloadMod ITEMID`
+## `magma download ITEMID`
 
 Downloads a Steam Workshop item.
 
 ```
 USAGE
-  $ magma downloadMod ITEMID
+  $ magma download ITEMID
 
 ARGUMENTS
   ITEMID  Steam Workshop item ID. Can be found in the URL.
 
 OPTIONS
-  -g, --workshopId=workshopId
-
-ALIASES
-  $ magma download
+  -w, --workshopId=workshopId
 ```
 
-_See code: [src/commands/downloadMod.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src/commands/downloadMod.ts)_
+_See code: [src/commands/download.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src/commands/download.ts)_
 
 ## `magma help [COMMAND]`
 
@@ -100,13 +96,4 @@ USAGE
 ```
 
 _See code: [src/commands/login.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src/commands/login.ts)_
-
-## `magma test`
-
-```
-USAGE
-  $ magma test
-```
-
-_See code: [src/commands/test.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src/commands/test.ts)_
 <!-- commandsstop -->

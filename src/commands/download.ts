@@ -9,11 +9,8 @@ import SteamCmd, { SteamCmdEvents } from '../steamcmd';
 
 import ora from 'ora';
 
-export default class DownloadMod extends Command {
+export default class Download extends Command {
     public static description = 'Downloads a Steam Workshop item.';
-    public static aliases = [
-        'download',
-    ];
 
     public static args = [
         {
@@ -24,13 +21,13 @@ export default class DownloadMod extends Command {
     ] as IArg[];
 
     public static flags = {
-        workshopId: flags.integer({ char: 'g' }),
+        workshopId: flags.integer({ char: 'w' }),
     };
 
     public async run() {
         this.checkIfInitialized();
         // tslint:disable-next-line: no-shadowed-variable
-        const { args, flags } = this.parse(DownloadMod);
+        const { args, flags } = this.parse(Download);
         const itemId = parseInt((args as { itemId: string }).itemId, 10);
 
         const credentials = Settings.get('steamCredentials');
