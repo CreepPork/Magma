@@ -63,6 +63,7 @@ export interface ISettings {
     mods: IMod[];
     steamCmdPath: string;
     gameServerPath: string;
+    instanceConfigPath?: string;
     steamCredentials: ISteamCredentials;
     encryptionKey: string;
     ivKey: string;

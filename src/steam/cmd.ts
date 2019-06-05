@@ -169,7 +169,6 @@ export default class SteamCmd extends EventEmitter {
         }
 
         this.emit('allItemsReady');
-        // ToDo: If first time installed, update server configuration to start mod
     }
 
     private async processClientsideMod(mods: IMod[]) {
@@ -190,7 +189,7 @@ export default class SteamCmd extends EventEmitter {
         if (mods.length === 0) { return; }
 
         const gameServerPath = Settings.get('gameServerPath');
-        const modDir = path.join(gameServerPath, 'mods');
+        const modDir = path.join(gameServerPath, 'servermods');
 
         if (! fs.existsSync(modDir)) {
             fs.mkdirsSync(modDir);
