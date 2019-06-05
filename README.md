@@ -21,7 +21,7 @@ $ npm install -g magma
 $ magma COMMAND
 running command...
 $ magma (-v|--version|version)
-Magma/0.0.0 linux-x64 node-v10.15.3
+magma/0.0.0 linux-x64 node-v10.15.3
 $ magma --help [COMMAND]
 USAGE
   $ magma COMMAND
@@ -30,31 +30,31 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-- [Magma](#magma)
-- [Usage](#usage)
-- [Commands](#commands)
-  - [`magma hello [FILE]`](#magma-hello-file)
-  - [`magma help [COMMAND]`](#magma-help-command)
+* [`magma downloadMod ITEMID`](#magma-downloadmod-itemid)
+* [`magma help [COMMAND]`](#magma-help-command)
+* [`magma initialize`](#magma-initialize)
+* [`magma login`](#magma-login)
+* [`magma test`](#magma-test)
 
-## `magma hello [FILE]`
+## `magma downloadMod ITEMID`
 
-describe the command here
+Downloads a Steam Workshop item.
 
 ```
 USAGE
-  $ magma hello [FILE]
+  $ magma downloadMod ITEMID
+
+ARGUMENTS
+  ITEMID  Steam Workshop item ID. Can be found in the URL.
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -g, --workshopId=workshopId
 
-EXAMPLE
-  $ magma hello
-  hello world from ./src/hello.ts!
+ALIASES
+  $ magma download
 ```
 
-_See code: [src/commands/hello.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src/commands/hello.ts)_
+_See code: [src/commands/downloadMod.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src/commands/downloadMod.ts)_
 
 ## `magma help [COMMAND]`
 
@@ -72,4 +72,41 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.0/src/commands/help.ts)_
+
+## `magma initialize`
+
+Initializes servers configuration data.
+
+```
+USAGE
+  $ magma initialize
+
+OPTIONS
+  -f, --force
+
+ALIASES
+  $ magma init
+```
+
+_See code: [src/commands/initialize.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src/commands/initialize.ts)_
+
+## `magma login`
+
+Logs into SteamCMD.
+
+```
+USAGE
+  $ magma login
+```
+
+_See code: [src/commands/login.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src/commands/login.ts)_
+
+## `magma test`
+
+```
+USAGE
+  $ magma test
+```
+
+_See code: [src/commands/test.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src/commands/test.ts)_
 <!-- commandsstop -->
