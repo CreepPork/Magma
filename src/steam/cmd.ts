@@ -98,8 +98,12 @@ export default class SteamCmd extends EventEmitter {
 
         const args = [];
 
+        // For some reason SteamCMD doesn't download correctly to the asked path
+        if (process.platform === 'win32') {
+            args.push(`+force_install_dir "${gameServerPath}"`);
+        } else {
         args.push(`+force_install_dir ${gameServerPath}`);
-        args.push(`+workshop_download_item ${gameId} ${itemId}`);
+        }
 
         await this.login(args);
 
