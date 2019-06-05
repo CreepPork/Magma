@@ -82,7 +82,7 @@ export default class Initialize extends Command {
                 if (mod.isClientSideMod) {
                     const installAsClient: { mod: boolean } = await inquirer.prompt({
                         default: true,
-                        message: 'This mod can be a client-side mod. Install as client-side only?',
+                        message: `${mod.name} can be a client-side mod. Install as client-side only?`,
                         name: 'mod',
                         type: 'confirm',
                     });
@@ -93,7 +93,7 @@ export default class Initialize extends Command {
                 if (mod.isServerMod) {
                     const installAsServer: { mod: boolean } = await inquirer.prompt({
                         default: true,
-                        message: 'This mod can be a server-side mod. Install as server-side only?',
+                        message: `${mod.name} can be a server-side mod. Install as server-side only?`,
                         name: 'mod',
                         type: 'confirm',
                     });
