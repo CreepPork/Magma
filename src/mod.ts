@@ -1,7 +1,8 @@
 import Settings from './settings';
-
-import * as _ from 'lodash';
 import SteamApi from './steam/api';
+
+import * as inquirer from 'inquirer';
+import * as _ from 'lodash';
 
 export default class Mod {
     public static async generateModFromId(appId: number, itemId: number): Promise<IMod> {
@@ -16,13 +17,43 @@ export default class Mod {
 
         // If not gen a new mod and append to magma.json
         const data = await SteamApi.getPublishedItemDetails(itemId);
+        const name = data.response.publishedfiledetails[0].title;
+
+        let isServerMod = false;
+        let isClientSideMod = false;
+
+        const isRequired: { forAll: boolean } = await inquirer.prompt({
+            default: true,
+            message: `Is ${name} required for all clients?`,
+            name: 'forAll',
+            type: 'confirm',
+        });
+
+        if (! isRequired.forAll) {
+            const isMod: { type: string[] } = await inquirer.prompt({
+                choices: ['Server-side mod', 'Client-side mod'],
+                message: `Is ${name} a`,
+                name: 'type',
+                type: 'list',
+            });
+
+            if (isMod.type.includes('Server-side mod')) {
+                isServerMod = true;
+            }
+
+            if (isMod.type.includes('Client-side mod')) {
+                isClientSideMod = true;
+            }
+        }
 
         const mod = {
             gameId: appId,
+            isClientSideMod,
+            isServerMod,
             itemId,
             name: data.response.publishedfiledetails[0].title,
             updatedAt: data.response.publishedfiledetails[0].time_updated,
-        } as IMod;
+        };
 
         mods.push(mod);
         Settings.write('mods', mods);
