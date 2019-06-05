@@ -21,7 +21,10 @@ export default class Download extends Command {
     ] as IArg[];
 
     public static flags = {
-        workshopId: flags.integer({ char: 'w' }),
+        gameAppId: flags.integer({
+            char: 'g',
+            description: 'Steam game app ID. Can be found at SteamDB or in the URL.',
+        }),
     };
 
     public async run() {
@@ -35,7 +38,7 @@ export default class Download extends Command {
 
         const spinner = ora('Fetching information about the item').start();
         const mod = await Mod.generateModFromId(
-            flags.workshopId ? flags.workshopId : Settings.get('server').gameAppId,
+            flags.gameAppId ? flags.gameAppId : Settings.get('server').gameAppId,
             itemId,
         );
         spinner.succeed();

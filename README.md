@@ -47,7 +47,7 @@ ARGUMENTS
   ITEMID  Steam Workshop item ID. Can be found in the URL.
 
 OPTIONS
-  -w, --workshopId=workshopId
+  -g, --gameAppId=gameAppId  Steam game app ID. Can be found at SteamDB or in the URL.
 ```
 
 _See code: [src/commands/download.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src/commands/download.ts)_
@@ -78,7 +78,7 @@ USAGE
   $ magma initialize
 
 OPTIONS
-  -f, --force
+  -f, --force  Skip a check if the settings file already exists.
 
 ALIASES
   $ magma init

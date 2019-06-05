@@ -21,7 +21,10 @@ export default class Initialize extends Command {
     ];
 
     public static flags = {
-        force: flags.boolean({ char: 'f' }),
+        force: flags.boolean({
+            char: 'f',
+            description: 'Skip a check if the settings file already exists.',
+        }),
     };
 
     public async run(): Promise<void> {
