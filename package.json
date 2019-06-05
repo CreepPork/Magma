@@ -1,5 +1,5 @@
 {
-  "name": "magma",
+  "name": "@creeppork/magma",
   "description": "A CLI app that is a mod updater for Arma 3 servers.",
   "version": "1.0.0",
   "author": "CreepPork",
