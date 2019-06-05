@@ -135,10 +135,9 @@ export default class SteamCmd extends EventEmitter {
 
         // ToDo: Add multiple item download without closing SteamCMD
         // ToDo: If first time installed, update server configuration to start mod
-        // ToDo: Server mod support
     }
 
-    public async downloadOptionalMod(mod: IMod, forceUpdate?: boolean) {
+    public async downloadClientsideMod(mod: IMod, forceUpdate?: boolean) {
         const updatedAt = await this.compareTimestamps(mod, forceUpdate);
 
         if (! updatedAt) {
@@ -151,6 +150,32 @@ export default class SteamCmd extends EventEmitter {
         await this.downloadWorkshopItem(mod.gameId, mod.itemId);
 
         await this.updateKeys(mod, itemDir);
+
+        this.emit('itemReady');
+    }
+
+    public async downloadServersideMod(mod: IMod, forceUpdate?: boolean) {
+        const gameServerPath = Settings.get('gameServerPath');
+        const modDir = path.join(gameServerPath, 'mods');
+        const itemDir = path.join(gameServerPath, `steamapps/workshop/content/${mod.gameId}/${mod.itemId}`);
+
+        const updatedAt = await this.compareTimestamps(mod, forceUpdate);
+
+        if (! updatedAt) {
+            return;
+        }
+
+        if (! fs.existsSync(modDir)) {
+            fs.mkdirsSync(modDir);
+        }
+
+        await this.downloadWorkshopItem(mod.gameId, mod.itemId);
+
+        // @my_awesome_mod
+        const dirName = `@${_.snakeCase(mod.name)}`;
+        const modDownloadDir = path.join(modDir, dirName);
+
+        await this.updateFiles(itemDir, modDownloadDir);
 
         this.emit('itemReady');
     }
