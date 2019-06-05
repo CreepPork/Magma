@@ -1,9 +1,7 @@
-import { ISteamPublishedFile } from './interfaces/steamPublishedFile';
 import Settings from './settings';
 
-import axios, { AxiosResponse } from 'axios';
 import * as _ from 'lodash';
-import * as qs from 'qs';
+import SteamApi from './steamApi';
 
 export default class Mod {
     public static async generateModFromId(appId: number, itemId: number): Promise<IMod> {
@@ -17,19 +15,7 @@ export default class Mod {
         }
 
         // If not gen a new mod and append to magma.json
-        const response: AxiosResponse<ISteamPublishedFile> = await axios.post(
-            'https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/',
-            qs.stringify({
-                'itemcount': 1,
-                'publishedfileids[0]': itemId,
-            }), {
-                headers: {
-                    'content-type': 'application/x-www-form-urlencoded',
-                },
-            },
-        );
-
-        const data = response.data;
+        const data = await SteamApi.getPublishedItemDetails(itemId);
 
         const mod = {
             gameId: appId,
