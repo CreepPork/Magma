@@ -1,7 +1,7 @@
 Magma
 =====
 
-A CLI app that is a mod updater for LinuxGSM powered Arma 3 servers.
+A CLI app that is a mod updater for Arma 3 servers.
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/Magma.svg)](https://npmjs.org/package/Magma)
@@ -20,7 +20,7 @@ $ npm install -g magma
 $ magma COMMAND
 running command...
 $ magma (-v|--version|version)
-magma/0.0.0 win32-x64 node-v10.15.3
+magma/1.0.0 win32-x64 node-v10.15.3
 $ magma --help [COMMAND]
 USAGE
   $ magma COMMAND
@@ -61,7 +61,7 @@ EXAMPLES
   magma add 430091721 -g 4000
 ```
 
-_See code: [src\commands\add.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src\commands\add.ts)_
+_See code: [src\commands\add.ts](https://github.com/CreepPork/Magma/blob/v1.0.0/src\commands\add.ts)_
 
 ## `magma download ITEMID`
 
@@ -84,7 +84,7 @@ EXAMPLES
   magma download 430091721 -g 4000
 ```
 
-_See code: [src\commands\download.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src\commands\download.ts)_
+_See code: [src\commands\download.ts](https://github.com/CreepPork/Magma/blob/v1.0.0/src\commands\download.ts)_
 
 ## `magma help [COMMAND]`
 
@@ -118,7 +118,7 @@ ALIASES
   $ magma init
 ```
 
-_See code: [src\commands\initialize.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src\commands\initialize.ts)_
+_See code: [src\commands\initialize.ts](https://github.com/CreepPork/Magma/blob/v1.0.0/src\commands\initialize.ts)_
 
 ## `magma install`
 
@@ -129,7 +129,7 @@ USAGE
   $ magma install
 ```
 
-_See code: [src\commands\install.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src\commands\install.ts)_
+_See code: [src\commands\install.ts](https://github.com/CreepPork/Magma/blob/v1.0.0/src\commands\install.ts)_
 
 ## `magma login`
 
@@ -140,7 +140,7 @@ USAGE
   $ magma login
 ```
 
-_See code: [src\commands\login.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src\commands\login.ts)_
+_See code: [src\commands\login.ts](https://github.com/CreepPork/Magma/blob/v1.0.0/src\commands\login.ts)_
 
 ## `magma remove`
 
@@ -151,7 +151,7 @@ USAGE
   $ magma remove
 ```
 
-_See code: [src\commands\remove.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src\commands\remove.ts)_
+_See code: [src\commands\remove.ts](https://github.com/CreepPork/Magma/blob/v1.0.0/src\commands\remove.ts)_
 
 ## `magma update`
 
@@ -162,5 +162,5 @@ USAGE
   $ magma update
 ```
 
-_See code: [src\commands\update.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src\commands\update.ts)_
+_See code: [src\commands\update.ts](https://github.com/CreepPork/Magma/blob/v1.0.0/src\commands\update.ts)_
 <!-- commandsstop -->

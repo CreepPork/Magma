@@ -1,8 +1,0 @@
-{
-    "plugins": [
-        "@babel/plugin-proposal-export-default-from",
-        "@babel/plugin-transform-typescript",
-        "@babel/plugin-proposal-class-properties",
-        "@babel/plugin-transform-modules-commonjs"
-    ]
-}
