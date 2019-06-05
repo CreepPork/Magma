@@ -1,6 +1,6 @@
-import File from './file';
-import { IMod } from './mod';
-import Settings from './settings';
+import File from '../file';
+import { IMod } from '../mod';
+import Settings from '../settings';
 
 import * as execa from 'execa';
 import * as fs from 'fs-extra';
@@ -9,7 +9,7 @@ import * as path from 'path';
 
 import { EventEmitter } from 'events';
 import { Readable, Writable } from 'stream';
-import SteamApi from './steamApi';
+import SteamApi from './api';
 
 export default class SteamCmd extends EventEmitter {
     private username: string;

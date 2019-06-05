@@ -3,7 +3,7 @@ import ora from 'ora';
 import Command from '../command';
 import Crypto from '../crypto';
 import Settings from '../settings';
-import SteamCmd from '../steamcmd';
+import SteamCmd from '../steam/cmd';
 
 import * as inquirer from 'inquirer';
 

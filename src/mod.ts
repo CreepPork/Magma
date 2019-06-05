@@ -1,7 +1,7 @@
 import Settings from './settings';
 
 import * as _ from 'lodash';
-import SteamApi from './steamApi';
+import SteamApi from './steam/api';
 
 export default class Mod {
     public static async generateModFromId(appId: number, itemId: number): Promise<IMod> {

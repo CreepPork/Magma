@@ -5,7 +5,7 @@ import Command from '../command';
 import Crypto from '../crypto';
 import Mod from '../mod';
 import Settings from '../settings';
-import SteamCmd from '../steamcmd';
+import SteamCmd from '../steam/cmd';
 
 import ora from 'ora';
 

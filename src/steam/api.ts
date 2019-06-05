@@ -1,4 +1,4 @@
-import { ISteamPublishedFile } from './interfaces/steamPublishedFile';
+import { ISteamPublishedFile } from '../interfaces/steamPublishedFile';
 
 import * as qs from 'qs';
 
