@@ -10,3 +10,4 @@ settings.json
 tests/coverage
 *.tsbuildinfo
 magma.json
+src/commands/test.ts
