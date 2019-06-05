@@ -12,7 +12,7 @@ import * as _ from 'lodash';
 import ora from 'ora';
 
 export default class Download extends Command {
-    public static description = 'Downloads Steam Workshop items and updates keys.';
+    public static description = 'Downloads Steam Workshop items, moves keys and updates mods.';
     public static examples = [
         'magma download 723217262',
         'magma download 450814997 723217262 713709341 -f',
@@ -50,7 +50,7 @@ export default class Download extends Command {
         const mods = [];
         const spinner = ora('Fetching information about the items').start();
         for (const itemId of itemIds) {
-            mods.push(await Mod.generateModFromId(appId, itemId));
+            mods.push(await Mod.generateModFromId(appId, itemId, true));
         }
         spinner.succeed();
 

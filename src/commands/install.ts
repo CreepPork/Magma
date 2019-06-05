@@ -3,7 +3,7 @@ import Settings from '../settings';
 import Download from './download';
 
 export default class Install extends Command {
-    public static description = 'Install all mods that are present in your configuration file.';
+    public static description = 'Installs all mods that are present in your configuration file.';
 
     public async run() {
         this.checkIfInitialized();
