@@ -1,12 +1,16 @@
 import File from './file';
+import { ISteamPublishedFile } from './interfaces/steamPublishedFile';
 import { IMod } from './popularMods';
 import Settings from './settings';
+import Time from './time';
 
 import * as execa from 'execa';
 import * as fs from 'fs-extra';
 import * as _ from 'lodash';
 import * as path from 'path';
+import * as qs from 'qs';
 
+import axios, { AxiosResponse } from 'axios';
 import { EventEmitter } from 'events';
 import { Readable, Writable } from 'stream';
 
@@ -33,6 +37,8 @@ export default class SteamCmd extends EventEmitter {
             let hasTriedToLogin = false;
             let loggedIn = false;
             let okTimes = 0;
+
+            this.emit('loggingIn' as SteamCmdEvents);
 
             const cmd = execa(this.cmdPath, [`+login ${this.username} ${this.password}`, ...args, '+quit']);
             cmd.catch(error => reject(error));
@@ -96,10 +102,37 @@ export default class SteamCmd extends EventEmitter {
         });
     }
 
-    public async downloadWorkshopItem(mod: IMod): Promise<void> {
+    public async downloadWorkshopItem(mod: IMod, forceUpdate?: boolean): Promise<void> {
         const settings = Settings.getAll();
         const modDir = path.join(settings.gameServerPath, 'mods');
         const itemDir = path.join(settings.gameServerPath, `steamapps/workshop/content/${mod.gameId}/${mod.itemId}`);
+
+        this.emit('itemComparingTimestamp' as SteamCmdEvents);
+
+        const response: AxiosResponse<ISteamPublishedFile> = await axios.post(
+            'https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/',
+            qs.stringify({
+                'itemcount': 1,
+                'publishedfileids[0]': mod.itemId,
+            }), {
+                headers: {
+                    'content-type': 'application/x-www-form-urlencoded',
+                },
+            },
+        );
+        const data = response.data;
+
+        const updatedAt = data.response.publishedfiledetails[0].time_updated;
+
+        if (mod.updatedAt && ! forceUpdate) {
+            if (updatedAt === mod.updatedAt) {
+                this.emit('itemTimestampEqual' as SteamCmdEvents);
+
+                return;
+            }
+        }
+
+        mod.updatedAt = updatedAt;
 
         if (! fs.existsSync(modDir)) {
             fs.mkdirsSync(modDir);
@@ -177,7 +210,6 @@ export default class SteamCmd extends EventEmitter {
         this.emit('itemReady' as SteamCmdEvents);
 
         // ToDo: Add multiple item download without closing SteamCMD
-        // ToDo: Check Steam API time_updated epoch timestamp if to run this method
         // ToDo: If first time installed, update server configuration to start mod
         // ToDo: Server mod support
         // ToDo: Optional mod support (only add keys)
@@ -186,7 +218,10 @@ export default class SteamCmd extends EventEmitter {
 
 export type SteamCmdEvents = 'steamGuardRequired' |
     'steamGuardSent' |
+    'loggingIn' |
     'loggedIn' |
+    'itemComparingTimestamp' |
+    'itemTimestampEqual' |
     'steamDownloaded' |
     'itemCopying' |
     'itemComparing' |

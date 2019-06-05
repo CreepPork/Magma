@@ -47,6 +47,7 @@ ARGUMENTS
   ITEMID  Steam Workshop item ID. Can be found in the URL.
 
 OPTIONS
+  -f, --force                Ignores time updated timestamp from Steam Workshop.
   -g, --gameAppId=gameAppId  Steam game app ID. Can be found at SteamDB or in the URL.
 ```
 

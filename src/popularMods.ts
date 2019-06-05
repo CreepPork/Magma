@@ -76,4 +76,5 @@ export interface IMod {
     itemId: number;
     name: string;
     keys?: string[];
+    updatedAt?: number;
 }

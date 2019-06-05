@@ -21,6 +21,10 @@ export default class Download extends Command {
     ] as IArg[];
 
     public static flags = {
+        force: flags.boolean({
+            char: 'f',
+            description: 'Ignores time updated timestamp from Steam Workshop.',
+        }),
         gameAppId: flags.integer({
             char: 'g',
             description: 'Steam game app ID. Can be found at SteamDB or in the URL.',
@@ -42,6 +46,23 @@ export default class Download extends Command {
             itemId,
         );
         spinner.succeed();
+
+        cmd.on('itemComparingTimestamp' as SteamCmdEvents, () => {
+            if (flags.force) {
+                spinner.start('Refreshing time updated timestamp');
+            } else {
+                spinner.start('Comparing time updated timestamps');
+            }
+        });
+
+        cmd.on('itemTimestampEqual' as SteamCmdEvents, () => {
+            spinner.info('Time updated timestamps are equal, exiting');
+        });
+
+        cmd.on('loggingIn' as SteamCmdEvents, () => {
+            spinner.succeed();
+            spinner.start('Logging in');
+        });
 
         cmd.on('loggedIn' as SteamCmdEvents, () => {
             spinner.succeed();
@@ -84,6 +105,6 @@ export default class Download extends Command {
         });
 
         spinner.start('Logging in');
-        await cmd.downloadWorkshopItem(mod);
+        await cmd.downloadWorkshopItem(mod, flags.force);
     }
 }

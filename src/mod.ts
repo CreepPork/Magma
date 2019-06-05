@@ -1,6 +1,7 @@
 import { ISteamPublishedFile } from './interfaces/steamPublishedFile';
 import { IMod } from './popularMods';
 import Settings from './settings';
+import Time from './time';
 
 import axios, { AxiosResponse } from 'axios';
 import * as _ from 'lodash';
@@ -25,7 +26,7 @@ export default class Mod {
                 'publishedfileids[0]': itemId,
             }), {
                 headers: {
-                    'content-type': 'application/x-www-urlencoded',
+                    'content-type': 'application/x-www-form-urlencoded',
                 },
             },
         );
@@ -36,6 +37,7 @@ export default class Mod {
             gameId: appId,
             itemId,
             name: data.response.publishedfiledetails[0].title,
+            updatedAt: data.response.publishedfiledetails[0].time_updated,
         } as IMod;
 
         mods.push(mod);
