@@ -2,8 +2,8 @@ import Command from '../command';
 import Settings from '../settings';
 import Download from './download';
 
-export default class Install extends Command {
-    public static description = 'Installs and updates all mods that are present in your configuration file.';
+export default class Update extends Command {
+    public static description = 'Updates installed mods to their latest versions.';
 
     public async run() {
         this.checkIfInitialized();
