@@ -17,8 +17,6 @@ export default class SteamCmd extends EventEmitter {
 
     private cmdPath: string;
 
-    private process?: execa.ExecaChildProcess;
-
     constructor(user?: string, password?: string) {
         super();
 
@@ -54,7 +52,6 @@ export default class SteamCmd extends EventEmitter {
                 if (hasTriedToLogin) {
                     if (text.includes('FAILED login with result code')) {
                         clearTimeout(timeout);
-                        this.process = undefined;
                         reject(new Error(text.split('\n')[0]));
                     }
 
@@ -67,7 +64,6 @@ export default class SteamCmd extends EventEmitter {
                             clearTimeout(timeout);
 
                             loggedIn = true;
-                            this.process = cmd;
                             this.emit('loggedIn' as SteamCmdEvents);
                         }
                     }
@@ -89,10 +85,8 @@ export default class SteamCmd extends EventEmitter {
             cmd.on('exit', () => {
                 if (loggedIn) {
                     resolve();
-                    this.process = undefined;
                 } else {
                     clearTimeout(timeout);
-                    this.process = undefined;
                     reject(new Error('Process closed and we did not log in.'));
                 }
             });
