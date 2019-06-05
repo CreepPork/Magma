@@ -1,6 +1,6 @@
 import File from '../file';
 import { IMod } from '../mod';
-import Settings from '../settings';
+import Settings, { ISettings } from '../settings';
 
 import * as execa from 'execa';
 import * as fs from 'fs-extra';
@@ -98,21 +98,11 @@ export default class SteamCmd extends EventEmitter {
         const modDir = path.join(settings.gameServerPath, 'mods');
         const itemDir = path.join(settings.gameServerPath, `steamapps/workshop/content/${mod.gameId}/${mod.itemId}`);
 
-        this.emit('itemComparingTimestamp');
+        const updatedAt = await this.compareTimestamps(mod, forceUpdate);
 
-        const data = await SteamApi.getPublishedItemDetails(mod.itemId);
-
-        const updatedAt = data.response.publishedfiledetails[0].time_updated;
-
-        if (mod.updatedAt && ! forceUpdate) {
-            if (updatedAt === mod.updatedAt) {
-                this.emit('itemTimestampEqual');
-
-                return;
-            }
+        if (! updatedAt) {
+            return;
         }
-
-        mod.updatedAt = updatedAt;
 
         if (! fs.existsSync(modDir)) {
             fs.mkdirsSync(modDir);
@@ -131,6 +121,39 @@ export default class SteamCmd extends EventEmitter {
         const dirName = `@${_.snakeCase(mod.name)}`;
         const modDownloadDir = path.join(modDir, dirName);
 
+        this.emit('itemComparingTimestamp');
+
+        await this.updateFiles(itemDir, modDownloadDir);
+
+        this.emit('itemUpdatingKeys');
+
+        await this.updateKeys(settings, mod, modDownloadDir);
+
+        this.emit('itemReady');
+
+        // ToDo: Add multiple item download without closing SteamCMD
+        // ToDo: If first time installed, update server configuration to start mod
+        // ToDo: Server mod support
+        // ToDo: Optional mod support (only add keys)
+    }
+
+    private async compareTimestamps(mod: IMod, forceUpdate?: boolean): Promise<number | undefined> {
+        const data = await SteamApi.getPublishedItemDetails(mod.itemId);
+
+        const updatedAt = data.response.publishedfiledetails[0].time_updated;
+
+        if (mod.updatedAt && ! forceUpdate) {
+            if (updatedAt === mod.updatedAt) {
+                this.emit('itemTimestampEqual');
+
+                return;
+            }
+        }
+
+        return updatedAt;
+    }
+
+    private async updateFiles(itemDir: string, modDownloadDir: string) {
         if (! fs.existsSync(modDownloadDir)) {
             this.emit('itemCopying');
 
@@ -152,9 +175,9 @@ export default class SteamCmd extends EventEmitter {
                 }
             });
         }
+    }
 
-        this.emit('itemUpdatingKeys');
-
+    private async updateKeys(settings: ISettings, mod: IMod, modDownloadDir: string) {
         const keyDir = path.join(settings.gameServerPath, 'keys');
         if (! fs.existsSync(keyDir)) {
             fs.mkdirsSync(keyDir);
@@ -186,13 +209,6 @@ export default class SteamCmd extends EventEmitter {
         Object.assign(settings.mods[modIndex], mod);
 
         Settings.write('mods', settings.mods);
-
-        this.emit('itemReady');
-
-        // ToDo: Add multiple item download without closing SteamCMD
-        // ToDo: If first time installed, update server configuration to start mod
-        // ToDo: Server mod support
-        // ToDo: Optional mod support (only add keys)
     }
 }
 
