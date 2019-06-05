@@ -5,7 +5,7 @@ import Command from '../command';
 
 import File from '../file';
 import { ISteamPublishedFile } from '../interfaces/steamPublishedFile';
-import { IMod, popularMods } from '../popularMods';
+import { IMod, popularMods } from '../mod';
 import { ISupportedServer, supportedServers } from '../servers';
 import Settings, { ISettings } from '../settings';
 import Login from './login';

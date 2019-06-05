@@ -1,5 +1,5 @@
 import { ISteamCredentials } from './commands/login';
-import { IMod } from './popularMods';
+import { IMod } from './mod';
 import { ISupportedServer } from './servers';
 
 import * as fs from 'fs-extra';

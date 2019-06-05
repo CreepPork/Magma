@@ -1,6 +1,6 @@
 import File from './file';
 import { ISteamPublishedFile } from './interfaces/steamPublishedFile';
-import { IMod } from './popularMods';
+import { IMod } from './mod';
 import Settings from './settings';
 
 import * as execa from 'execa';

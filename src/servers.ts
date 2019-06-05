@@ -9,10 +9,6 @@ export const supportedServers: ISupportedServer[] = [
     },
 ];
 
-export function getGame(gameAppId: number): ISupportedServer {
-    return _.find(supportedServers, { gameAppId }) as ISupportedServer;
-}
-
 export interface ISupportedServer {
     gameAppId: number;
     serverAppId: number;
