@@ -21,7 +21,7 @@ $ npm install -g magma
 $ magma COMMAND
 running command...
 $ magma (-v|--version|version)
-magma/0.0.0 linux-x64 node-v10.15.3
+magma/0.0.0 win32-x64 node-v10.15.3
 $ magma --help [COMMAND]
 USAGE
   $ magma COMMAND
@@ -37,21 +37,21 @@ USAGE
 
 ## `magma download ITEMID`
 
-Downloads a Steam Workshop item.
+Downloads Steam Workshop items and updates keys.
 
 ```
 USAGE
   $ magma download ITEMID
 
 ARGUMENTS
-  ITEMID  Steam Workshop item ID. Can be found in the URL.
+  ITEMID  Steam Workshop item IDs. Chaining them will download all of them at once.
 
 OPTIONS
   -f, --force                Ignores time updated timestamp from Steam Workshop.
   -g, --gameAppId=gameAppId  Steam game app ID. Can be found at SteamDB or in the URL.
 ```
 
-_See code: [src/commands/download.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src/commands/download.ts)_
+_See code: [src\commands\download.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src\commands\download.ts)_
 
 ## `magma help [COMMAND]`
 
@@ -68,7 +68,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.0/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.0/src\commands\help.ts)_
 
 ## `magma initialize`
 
@@ -85,7 +85,7 @@ ALIASES
   $ magma init
 ```
 
-_See code: [src/commands/initialize.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src/commands/initialize.ts)_
+_See code: [src\commands\initialize.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src\commands\initialize.ts)_
 
 ## `magma login`
 
@@ -96,5 +96,5 @@ USAGE
   $ magma login
 ```
 
-_See code: [src/commands/login.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src/commands/login.ts)_
+_See code: [src\commands\login.ts](https://github.com/CreepPork/Magma/blob/v0.0.0/src\commands\login.ts)_
 <!-- commandsstop -->
