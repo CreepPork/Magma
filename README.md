@@ -6,7 +6,6 @@ A CLI app that is a mod updater for LinuxGSM powered Arma 3 servers.
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/Magma.svg)](https://npmjs.org/package/Magma)
 [![Build Status](https://travis-ci.com/CreepPork/Magma.svg?token=TsdTZZVMQRx2yic71M4F&branch=master)](https://travis-ci.com/CreepPork/Magma)
-[![Codecov](https://codecov.io/gh/CreepPork/Magma/branch/master/graph/badge.svg)](https://codecov.io/gh/CreepPork/Magma)
 [![Downloads/week](https://img.shields.io/npm/dw/Magma.svg)](https://npmjs.org/package/Magma)
 [![License](https://img.shields.io/npm/l/Magma.svg)](https://github.com/CreepPork/Magma/blob/master/package.json)
 
@@ -30,14 +29,17 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`magma add ITEMID`](#magma-add-itemid)
-* [`magma download ITEMID`](#magma-download-itemid)
-* [`magma help [COMMAND]`](#magma-help-command)
-* [`magma initialize`](#magma-initialize)
-* [`magma install`](#magma-install)
-* [`magma login`](#magma-login)
-* [`magma remove`](#magma-remove)
-* [`magma update`](#magma-update)
+- [Magma](#magma)
+- [Usage](#usage)
+- [Commands](#commands)
+  - [`magma add ITEMID`](#magma-add-itemid)
+  - [`magma download ITEMID`](#magma-download-itemid)
+  - [`magma help [COMMAND]`](#magma-help-command)
+  - [`magma initialize`](#magma-initialize)
+  - [`magma install`](#magma-install)
+  - [`magma login`](#magma-login)
+  - [`magma remove`](#magma-remove)
+  - [`magma update`](#magma-update)
 
 ## `magma add ITEMID`
 
