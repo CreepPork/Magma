@@ -98,34 +98,36 @@ export default class SteamCmd extends EventEmitter {
     }
 
     public async downloadWorkshopItems(mods: IMod[]) {
-        if (mods.length > 0) {
-            const gameServerPath = Settings.get('gameServerPath');
+        if (mods.length === 0) { return; }
 
-            const args = [];
+        const gameServerPath = Settings.get('gameServerPath');
 
-            // For some reason SteamCMD doesn't download correctly to the asked path
-            if (process.platform === 'win32') {
-                args.push(`+force_install_dir "${gameServerPath}"`);
-            } else {
-                args.push(`+force_install_dir ${gameServerPath}`);
-            }
+        const args = [];
 
-            mods.forEach(mod => {
-                args.push(`+workshop_download_item ${mod.gameId} ${mod.itemId}`);
-            });
-
-            await this.login(args);
-
-            this.emit('steamDownloaded');
+        // For some reason SteamCMD doesn't download correctly to the asked path
+        if (process.platform === 'win32') {
+            args.push(`+force_install_dir "${gameServerPath}"`);
+        } else {
+            args.push(`+force_install_dir ${gameServerPath}`);
         }
+
+        mods.forEach(mod => {
+            args.push(`+workshop_download_item ${mod.gameId} ${mod.itemId}`);
+        });
+
+        await this.login(args);
+
+        this.emit('steamDownloaded');
     }
 
     public async downloadMods(mods: IMod[], forceUpdate?: boolean): Promise<void> {
+        if (mods.length === 0) { return; }
+
         const gameServerPath = Settings.get('gameServerPath');
         const modDir = path.join(gameServerPath, 'mods');
 
         // Remove any mods that don't need to be processed
-        const filteredMods = [];
+        let filteredMods = [];
         for (const mod of mods) {
             const timestamp = await this.compareTimestamps(mod, forceUpdate);
 
@@ -134,7 +136,19 @@ export default class SteamCmd extends EventEmitter {
             }
         }
 
+        // Separate server and client side mods into their own arrays
+        const serverSideMods = filteredMods.filter(mod => mod.isServerMod);
+        const clientSideMods = filteredMods.filter(mod => mod.isClientSideMod);
+
+        // All of them are in one filteredMods array so they are downloaded
+        // Through the same instance of SteamCMD.
         await this.downloadWorkshopItems(filteredMods);
+
+        await this.processServersideMod(serverSideMods);
+        await this.processClientsideMod(clientSideMods);
+
+        // Remove server and client side mods
+        filteredMods = filteredMods.filter(mod => !mod.isServerMod && !mod.isClientSideMod);
 
         for (const mod of filteredMods) {
             const itemDir = path.join(gameServerPath, `steamapps/workshop/content/${mod.gameId}/${mod.itemId}`);
@@ -158,47 +172,41 @@ export default class SteamCmd extends EventEmitter {
         // ToDo: If first time installed, update server configuration to start mod
     }
 
-    public async downloadClientsideMod(mod: IMod, forceUpdate?: boolean) {
-        const updatedAt = await this.compareTimestamps(mod, forceUpdate);
-
-        if (! updatedAt) {
-            return;
-        }
+    private async processClientsideMod(mods: IMod[]) {
+        if (mods.length === 0) { return; }
 
         const gameServerPath = Settings.get('gameServerPath');
-        const itemDir = path.join(gameServerPath, `steamapps/workshop/content/${mod.gameId}/${mod.itemId}`);
 
-        await this.downloadWorkshopItem(mod);
+        for (const mod of mods) {
+            const itemDir = path.join(gameServerPath, `steamapps/workshop/content/${mod.gameId}/${mod.itemId}`);
 
-        await this.updateKeys(mod, itemDir);
+            await this.updateKeys(mod, itemDir);
 
-        this.emit('itemReady');
+            this.emit('itemReady');
+        }
     }
 
-    public async downloadServersideMod(mod: IMod, forceUpdate?: boolean) {
+    private async processServersideMod(mods: IMod[]) {
+        if (mods.length === 0) { return; }
+
         const gameServerPath = Settings.get('gameServerPath');
         const modDir = path.join(gameServerPath, 'mods');
-        const itemDir = path.join(gameServerPath, `steamapps/workshop/content/${mod.gameId}/${mod.itemId}`);
-
-        const updatedAt = await this.compareTimestamps(mod, forceUpdate);
-
-        if (! updatedAt) {
-            return;
-        }
 
         if (! fs.existsSync(modDir)) {
             fs.mkdirsSync(modDir);
         }
 
-        await this.downloadWorkshopItem(mod);
+        for (const mod of mods) {
+            const itemDir = path.join(gameServerPath, `steamapps/workshop/content/${mod.gameId}/${mod.itemId}`);
 
-        // @my_awesome_mod
-        const dirName = `@${_.snakeCase(mod.name)}`;
-        const modDownloadDir = path.join(modDir, dirName);
+            // @my_awesome_mod
+            const dirName = `@${_.snakeCase(mod.name)}`;
+            const modDownloadDir = path.join(modDir, dirName);
 
-        await this.updateFiles(itemDir, modDownloadDir);
+            await this.updateFiles(itemDir, modDownloadDir);
 
-        this.emit('itemReady');
+            this.emit('itemReady');
+        }
     }
 
     private async compareTimestamps(mod: IMod, forceUpdate?: boolean): Promise<number | undefined> {
