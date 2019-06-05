@@ -13,6 +13,11 @@ import ora from 'ora';
 
 export default class Download extends Command {
     public static description = 'Downloads Steam Workshop items and updates keys.';
+    public static examples = [
+        'magma download 723217262',
+        'magma download 450814997 723217262 713709341 -f',
+        'magma download 430091721 -g 4000',
+    ];
 
     public static strict = false;
     public static args = [
