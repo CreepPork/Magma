@@ -1,7 +1,7 @@
 {
   "name": "@creeppork/magma",
   "description": "A CLI app that is a mod updater for Arma 3 servers.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": "CreepPork",
   "bin": {
     "magma": "./bin/run"
