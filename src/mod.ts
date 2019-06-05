@@ -5,7 +5,7 @@ import * as inquirer from 'inquirer';
 import * as _ from 'lodash';
 
 export default class Mod {
-    public static async generateModFromId(appId: number, itemId: number): Promise<IMod> {
+    public static async generateModFromId(appId: number, itemId: number, skipUpdatedAt = false): Promise<IMod> {
         const mods = Settings.get('mods');
 
         // Find if item already exists in mod list in magma.json
@@ -52,7 +52,7 @@ export default class Mod {
             isServerMod,
             itemId,
             name: data.response.publishedfiledetails[0].title,
-            updatedAt: data.response.publishedfiledetails[0].time_updated,
+            updatedAt: skipUpdatedAt ? undefined : data.response.publishedfiledetails[0].time_updated,
         };
 
         mods.push(mod);
