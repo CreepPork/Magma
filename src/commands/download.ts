@@ -105,6 +105,6 @@ export default class Download extends Command {
         });
 
         spinner.start('Logging in');
-        await cmd.downloadWorkshopItem(mod, flags.force);
+        await cmd.downloadMod(mod, flags.force);
     }
 }

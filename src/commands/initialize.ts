@@ -1,18 +1,16 @@
 import { flags } from '@oclif/command';
-import axios, { AxiosResponse } from 'axios';
 import ora from 'ora';
 import Command from '../command';
 
 import File from '../file';
-import { ISteamPublishedFile } from '../interfaces/steamPublishedFile';
 import { IMod, popularMods } from '../mod';
 import { ISupportedServer, supportedServers } from '../servers';
 import Settings, { ISettings } from '../settings';
+import SteamApi from '../steam/api';
 import Login from './login';
 
 import * as inquirer from 'inquirer';
 import * as _ from 'lodash';
-import * as qs from 'qs';
 
 export default class Initialize extends Command {
     public static description = 'Initializes servers configuration data.';
@@ -78,12 +76,32 @@ export default class Initialize extends Command {
                 type: 'checkbox',
             });
 
-            for (const mod of selectedMods.mods) {
-                const value = _.find(popularMods, { name: mod });
+            for (const name of selectedMods.mods) {
+                const mod = _.find(popularMods, { name }) as IMod;
 
-                if (value) {
-                    mods.push(value);
+                if (mod.isClientSideMod) {
+                    const installAsClient: { mod: boolean } = await inquirer.prompt({
+                        default: true,
+                        message: 'This mod can be a client-side mod. Install as client-side only?',
+                        name: 'mod',
+                        type: 'confirm',
+                    });
+
+                    mod.isClientSideMod = installAsClient.mod;
                 }
+
+                if (mod.isServerMod) {
+                    const installAsServer: { mod: boolean } = await inquirer.prompt({
+                        default: true,
+                        message: 'This mod can be a server-side mod. Install as server-side only?',
+                        name: 'mod',
+                        type: 'confirm',
+                    });
+
+                    mod.isServerMod = installAsServer.mod;
+                }
+
+                mods.push(mod);
             }
         }
 
@@ -115,29 +133,49 @@ export default class Initialize extends Command {
                     },
                 });
 
-                const id = mod.url.match(RegExp(/([0-9])\w+/g)) as RegExpMatchArray;
+                let isServerMod = false;
+                let isClientSideMod = false;
+
+                const isRequired: { forAll: boolean } = await inquirer.prompt({
+                    default: true,
+                    message: 'Is this mod required for all clients?',
+                    name: 'forAll',
+                    type: 'confirm',
+                });
+
+                if (! isRequired.forAll) {
+                    const isMod: { type: string[] } = await inquirer.prompt({
+                        choices: ['Server-side mod', 'Client-side mod'],
+                        message: 'Is this mod a',
+                        name: 'type',
+                        type: 'list',
+                    });
+
+                    if (isMod.type.includes('Server-side mod')) {
+                        isServerMod = true;
+                    }
+
+                    if (isMod.type.includes('Client-side mod')) {
+                        isClientSideMod = true;
+                    }
+                }
+
+                const id = parseInt((mod.url.match(RegExp(/([0-9])\w+/g)) as RegExpMatchArray).toString(), 10);
                 const axiosSpinner = ora('Fetching info');
 
                 try {
                     axiosSpinner.start();
-                    const request: AxiosResponse<ISteamPublishedFile> = await axios.post(
-                        'https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/',
-                        qs.stringify({
-                            'itemcount': 1,
-                            'publishedfileids[0]': id.toString(),
-                        }), {
-                            headers: {
-                                'content-type': 'application/x-www-form-urlencoded',
-                            },
-                        },
-                    );
+
+                    const data = await SteamApi.getPublishedItemDetails(id);
 
                     axiosSpinner.succeed();
 
                     mods.push({
                         gameId: serverType.gameAppId,
+                        isClientSideMod,
+                        isServerMod,
                         itemId: parseInt(id.toString(), 10),
-                        name: request.data.response.publishedfiledetails[0].title,
+                        name: data.response.publishedfiledetails[0].title,
                     });
                 } catch (error) {
                     axiosSpinner.fail();
@@ -145,6 +183,8 @@ export default class Initialize extends Command {
 
                     mods.push({
                         gameId: serverType.gameAppId,
+                        isClientSideMod,
+                        isServerMod,
                         itemId: parseInt(id.toString(), 10),
                         name: `Unknown Addon (${id})`,
                     });

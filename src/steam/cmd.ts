@@ -1,6 +1,6 @@
 import File from '../file';
 import { IMod } from '../mod';
-import Settings, { ISettings } from '../settings';
+import Settings from '../settings';
 
 import * as execa from 'execa';
 import * as fs from 'fs-extra';
@@ -93,10 +93,23 @@ export default class SteamCmd extends EventEmitter {
         });
     }
 
-    public async downloadWorkshopItem(mod: IMod, forceUpdate?: boolean): Promise<void> {
-        const settings = Settings.getAll();
-        const modDir = path.join(settings.gameServerPath, 'mods');
-        const itemDir = path.join(settings.gameServerPath, `steamapps/workshop/content/${mod.gameId}/${mod.itemId}`);
+    public async downloadWorkshopItem(gameId: number, itemId: number): Promise<void> {
+        const gameServerPath = Settings.get('gameServerPath');
+
+        const args = [];
+
+        args.push(`+force_install_dir ${gameServerPath}`);
+        args.push(`+workshop_download_item ${gameId} ${itemId}`);
+
+        await this.login(args);
+
+        this.emit('steamDownloaded');
+    }
+
+    public async downloadMod(mod: IMod, forceUpdate?: boolean): Promise<void> {
+        const gameServerPath = Settings.get('gameServerPath');
+        const modDir = path.join(gameServerPath, 'mods');
+        const itemDir = path.join(gameServerPath, `steamapps/workshop/content/${mod.gameId}/${mod.itemId}`);
 
         const updatedAt = await this.compareTimestamps(mod, forceUpdate);
 
@@ -108,36 +121,43 @@ export default class SteamCmd extends EventEmitter {
             fs.mkdirsSync(modDir);
         }
 
-        const args = [];
-
-        args.push(`+force_install_dir ${settings.gameServerPath}`);
-        args.push(`+workshop_download_item ${mod.gameId} ${mod.itemId}`);
-
-        await this.login(args);
-
-        this.emit('steamDownloaded');
+        await this.downloadWorkshopItem(mod.gameId, mod.itemId);
 
         // @my_awesome_mod
         const dirName = `@${_.snakeCase(mod.name)}`;
         const modDownloadDir = path.join(modDir, dirName);
 
-        this.emit('itemComparingTimestamp');
-
         await this.updateFiles(itemDir, modDownloadDir);
 
-        this.emit('itemUpdatingKeys');
-
-        await this.updateKeys(settings, mod, modDownloadDir);
+        await this.updateKeys(mod, modDownloadDir);
 
         this.emit('itemReady');
 
         // ToDo: Add multiple item download without closing SteamCMD
         // ToDo: If first time installed, update server configuration to start mod
         // ToDo: Server mod support
-        // ToDo: Optional mod support (only add keys)
+    }
+
+    public async downloadOptionalMod(mod: IMod, forceUpdate?: boolean) {
+        const updatedAt = await this.compareTimestamps(mod, forceUpdate);
+
+        if (! updatedAt) {
+            return;
+        }
+
+        const gameServerPath = Settings.get('gameServerPath');
+        const itemDir = path.join(gameServerPath, `steamapps/workshop/content/${mod.gameId}/${mod.itemId}`);
+
+        await this.downloadWorkshopItem(mod.gameId, mod.itemId);
+
+        await this.updateKeys(mod, itemDir);
+
+        this.emit('itemReady');
     }
 
     private async compareTimestamps(mod: IMod, forceUpdate?: boolean): Promise<number | undefined> {
+        this.emit('itemComparingTimestamp');
+
         const data = await SteamApi.getPublishedItemDetails(mod.itemId);
 
         const updatedAt = data.response.publishedfiledetails[0].time_updated;
@@ -177,8 +197,14 @@ export default class SteamCmd extends EventEmitter {
         }
     }
 
-    private async updateKeys(settings: ISettings, mod: IMod, modDownloadDir: string) {
-        const keyDir = path.join(settings.gameServerPath, 'keys');
+    private async updateKeys(mod: IMod, downloadDir: string) {
+        this.emit('itemUpdatingKeys');
+
+        const gameServerPath = Settings.get('gameServerPath');
+        const mods = Settings.get('mods');
+
+        // Create keys dir if doesn't exist
+        const keyDir = path.join(gameServerPath, 'keys');
         if (! fs.existsSync(keyDir)) {
             fs.mkdirsSync(keyDir);
         }
@@ -195,20 +221,20 @@ export default class SteamCmd extends EventEmitter {
         }
 
         // Add new keys
-        const keys = File.findFiles(modDownloadDir, '.bikey');
+        const keys = File.findFiles(downloadDir, '.bikey');
 
+        // Copy keys
         keys.forEach(key => {
             fs.copyFile(key, path.join(keyDir, File.getFilename(key)));
         });
 
-        // Change keys paths from mod dir to keys dir
         mod.keys = keys.map(key => path.join(keyDir, File.getFilename(key)));
 
         // Update keys in settings
-        const modIndex = settings.mods.findIndex(el => el.itemId === mod.itemId);
-        Object.assign(settings.mods[modIndex], mod);
+        const modIndex = mods.findIndex(el => el.itemId === mod.itemId);
+        Object.assign(mods[modIndex], mod);
 
-        Settings.write('mods', settings.mods);
+        Settings.write('mods', mods);
     }
 }
 
