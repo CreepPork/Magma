@@ -1,5 +1,3 @@
-import * as _ from 'lodash';
-
 export const supportedServers: ISupportedServer[] = [
     {
         executableName: 'arma3server',
