@@ -3,7 +3,7 @@ import ora from 'ora';
 import Command from '../command';
 import Crypto from '../crypto';
 import Settings from '../settings';
-import SteamCmd, { SteamCmdEvents } from '../steamcmd';
+import SteamCmd from '../steamcmd';
 
 import * as inquirer from 'inquirer';
 
@@ -32,7 +32,7 @@ export default class Login extends Command {
 
         const loginSpinner = ora(`Logging in as user '${credentials.username}'`).start();
 
-        cmd.on('steamGuardRequired' as SteamCmdEvents, async () => {
+        cmd.on('steamGuardRequired', async () => {
             loginSpinner.stop();
 
             const auth: { code: string } = await inquirer.prompt({
@@ -42,7 +42,7 @@ export default class Login extends Command {
                 validate: code => code !== '',
             });
 
-            cmd.emit('steamGuardSent' as SteamCmdEvents, auth.code);
+            cmd.emit('steamGuardSent', auth.code);
 
             loginSpinner.start();
         });

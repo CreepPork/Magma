@@ -33,7 +33,7 @@ export default class SteamCmd extends EventEmitter {
             let loggedIn = false;
             let okTimes = 0;
 
-            this.emit('loggingIn' as SteamCmdEvents);
+            this.emit('loggingIn');
 
             const cmd = execa(this.cmdPath, [`+login ${this.username} ${this.password}`, ...args, '+quit']);
             cmd.catch(error => reject(error));
@@ -64,7 +64,7 @@ export default class SteamCmd extends EventEmitter {
                             clearTimeout(timeout);
 
                             loggedIn = true;
-                            this.emit('loggedIn' as SteamCmdEvents);
+                            this.emit('loggedIn');
                         }
                     }
                 } else {
@@ -73,10 +73,10 @@ export default class SteamCmd extends EventEmitter {
 
                         // As the Steam Guard code doesn't get outputed to stdout we do a wait (can be risky)
                         timeout = setTimeout(() => {
-                            this.on('steamGuardSent' as SteamCmdEvents, (code: string) => {
+                            this.on('steamGuardSent', (code: string) => {
                                 stdin.write(`${code}\n`);
                             });
-                            this.emit('steamGuardRequired' as SteamCmdEvents);
+                            this.emit('steamGuardRequired');
                         }, 10 * 1000);
                     }
                 }
@@ -98,7 +98,7 @@ export default class SteamCmd extends EventEmitter {
         const modDir = path.join(settings.gameServerPath, 'mods');
         const itemDir = path.join(settings.gameServerPath, `steamapps/workshop/content/${mod.gameId}/${mod.itemId}`);
 
-        this.emit('itemComparingTimestamp' as SteamCmdEvents);
+        this.emit('itemComparingTimestamp');
 
         const data = await SteamApi.getPublishedItemDetails(mod.itemId);
 
@@ -106,7 +106,7 @@ export default class SteamCmd extends EventEmitter {
 
         if (mod.updatedAt && ! forceUpdate) {
             if (updatedAt === mod.updatedAt) {
-                this.emit('itemTimestampEqual' as SteamCmdEvents);
+                this.emit('itemTimestampEqual');
 
                 return;
             }
@@ -125,23 +125,23 @@ export default class SteamCmd extends EventEmitter {
 
         await this.login(args);
 
-        this.emit('steamDownloaded' as SteamCmdEvents);
+        this.emit('steamDownloaded');
 
         // @my_awesome_mod
         const dirName = `@${_.snakeCase(mod.name)}`;
         const modDownloadDir = path.join(modDir, dirName);
 
         if (! fs.existsSync(modDownloadDir)) {
-            this.emit('itemCopying' as SteamCmdEvents);
+            this.emit('itemCopying');
 
             fs.copySync(itemDir, modDownloadDir);
         } else {
-            this.emit('itemComparing' as SteamCmdEvents);
+            this.emit('itemComparing');
 
             const changedFiles = await File.compareFiles(itemDir, modDownloadDir);
 
             if (changedFiles.length === 0) {
-                this.emit('itemNotUpdated' as SteamCmdEvents);
+                this.emit('itemNotUpdated');
             }
 
             changedFiles.forEach(file => {
@@ -153,7 +153,7 @@ export default class SteamCmd extends EventEmitter {
             });
         }
 
-        this.emit('itemUpdatingKeys' as SteamCmdEvents);
+        this.emit('itemUpdatingKeys');
 
         const keyDir = path.join(settings.gameServerPath, 'keys');
         if (! fs.existsSync(keyDir)) {
@@ -187,7 +187,7 @@ export default class SteamCmd extends EventEmitter {
 
         Settings.write('mods', settings.mods);
 
-        this.emit('itemReady' as SteamCmdEvents);
+        this.emit('itemReady');
 
         // ToDo: Add multiple item download without closing SteamCMD
         // ToDo: If first time installed, update server configuration to start mod

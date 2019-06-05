@@ -5,7 +5,7 @@ import Command from '../command';
 import Crypto from '../crypto';
 import Mod from '../mod';
 import Settings from '../settings';
-import SteamCmd, { SteamCmdEvents } from '../steamcmd';
+import SteamCmd from '../steamcmd';
 
 import ora from 'ora';
 
@@ -47,7 +47,7 @@ export default class Download extends Command {
         );
         spinner.succeed();
 
-        cmd.on('itemComparingTimestamp' as SteamCmdEvents, () => {
+        cmd.on('itemComparingTimestamp', () => {
             if (flags.force) {
                 spinner.start('Refreshing time updated timestamp');
             } else {
@@ -55,41 +55,41 @@ export default class Download extends Command {
             }
         });
 
-        cmd.on('itemTimestampEqual' as SteamCmdEvents, () => {
+        cmd.on('itemTimestampEqual', () => {
             spinner.info('Time updated timestamps are equal, exiting');
         });
 
-        cmd.on('loggingIn' as SteamCmdEvents, () => {
+        cmd.on('loggingIn', () => {
             spinner.succeed();
             spinner.start('Logging in');
         });
 
-        cmd.on('loggedIn' as SteamCmdEvents, () => {
+        cmd.on('loggedIn', () => {
             spinner.succeed();
             spinner.start('Downloading item');
         });
 
-        cmd.on('steamDownloaded' as SteamCmdEvents, () => {
+        cmd.on('steamDownloaded', () => {
             spinner.succeed();
             spinner.start('Processing item');
         });
 
-        cmd.on('itemCopying' as SteamCmdEvents, () => {
+        cmd.on('itemCopying', () => {
             spinner.succeed();
             spinner.start('Copying item');
         });
 
-        cmd.on('itemComparing' as SteamCmdEvents, () => {
+        cmd.on('itemComparing', () => {
             spinner.succeed();
             spinner.start('Comparing signatures and updating mod data');
         });
 
-        cmd.on('itemNotUpdated' as SteamCmdEvents, () => {
+        cmd.on('itemNotUpdated', () => {
             spinner.succeed();
             spinner.info('Nothing new, did not update mod files');
         });
 
-        cmd.on('itemUpdatingKeys' as SteamCmdEvents, () => {
+        cmd.on('itemUpdatingKeys', () => {
             const message = 'Updating mod keys';
 
             if (spinner.isSpinning) {
@@ -100,7 +100,7 @@ export default class Download extends Command {
             }
         });
 
-        cmd.on('itemReady' as SteamCmdEvents, () => {
+        cmd.on('itemReady', () => {
             spinner.succeed();
         });
 
