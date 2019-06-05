@@ -18,6 +18,15 @@ export default class SteamApi {
             },
         );
 
+        const result = response.data.response.publishedfiledetails[0].result;
+        if (result !== 1) {
+            if (result === 9) {
+                throw new Error(`Item ${itemId} does not exist`);
+            } else {
+                throw new Error(`Something went wrong while trying to fetch data for item ${itemId}`);
+            }
+        }
+
         return response.data;
     }
 }
