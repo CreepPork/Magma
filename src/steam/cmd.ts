@@ -250,6 +250,16 @@ export default class SteamCmd extends EventEmitter {
                 }
             });
         }
+
+        this.allFilesToLowercase(modDownloadDir);
+    }
+
+    private allFilesToLowercase(dir: string) {
+        const allFiles = File.getAllFilesRecursively(dir);
+
+        for (const file of allFiles) {
+            fs.renameSync(file, path.join(file, '..', File.getFilename(file).toLowerCase()));
+        }
     }
 
     private async updateKeys(mod: IMod, downloadDir: string) {
