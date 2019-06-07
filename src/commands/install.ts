@@ -46,6 +46,27 @@ export default class Install extends Command {
         // If on Linux then find LinuxGSM config file
         if (process.platform !== 'linux') { return; }
 
+        if (! Settings.has('linuxGsmEnabled')) {
+            const doesHave: { linuxGsm: boolean } = await inquirer.prompt({
+                default: true,
+                message: 'Is your server installed through LinuxGSM?',
+                name: 'linuxGsm',
+                type: 'confirm',
+            });
+
+            if (! doesHave.linuxGsm) {
+                Settings.write('linuxGsmEnabled', false);
+
+                return;
+            }
+
+            Settings.write('linuxGsmEnabled', true);
+        }
+
+        if (! Settings.get('linuxGsmEnabled')) {
+            return;
+        }
+
         const spinner = ora('Updating LinuxGSM config file').start();
 
         let configPath = '';
@@ -55,12 +76,22 @@ export default class Install extends Command {
                 configPath = settings.instanceConfigPath;
             }
         } else {
-            const configDir = path.join(
+            let configDir = path.join(
                 settings.gameServerPath,
                 `../lgsm/config-lgsm/${settings.server.executableName}`,
             );
 
             spinner.stop();
+
+            if (! fs.existsSync(configDir)) {
+                const linuxGsmConfig: { path: string } = await inquirer.prompt({
+                    message: `Config file location directory e.g. lgsm/config-lgsm/${settings.server.executableName}`,
+                    name: 'path',
+                    validate: (dir: string) => File.isDirectory(dir),
+                });
+
+                configDir = linuxGsmConfig.path;
+            }
 
             const configFile: { filename: string } = await inquirer.prompt({
                 choices: File.getAllFilesRecursively(configDir).map(file => File.getFilename(file)),
