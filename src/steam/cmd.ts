@@ -1,6 +1,7 @@
 import File from '../file';
 import { IMod } from '../mod';
 import Settings from '../settings';
+import SteamApi from './api';
 
 import * as execa from 'execa';
 import * as fs from 'fs-extra';
@@ -9,7 +10,6 @@ import * as path from 'path';
 
 import { EventEmitter } from 'events';
 import { Readable, Writable } from 'stream';
-import SteamApi from './api';
 
 export default class SteamCmd extends EventEmitter {
     private username: string;
@@ -60,7 +60,8 @@ export default class SteamCmd extends EventEmitter {
 
                         // It outputs OK twice but not the full string
                         // One is when logged in and other when profile info has been downloaded
-                        if (okTimes >= 2) {
+                        // If args is not empty then only one OK is returned for some reason
+                        if (okTimes >= 2 || args.length > 0) {
                             clearTimeout(timeout);
 
                             loggedIn = true;
