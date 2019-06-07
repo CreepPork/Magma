@@ -53,7 +53,9 @@
     "oclif",
     "updater",
     "linuxgsm",
-    "windows"
+    "windows",
+    "linux",
+    "magma"
   ],
   "license": "MIT",
   "main": "lib/index.js",
