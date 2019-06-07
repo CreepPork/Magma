@@ -34,6 +34,10 @@ export default class File {
         return fs.readdirSync(dir).map(el => path.join(dir, el)).filter(this.isFile).some(el => el.includes(search));
     }
 
+    public static getAllDirectoriesRecursively(dir: string): string[] {
+        return klaw(dir).map(item => item.path).filter(this.isDirectory);
+    }
+
     public static getAllFilesRecursively(dir: string): string[] {
         return klaw(dir).map(item => item.path).filter(this.isFile);
     }

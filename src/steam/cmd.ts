@@ -252,14 +252,21 @@ export default class SteamCmd extends EventEmitter {
             });
         }
 
-        this.allFilesToLowercase(modDownloadDir);
+        this.everythingToLowercase(modDownloadDir);
     }
 
-    private allFilesToLowercase(dir: string) {
-        const allFiles = File.getAllFilesRecursively(dir);
+    private everythingToLowercase(sourceDir: string) {
+        const files = File.getAllFilesRecursively(sourceDir);
 
-        for (const file of allFiles) {
+        for (const file of files) {
             fs.renameSync(file, path.join(file, '..', File.getFilename(file).toLowerCase()));
+        }
+
+        // Rename all folders after all files so there aren't any ENOENT errors.
+        const dirs = File.getAllDirectoriesRecursively(sourceDir);
+
+        for (const dir of dirs) {
+            fs.renameSync(dir, path.join(dir, '..', File.getFilename(dir).toLowerCase()));
         }
     }
 
