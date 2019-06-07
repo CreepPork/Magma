@@ -284,21 +284,30 @@ export default class SteamCmd extends EventEmitter {
             });
         }
 
+        // Required for Linux servers, otherwise mods don't work
+        // But then on mod update it has to be cleaned up, otherwise ENOTEMPTY error is thrown
+        // Because two directories are created (lower, sentence case) which then try to merge resulting in a error.
         this.everythingToLowercase(modDownloadDir);
     }
 
     private everythingToLowercase(sourceDir: string) {
+        const dirs = File.getAllDirectoriesRecursively(sourceDir);
+
+        for (const [i, dir] of dirs.entries()) {
+            if (fs.existsSync(dir)) {
+                fs.renameSync(dir, path.join(dir, '..', File.getFilename(dir).toLowerCase()));
+            } else {
+                const newDirs = File.getAllDirectoriesRecursively(sourceDir);
+                const updatedDir = newDirs[i];
+
+                fs.renameSync(updatedDir, path.join(updatedDir, '..', File.getFilename(updatedDir).toLowerCase()));
+            }
+        }
+
         const files = File.getAllFilesRecursively(sourceDir);
 
         for (const file of files) {
             fs.renameSync(file, path.join(file, '..', File.getFilename(file).toLowerCase()));
-        }
-
-        // Rename all folders after all files so there aren't any ENOENT errors.
-        const dirs = File.getAllDirectoriesRecursively(sourceDir);
-
-        for (const dir of dirs) {
-            fs.renameSync(dir, path.join(dir, '..', File.getFilename(dir).toLowerCase()));
         }
     }
 
