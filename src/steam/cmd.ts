@@ -127,15 +127,24 @@ export default class SteamCmd extends EventEmitter {
         const gameServerPath = Settings.get('gameServerPath');
         const modDir = path.join(gameServerPath, 'mods');
 
+        const allMods = Settings.get('mods');
+
         // Remove any mods that don't need to be processed
         let filteredMods = [];
         for (const mod of mods) {
             const timestamp = await this.compareTimestamps(mod, forceUpdate);
 
             if (timestamp) {
+                mod.updatedAt = timestamp;
                 filteredMods.push(mod);
+
+                const modIndex = allMods.findIndex(el => el.itemId === mod.itemId);
+                Object.assign(allMods[modIndex], mod);
             }
         }
+
+        // Write timestamps to config
+        Settings.write('mods', mods);
 
         // Separate server and client side mods into their own arrays
         const serverSideMods = filteredMods.filter(mod => mod.isServerMod);
