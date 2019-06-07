@@ -5,6 +5,8 @@ import Command from '../command';
 import Mod from '../mod';
 import Settings from '../settings';
 
+import ora from 'ora';
+
 export default class Add extends Command {
     public static description = 'Adds Steam Workshop item data to the config file.';
     public static examples = [
@@ -37,9 +39,13 @@ export default class Add extends Command {
         const appId = flags.gameAppId ? flags.gameAppId : Settings.get('server').gameAppId;
         const itemIds = argv.map(arg => parseInt(arg, 10));
 
+        const spinner = ora('Adding items to settings').start();
+
         const mods = [];
         for (const itemId of itemIds) {
-            mods.push(await Mod.generateModFromId(appId, itemId, true));
+            mods.push(await Mod.generateModFromId(appId, itemId, true, spinner));
         }
+
+        spinner.succeed();
     }
 }
