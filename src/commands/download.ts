@@ -58,18 +58,25 @@ export default class Download extends Command {
         const cmd = new SteamCmd(credentials.username, new Crypto().decrypt(credentials.password));
 
         if (mods.length === 1) {
-            cmd.on('loggedIn', () => {
+            cmd.once('loggedIn', () => {
                 spinner.succeed();
                 spinner.start('Downloading item');
             });
 
             cmd.on('steamDownloaded', () => {
-                spinner.succeed();
                 spinner.start('Processing item');
             });
 
-            cmd.on('itemCopying', () => {
+            cmd.on('waitingSteamCopy', () => {
                 spinner.succeed();
+                spinner.start('Waiting for Steam to copy files');
+            });
+
+            cmd.on('awaitedSteamCopy', () => {
+                spinner.succeed();
+            });
+
+            cmd.on('itemCopying', () => {
                 spinner.start('Copying item');
             });
 
@@ -86,7 +93,7 @@ export default class Download extends Command {
                 spinner.start('Updating mod keys');
             });
         } else {
-            cmd.on('loggedIn', () => {
+            cmd.once('loggedIn', () => {
                 spinner.succeed();
                 spinner.start('Processing your request');
             });
@@ -118,7 +125,6 @@ export default class Download extends Command {
             }
         });
 
-        spinner.start('Logging in');
         await cmd.downloadMods(mods, flags.force);
     }
 }
