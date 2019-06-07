@@ -1,3 +1,5 @@
+import { flags } from '@oclif/command';
+
 import Command from '../command';
 import File from '../file';
 import Settings from '../settings';
@@ -13,13 +15,33 @@ import ora from 'ora';
 export default class Install extends Command {
     public static description = 'Installs and updates all mods that are present in your configuration file.';
 
+    public static flags = {
+        force: flags.boolean({
+            char: 'f',
+            default: false,
+            description: 'Ignores time updated timestamps from Steam Workshop.',
+        }),
+    };
+
     public async run() {
         this.checkIfInitialized();
+        // tslint:disable-next-line: no-shadowed-variable
+        const { flags } = this.parse(Install);
 
         const settings = Settings.getAll();
 
+        const args = settings.mods.map(mod => mod.itemId.toString());
+
+        if (args.length === 0) {
+            this.error('No mods are in your Magma JSON file.');
+        }
+
+        if (flags.force) {
+            args.push('--force');
+        }
+
         // Install and update all mods
-        await Download.run(settings.mods.map(mod => mod.itemId.toString()));
+        await Download.run(args);
 
         // If on Linux then find LinuxGSM config file
         if (process.platform !== 'linux') { return; }
