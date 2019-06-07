@@ -4,8 +4,12 @@ import SteamApi from './steam/api';
 import * as inquirer from 'inquirer';
 import * as _ from 'lodash';
 
+import { Ora } from 'ora';
+
 export default class Mod {
-    public static async generateModFromId(appId: number, itemId: number, skipUpdatedAt = false): Promise<IMod> {
+    public static async generateModFromId(
+        appId: number, itemId: number, skipUpdatedAt = false, spinner?: Ora,
+    ): Promise<IMod> {
         const mods = Settings.get('mods');
 
         // Find if item already exists in mod list in magma.json
@@ -21,6 +25,12 @@ export default class Mod {
 
         let isServerMod = false;
         let isClientSideMod = false;
+
+        if (spinner) {
+            if (spinner.isSpinning) {
+                spinner.stop();
+            }
+        }
 
         const isRequired: { forAll: boolean } = await inquirer.prompt({
             default: true,
@@ -43,6 +53,12 @@ export default class Mod {
 
             if (isMod.type.includes('Client-side mod')) {
                 isClientSideMod = true;
+            }
+        }
+
+        if (spinner) {
+            if (! spinner.isSpinning) {
+                spinner.start();
             }
         }
 
