@@ -50,7 +50,7 @@ export default class Download extends Command {
         const mods = [];
         const spinner = ora('Fetching information about the items').start();
         for (const itemId of itemIds) {
-            mods.push(await Mod.generateModFromId(appId, itemId, true));
+            mods.push(await Mod.generateModFromId(appId, itemId, true, spinner));
         }
         spinner.succeed();
 
