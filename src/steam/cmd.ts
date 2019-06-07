@@ -1,6 +1,7 @@
 import File from '../file';
 import { IMod } from '../mod';
 import Settings from '../settings';
+import sleep from '../sleep';
 import SteamApi from './api';
 
 import * as execa from 'execa';
@@ -154,6 +155,17 @@ export default class SteamCmd extends EventEmitter {
         // Through the same instance of SteamCMD.
         await this.downloadWorkshopItems(filteredMods);
 
+        // Take into account time to copy all files from steam downloading to steam workshop dir
+        if (filteredMods.length > 0) {
+            this.emit('waitingSteamCopy');
+            for (const mod of filteredMods) {
+                const dir = path.join(gameServerPath, `steamapps/workshop/downloads/${mod.gameId}/${mod.itemId}`);
+
+                await this.awaitDownloadDirDestruction(dir);
+            }
+            this.emit('awaitedSteamCopy');
+        }
+
         await this.processServersideMod(serverSideMods);
         await this.processClientsideMod(clientSideMods);
 
@@ -179,6 +191,17 @@ export default class SteamCmd extends EventEmitter {
         }
 
         this.emit('allItemsReady');
+    }
+
+    private async awaitDownloadDirDestruction(downloadDir: string): Promise<void> {
+        while (true) {
+            // If downloadDir exists then await till it doesn't exist
+            if (! fs.existsSync(downloadDir)) {
+                break;
+            }
+
+            await sleep(500);
+        }
     }
 
     private async processClientsideMod(mods: IMod[]) {
