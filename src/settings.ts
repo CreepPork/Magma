@@ -8,19 +8,20 @@ import * as process from 'process';
 
 export default class Settings {
     public static has<T extends keyof ISettings>(key: T): boolean {
-        try {
-            this.get(key);
-
-            return true;
-        } catch (error) {
-            return false;
-        }
-    }
-
-    public static get<T extends keyof ISettings, K extends ISettings[T]>(key: T): K {
         const contents: ISettings = JSON.parse(fs.readFileSync(this.getFile()).toString());
 
-        if (contents[key]) {
+        // Key can be a false boolean and it will fail even though it exists
+        if (contents[key] !== undefined) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static get<T extends keyof ISettings, K extends ISettings[T]>(key: T): K | never {
+        const contents: ISettings = JSON.parse(fs.readFileSync(this.getFile()).toString());
+
+        if (contents[key] !== undefined) {
             return contents[key] as K;
         }
 
@@ -64,6 +65,7 @@ export interface ISettings {
     steamCmdPath: string;
     gameServerPath: string;
     instanceConfigPath?: string;
+    linuxGsmEnabled?: boolean;
     steamCredentials: ISteamCredentials;
     encryptionKey: string;
     ivKey: string;
