@@ -51,6 +51,12 @@ export default class Remove extends Command {
                 fs.removeSync(modPath);
             }
 
+            const serverModPath = path.join(serverDir, 'servermods', _.snakeCase(mod.name));
+
+            if (fs.existsSync(serverModPath)) {
+                fs.removeSync(serverModPath);
+            }
+
             _.remove(allMods, mod);
 
             spinner.succeed();
