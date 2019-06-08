@@ -138,14 +138,8 @@ export default class SteamCmd extends EventEmitter {
             if (timestamp) {
                 mod.updatedAt = timestamp;
                 filteredMods.push(mod);
-
-                const modIndex = allMods.findIndex(el => el.itemId === mod.itemId);
-                Object.assign(allMods[modIndex], mod);
             }
         }
-
-        // Write timestamps to config
-        Settings.write('mods', mods);
 
         // Separate server and client side mods into their own arrays
         const serverSideMods = filteredMods.filter(mod => mod.isServerMod);
@@ -187,8 +181,14 @@ export default class SteamCmd extends EventEmitter {
 
             await this.updateKeys(mod, modDownloadDir);
 
+            const modIndex = allMods.findIndex(el => el.itemId === mod.itemId);
+            Object.assign(allMods[modIndex], mod);
+
             this.emit('itemReady');
         }
+
+        // Write timestamps to config
+        Settings.write('mods', mods);
 
         this.emit('allItemsReady');
     }
@@ -262,6 +262,11 @@ export default class SteamCmd extends EventEmitter {
     }
 
     private async updateFiles(itemDir: string, modDownloadDir: string) {
+        // Required for Linux servers, otherwise mods don't work
+        // But then on mod update it has to be cleaned up, otherwise ENOTEMPTY error is thrown
+        // Because two directories are created (lower, sentence case) which then try to merge resulting in a error.
+        this.everythingToLowercase(itemDir);
+
         if (! fs.existsSync(modDownloadDir)) {
             this.emit('itemCopying');
 
@@ -283,11 +288,6 @@ export default class SteamCmd extends EventEmitter {
                 }
             });
         }
-
-        // Required for Linux servers, otherwise mods don't work
-        // But then on mod update it has to be cleaned up, otherwise ENOTEMPTY error is thrown
-        // Because two directories are created (lower, sentence case) which then try to merge resulting in a error.
-        this.everythingToLowercase(modDownloadDir);
     }
 
     private everythingToLowercase(sourceDir: string) {
