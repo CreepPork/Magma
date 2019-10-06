@@ -4,10 +4,10 @@ import * as crypto from 'crypto';
 
 export default class Crypto {
     public static createChecksum(
-        contents: string,
+        contents: Buffer,
         algorithm: 'sha1' | 'md5' = 'sha1',
         encoding: crypto.HexBase64Latin1Encoding = 'hex'): string {
-            return crypto.createHash(algorithm).update(contents, 'utf8').digest(encoding);
+            return crypto.createHash(algorithm).update(contents).digest(encoding);
     }
 
     private encryptionKey: string;

@@ -160,7 +160,7 @@ export default class SteamCmd extends EventEmitter {
             this.emit('awaitedSteamCopy');
         }
 
-        await this.processServersideMod(serverSideMods);
+        this.processServersideMod(serverSideMods);
         await this.processClientsideMod(clientSideMods);
 
         // Remove server and client side mods
@@ -177,7 +177,7 @@ export default class SteamCmd extends EventEmitter {
             const dirName = `@${_.snakeCase(mod.name)}`;
             const modDownloadDir = path.join(modDir, dirName);
 
-            await this.updateFiles(itemDir, modDownloadDir);
+            this.updateFiles(itemDir, modDownloadDir);
 
             await this.updateKeys(mod, modDownloadDir);
 
@@ -218,7 +218,7 @@ export default class SteamCmd extends EventEmitter {
         }
     }
 
-    private async processServersideMod(mods: IMod[]) {
+    private processServersideMod(mods: IMod[]) {
         if (mods.length === 0) { return; }
 
         const gameServerPath = Settings.get('gameServerPath');
@@ -235,7 +235,7 @@ export default class SteamCmd extends EventEmitter {
             const dirName = `@${_.snakeCase(mod.name)}`;
             const modDownloadDir = path.join(modDir, dirName);
 
-            await this.updateFiles(itemDir, modDownloadDir);
+            this.updateFiles(itemDir, modDownloadDir);
 
             this.emit('itemReady');
         }
@@ -261,7 +261,7 @@ export default class SteamCmd extends EventEmitter {
         return updatedAt;
     }
 
-    private async updateFiles(itemDir: string, modDownloadDir: string) {
+    private updateFiles(itemDir: string, modDownloadDir: string) {
         // Required for Linux servers, otherwise mods don't work
         // But then on mod update it has to be cleaned up, otherwise ENOTEMPTY error is thrown
         // Because two directories are created (lower, sentence case) which then try to merge resulting in a error.
@@ -274,7 +274,7 @@ export default class SteamCmd extends EventEmitter {
         } else {
             this.emit('itemComparing');
 
-            const changedFiles = await File.compareFiles(itemDir, modDownloadDir);
+            const changedFiles = File.compareFiles(itemDir, modDownloadDir);
 
             if (changedFiles.length === 0) {
                 this.emit('itemNotUpdated');

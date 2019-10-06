@@ -42,15 +42,15 @@ export default class File {
         return klaw(dir).map(item => item.path).filter(this.isFile);
     }
 
-    public static async getChecksumForFile(file: string): Promise<string> {
-        return await Crypto.createChecksum(fs.readFileSync(file).toString());
+    public static getChecksumForFile(file: string): string {
+        return Crypto.createChecksum(fs.readFileSync(file));
     }
 
-    public static async getChecksumForFiles(files: string[]): Promise<IChecksumFile[]> {
+    public static getChecksumForFiles(files: string[]): IChecksumFile[] {
         const checksums: IChecksumFile[] = [];
 
         for (const file of files) {
-            checksums.push({ file, filename: this.getFilename(file), checksum: await this.getChecksumForFile(file) });
+            checksums.push({ file, filename: this.getFilename(file), checksum: this.getChecksumForFile(file) });
         }
 
         return checksums;
@@ -60,11 +60,11 @@ export default class File {
      * Returns a string array of files that are different should be updated.
      * If file is returned from the `compareDir` then it should be removed from disk.
      */
-    public static async compareFiles(mainDir: string, compareDir: string): Promise<string[]> {
+    public static compareFiles(mainDir: string, compareDir: string): string[] {
         let differentFiles: string[] = [];
 
-        const mainDirChecksums = await this.getChecksumForFiles(this.getAllFilesRecursively(mainDir));
-        const compareDirChecksums = await this.getChecksumForFiles(this.getAllFilesRecursively(compareDir));
+        const mainDirChecksums = this.getChecksumForFiles(this.getAllFilesRecursively(mainDir));
+        const compareDirChecksums = this.getChecksumForFiles(this.getAllFilesRecursively(compareDir));
 
         const missingFiles = mainDirChecksums.filter(
             el => !compareDirChecksums.map(check => check.filename).includes(el.filename),
