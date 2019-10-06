@@ -20,7 +20,7 @@ $ npm install -g @creeppork/magma
 $ magma COMMAND
 running command...
 $ magma (-v|--version|version)
-@creeppork/magma/1.1.1 linux-x64 node-v10.16.0
+@creeppork/magma/1.1.2 linux-x64 node-v10.16.0
 $ magma --help [COMMAND]
 USAGE
   $ magma COMMAND
@@ -58,7 +58,7 @@ EXAMPLES
   magma add 430091721 -g 4000
 ```
 
-_See code: [src/commands/add.ts](https://github.com/CreepPork/Magma/blob/v1.1.1/src/commands/add.ts)_
+_See code: [src/commands/add.ts](https://github.com/CreepPork/Magma/blob/v1.1.2/src/commands/add.ts)_
 
 ## `magma download ITEMID`
 
@@ -81,7 +81,7 @@ EXAMPLES
   magma download 430091721 -g 4000
 ```
 
-_See code: [src/commands/download.ts](https://github.com/CreepPork/Magma/blob/v1.1.1/src/commands/download.ts)_
+_See code: [src/commands/download.ts](https://github.com/CreepPork/Magma/blob/v1.1.2/src/commands/download.ts)_
 
 ## `magma help [COMMAND]`
 
@@ -115,7 +115,7 @@ ALIASES
   $ magma init
 ```
 
-_See code: [src/commands/initialize.ts](https://github.com/CreepPork/Magma/blob/v1.1.1/src/commands/initialize.ts)_
+_See code: [src/commands/initialize.ts](https://github.com/CreepPork/Magma/blob/v1.1.2/src/commands/initialize.ts)_
 
 ## `magma install`
 
@@ -129,7 +129,7 @@ OPTIONS
   -f, --force  Ignores time updated timestamps from Steam Workshop.
 ```
 
-_See code: [src/commands/install.ts](https://github.com/CreepPork/Magma/blob/v1.1.1/src/commands/install.ts)_
+_See code: [src/commands/install.ts](https://github.com/CreepPork/Magma/blob/v1.1.2/src/commands/install.ts)_
 
 ## `magma login`
 
@@ -140,7 +140,7 @@ USAGE
   $ magma login
 ```
 
-_See code: [src/commands/login.ts](https://github.com/CreepPork/Magma/blob/v1.1.1/src/commands/login.ts)_
+_See code: [src/commands/login.ts](https://github.com/CreepPork/Magma/blob/v1.1.2/src/commands/login.ts)_
 
 ## `magma remove`
 
@@ -151,7 +151,7 @@ USAGE
   $ magma remove
 ```
 
-_See code: [src/commands/remove.ts](https://github.com/CreepPork/Magma/blob/v1.1.1/src/commands/remove.ts)_
+_See code: [src/commands/remove.ts](https://github.com/CreepPork/Magma/blob/v1.1.2/src/commands/remove.ts)_
 
 ## `magma update`
 
@@ -162,5 +162,5 @@ USAGE
   $ magma update
 ```
 
-_See code: [src/commands/update.ts](https://github.com/CreepPork/Magma/blob/v1.1.1/src/commands/update.ts)_
+_See code: [src/commands/update.ts](https://github.com/CreepPork/Magma/blob/v1.1.2/src/commands/update.ts)_
 <!-- commandsstop -->
