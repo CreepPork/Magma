@@ -12,7 +12,7 @@
     "@oclif/config": "^1.13.0",
     "@oclif/plugin-help": "^2.2.0",
     "axios": "^0.19.0",
-    "execa": "^1.0.0",
+    "execa": "^2.1.0",
     "fs-extra": "^8.0.1",
     "inquirer": "^6.3.1",
     "klaw-sync": "^6.0.0",
