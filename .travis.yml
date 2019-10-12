@@ -8,7 +8,7 @@ before_script:
   - npm i -g codecov
 
 script:
-  - npm run test
+  - npm test
 
 notifications:
   email: false
@@ -18,5 +18,4 @@ notifications:
     on_success: change
 
 after_success:
-  - ./node_modules/.bin/nyc report --reporter text-lcov > coverage.lcov
   - codecov
