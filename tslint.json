@@ -33,7 +33,12 @@
         "label-position": true,
         "file-name-casing": [
             true,
-            "pascal-case"
+            "camel-case"
+        ],
+        "typedef": [
+            true,
+            "call-signature",
+            "property-declaration"
         ],
         "newline-before-return": true,
         "no-console": false,
