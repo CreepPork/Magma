@@ -1,4 +1,4 @@
-magma
+Magma
 =====
 
 A CLI app that is a mod updater for Arma 3 servers.
