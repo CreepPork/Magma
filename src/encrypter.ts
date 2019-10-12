@@ -24,7 +24,7 @@ export default class Encrypter {
     /**
      * Create a new encryption key for the given cipher.
      */
-    public static generateKey(cipher: string): string {
+    public static generateKey(cipher = this.DEFAULT_CIPHER): string {
         return Crypto.randomBytes(cipher === 'AES-128-CBC' ? 16 : 32).toString('base64');
     }
 
@@ -87,7 +87,7 @@ export default class Encrypter {
     /**
      * Decrypt the given value.
      */
-    public decrypt(payload: string, unserialize = true): string {
+    public decrypt(payload: string, unserialize = true): any {
         const json = this.getJsonPayload(payload);
 
         const iv = Buffer.from(json.iv);
