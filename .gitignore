@@ -12,3 +12,4 @@ tests/coverage
 magma.json
 *.tgz
 oclif.manifest.json
+test/coverage
