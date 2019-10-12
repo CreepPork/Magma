@@ -1,19 +1,14 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es6",
+        "target": "es2017",
         "noImplicitAny": true,
         "strict": true,
-        "sourceMap": true,
-        "inlineSources": true,
-        "sourceRoot": "/",
-        "outDir": "dist",
-        "baseUrl": ".",
-        "paths": {
-            "*": [
-                "node_modules/*"
-            ]
-        }
+        "outDir": "lib",
+        "rootDir": "src",
+        "declaration": true,
+        "importHelpers": true,
+        "composite": true
     },
     "include": [
         "src/**/*"
