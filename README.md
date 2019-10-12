@@ -4,10 +4,10 @@ Magma
 A CLI app that is a mod updater for Arma 3 servers.
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![Version](https://img.shields.io/npm/v/magma.svg)](https://npmjs.org/package/magma)
+[![Version](https://img.shields.io/npm/v/@creeppork/magma.svg)](https://npmjs.org/package/@creeppork/magma)
 [![Codecov](https://codecov.io/gh/CreepPork/Magma/branch/master/graph/badge.svg)](https://codecov.io/gh/CreepPork/Magma)
-[![Downloads/week](https://img.shields.io/npm/dw/magma.svg)](https://npmjs.org/package/magma)
-[![License](https://img.shields.io/npm/l/magma.svg)](https://github.com/CreepPork/Magma/blob/master/package.json)
+[![Downloads/week](https://img.shields.io/npm/dw/@creeppork/magma.svg)](https://npmjs.org/package/@creeppork/magma)
+[![License](https://img.shields.io/npm/l/@creeppork/magma.svg)](https://github.com/CreepPork/Magma/blob/master/package.json)
 
 <!-- toc -->
 * [Usage](#usage)
@@ -29,15 +29,18 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`magma add`](#magma-add)
-* [`magma cron`](#magma-cron)
-* [`magma download`](#magma-download)
-* [`magma help [COMMAND]`](#magma-help-command)
-* [`magma initialize`](#magma-initialize)
-* [`magma install`](#magma-install)
-* [`magma login`](#magma-login)
-* [`magma remove`](#magma-remove)
-* [`magma update`](#magma-update)
+- [Magma](#magma)
+- [Usage](#usage)
+- [Commands](#commands)
+  - [`magma add`](#magma-add)
+  - [`magma cron`](#magma-cron)
+  - [`magma download`](#magma-download)
+  - [`magma help [COMMAND]`](#magma-help-command)
+  - [`magma initialize`](#magma-initialize)
+  - [`magma install`](#magma-install)
+  - [`magma login`](#magma-login)
+  - [`magma remove`](#magma-remove)
+  - [`magma update`](#magma-update)
 
 ## `magma add`
 
