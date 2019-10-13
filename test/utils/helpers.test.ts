@@ -1,15 +1,15 @@
 import * as fs from 'fs-extra';
 
-import Helpers from '../../src/helpers';
+import Config from '../../src/config';
 
-describe('Helpers.ensureIsInitialized()', () => {
+describe('Config.ensureIsInitialized()', () => {
     test('Error is thrown if magma.json does not exist', () => {
         Object.defineProperty(fs, 'existsSync', { value: jest.fn() });
         const mock = fs.existsSync as jest.Mock;
 
         mock.mockReturnValue(false);
 
-        expect(() => Helpers.ensureIsInitialized()).toThrowError(
+        expect(() => Config.ensureIsInitialized()).toThrowError(
             new Error('Magma is not initialized. Run `magma init` to initialize your project.')
         );
     });
@@ -20,6 +20,6 @@ describe('Helpers.ensureIsInitialized()', () => {
 
         mock.mockReturnValue(true);
 
-        expect(() => Helpers.ensureIsInitialized()).not.toThrow();
+        expect(() => Config.ensureIsInitialized()).not.toThrow();
     });
 });
