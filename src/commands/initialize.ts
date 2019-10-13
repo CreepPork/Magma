@@ -51,25 +51,19 @@ export default class Initialize extends Command {
         const { flags } = this.parse(Initialize);
         this.nonInteractive = flags.nonInteractive;
 
-        // Check for settings file
         await this.ensureNoConfig(flags.force);
 
-        // Validate given or ask for SteamCMD path
         const steamCmdPath = await this.ensureValidSteamCmd(flags.steamCmd);
 
-        // Ask for game server
         const serverPath = await this.ensureValidServer(flags.server);
 
-        // Ask for login
         const credentials = await this.ensureValidLogin(flags.username, flags.password);
 
-        // Ask if they use LinuxGSM
         const linuxGsm = await this.ensureValidLinuxGsm(flags.linuxGsmInstanceConfig);
 
         // Log in to verify
         // ToDo: write login logic
 
-        // Save data to disk
         const key = Encrypter.generateKey();
 
         Config.setAll({
