@@ -1,7 +1,268 @@
-import Command from '@oclif/command';
+import Command, { flags } from '@oclif/command';
+import { prompt } from 'inquirer';
+
+import Config from '../config';
+import Filesystem from '../filesystem';
+
+import Server from '../constants/server';
+import Encrypter from '../encrypter';
+import ISteamCredentials from '../interfaces/iSteamCredentials';
 
 export default class Initialize extends Command {
+    public static description = 'Initializes the configuration data required for Magma to operate.';
+    public static aliases = ['init'];
+    public static flags = {
+        force: flags.boolean({
+            char: 'f',
+            default: false,
+            description: 'Skip the check for the magma.json file. If it exists, it will be overwritten.',
+        }),
+        linuxGsmInstanceConfig: flags.string({
+            char: 'l',
+            description: 'Absolute path to the LinuxGSM instance configuration file (where it handles mods/servermods)',
+        }),
+        nonInteractive: flags.boolean({
+            char: 'n',
+            default: false,
+            description: 'Do not prompt for any input.',
+        }),
+        password: flags.string({
+            char: 'p',
+            description: 'Steam user password.',
+        }),
+        server: flags.string({
+            char: 's',
+            description: 'Absolute path to the directory where the server is (where the server executable is).',
+        }),
+        steamCmd: flags.string({
+            char: 'c',
+            description: 'Absolute path to the SteamCMD executable (including the file itself).',
+        }),
+        username: flags.string({
+            char: 'u',
+            description: 'Steam username.',
+        }),
+    };
+
+    private nonInteractive: boolean = false;
+
     public async run(): Promise<void> {
-        //
+        // tslint:disable-next-line: no-shadowed-variable
+        const { flags } = this.parse(Initialize);
+        this.nonInteractive = flags.nonInteractive;
+
+        // Check for settings file
+        await this.ensureNoConfig(flags.force);
+
+        // Validate given or ask for SteamCMD path
+        const steamCmdPath = await this.ensureValidSteamCmd(flags.steamCmd);
+
+        // Ask for game server
+        const serverPath = await this.ensureValidServer(flags.server);
+
+        // Ask for login
+        const credentials = await this.ensureValidLogin(flags.username, flags.password);
+
+        // Ask if they use LinuxGSM
+        const linuxGsm = await this.ensureValidLinuxGsm(flags.linuxGsmInstanceConfig);
+
+        // Log in to verify
+        // ToDo: write login logic
+
+        // Save data to disk
+        const key = Encrypter.generateKey();
+
+        Config.setAll({
+            credentials: {
+                password: new Encrypter(key).encrypt(credentials.password),
+                username: credentials.username,
+            },
+            key,
+            linuxGsm,
+            mods: [],
+            serverPath,
+            steamCmdPath,
+        });
+    }
+
+    private async ensureNoConfig(force: boolean): Promise<never | void> {
+        if (! force) {
+            if (Config.exists()) {
+                if (this.nonInteractive) {
+                    throw new Error('Magma is already initialized. Add the --force flag to overwrite the magma.json file.');
+                }
+
+                const response: { overwrite: boolean } = await prompt({
+                    message: 'The magma.json file exists here. Do you want to overwrite it?',
+                    name: 'overwrite',
+                    type: 'confirm',
+                });
+
+                if (response.overwrite === false) { this.exit(1); }
+            }
+        }
+    }
+
+    private async ensureValidSteamCmd(steamCmd: string | undefined): Promise<never | string> {
+        if (steamCmd) {
+            const valid = this.validateSteamCmd(steamCmd);
+
+            if (! valid) {
+                if (this.nonInteractive) {
+                    throw new Error('The given SteamCMD path is invalid. Did you include the executable as well?');
+                }
+
+                steamCmd = await this.promptForSteamCmd();
+            }
+        } else {
+            if (this.nonInteractive) {
+                throw new Error('The SteamCMD path was not given.');
+            }
+
+            steamCmd = await this.promptForSteamCmd();
+        }
+
+        return steamCmd;
+    }
+
+    private validateSteamCmd(path: string): boolean {
+        if (Filesystem.isFile(path) && Filesystem.getFilenameNoExt(path) === 'steamcmd') {
+            return true;
+        }
+
+        return false;
+    }
+
+    private async promptForSteamCmd(): Promise<string> {
+        const response: { path: string } = await prompt({
+            message: 'Absolute path to the SteamCMD executable (including the file itself)',
+            name: 'path',
+            type: 'input',
+            validate: this.validateSteamCmd,
+        });
+
+        return response.path;
+    }
+
+    private async ensureValidServer(server: string | undefined): Promise<never | string> {
+        if (server) {
+            const valid = this.validateServer(server);
+
+            if (! valid) {
+                if (this.nonInteractive) {
+                    throw new Error(
+                        'The given Arma 3 server directory is invalid.' +
+                        'Did you enter the directory where the arma3server executable resides?',
+                    );
+                }
+
+                server = await this.promptForServer();
+            }
+        } else {
+            if (this.nonInteractive) {
+                throw new Error('The Arma 3 server directory was not given.');
+            }
+
+            server = await this.promptForServer();
+        }
+
+        return server;
+    }
+
+    private validateServer(path: string): boolean {
+        if (Filesystem.isDirectory(path) && Filesystem.directoryContains(path, Server.executable)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private async promptForServer(): Promise<string> {
+        const response: { path: string } = await prompt({
+            message: 'Absolute path to the directory where the server is (where the server executable is)',
+            name: 'path',
+            type: 'input',
+            validate: this.validateServer,
+        });
+
+        return response.path;
+    }
+
+    private async ensureValidLogin(username: string | undefined, password: string | undefined):
+        Promise<never | ISteamCredentials> {
+            let credentials;
+
+            if (username && password) {
+                if (username === '' || password === '') {
+                    if (this.nonInteractive) {
+                        throw new Error('The given credentials were invalid. Did you enter empty credentials?');
+                    }
+
+                    credentials = await this.promptForCredentials();
+                } else {
+                    credentials = { username, password };
+                }
+            } else {
+                if (this.nonInteractive) {
+                    throw new Error('The Steam users credentials were not given.');
+                }
+
+                credentials = await this.promptForCredentials();
+            }
+
+            return credentials;
+    }
+
+    private async promptForCredentials(): Promise<ISteamCredentials> {
+        const response: ISteamCredentials = await prompt([{
+            message: 'Steam username',
+            name: 'username',
+            type: 'input',
+            validate: user => user !== '',
+        }, {
+            message: 'Steam user password',
+            name: 'password',
+            type: 'password',
+            validate: pass => pass !== '',
+        }]);
+
+        return response;
+    }
+
+    private async ensureValidLinuxGsm(path: string | undefined): Promise<string | undefined | never> {
+        if (path) {
+            if (Filesystem.isFile(path)) {
+                return path;
+            } else {
+                if (this.nonInteractive) {
+                    throw new Error('The LinuxGSM configuration file path is invalid. Did you include the file?');
+                }
+
+                return await this.promptForLinuxGsm();
+            }
+        } else {
+            if (! this.nonInteractive) {
+                const response: { uses: boolean } = await prompt({
+                    message: 'Are you using LinuxGSM?',
+                    name: 'uses',
+                    type: 'confirm',
+                });
+
+                if (response.uses) {
+                    return await this.promptForLinuxGsm();
+                }
+            }
+        }
+    }
+
+    private async promptForLinuxGsm(): Promise<string> {
+        const response: { path: string } = await prompt({
+            message: 'Absolute path to the LinuxGSM instance configuration file (where it handles mods/servermods)',
+            name: 'path',
+            type: 'input',
+            validate: Filesystem.isFile,
+        });
+
+        return response.path;
     }
 }
