@@ -36,6 +36,18 @@ describe('Encrypter.encrypt() & Encrypter.decrypt()', () => {
         expect(decrypted.foo).toBe(subject.foo);
     });
 
+    test('Stringification can be turned off and strings work still fine', () => {
+        const subject = 'Hello World!';
+
+        const cipher = new Encrypter(key);
+
+        const encrypted = cipher.encrypt(subject, false);
+        expect(encrypted).not.toBe(subject);
+
+        const decrypted = cipher.decrypt(encrypted, false);
+        expect(decrypted).toBe(subject);
+    });
+
     test('Strings can be encrypted and decrypted using non-default cipher', () => {
         const subject = 'Hello World!';
 
