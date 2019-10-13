@@ -10,7 +10,7 @@ describe('Config.ensureIsInitialized()', () => {
         mock.mockReturnValue(false);
 
         expect(() => Config.ensureIsInitialized()).toThrowError(
-            new Error('Magma is not initialized. Run `magma init` to initialize your project.')
+            new Error('Magma is not initialized. Run `magma init` to initialize your project.'),
         );
     });
 
