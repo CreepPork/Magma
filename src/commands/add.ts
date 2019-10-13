@@ -1,9 +1,9 @@
 import Command from '@oclif/command';
-import Helpers from '../helpers';
+import Config from '../config';
 
 export default class Add extends Command {
     public async init(): Promise<void> {
-        Helpers.ensureIsInitialized();
+        Config.ensureIsInitialized();
     }
 
     public async run(): Promise<void> {
