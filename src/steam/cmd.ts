@@ -1,20 +1,17 @@
-import * as pty from 'node-pty';
+import * as pty from 'node-pty-prebuilt';
 import * as os from 'os';
 
 import Config from '../config';
 import Encrypter from '../encrypter';
 
 export default class SteamCmd {
-    public static login(anonymous = false): Promise<boolean> {
+    public static login(credentials = Config.get('credentials'), key = Config.get('key')): Promise<boolean> {
         return new Promise(resolve => {
-            const credentials = Config.get('credentials');
-            const password = new Encrypter(Config.get('key')).decrypt(credentials.password);
-
-            const command = anonymous ? '+login anonymous' : `+login ${credentials.username} ${password}`;
+            const password = new Encrypter(key).decrypt(credentials.password);
 
             let loginSuccessful = false;
 
-            this.runCommand(command, data => {
+            this.runCommand(`+login ${credentials.username} ${password}`, data => {
                 if (data === 'Logged in OK\r\nWaiting for user info...') {
                     loginSuccessful = true;
                 } else if (loginSuccessful && data === 'OK\r\n') {

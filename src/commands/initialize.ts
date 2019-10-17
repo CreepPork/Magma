@@ -7,6 +7,9 @@ import Filesystem from '../filesystem';
 import Server from '../constants/server';
 import Encrypter from '../encrypter';
 import ISteamCredentials from '../interfaces/iSteamCredentials';
+import SteamCmd from '../steam/cmd';
+
+import ora = require('ora');
 
 export default class Initialize extends Command {
     public static description = 'Initializes the configuration data required for Magma to operate.';
@@ -57,14 +60,21 @@ export default class Initialize extends Command {
 
         const serverPath = await this.ensureValidServer(flags.server);
 
-        const credentials = await this.ensureValidLogin(flags.username, flags.password);
-
-        const linuxGsm = await this.ensureValidLinuxGsm(flags.linuxGsmInstanceConfig);
-
-        // Log in to verify
-        // ToDo: write login logic
+        let credentials = await this.ensureValidLogin(flags.username, flags.password);
 
         const key = Encrypter.generateKey();
+
+        const spinner = ora({ discardStdin: true, text: 'Validating Steam credentials' }).start();
+
+        while (await this.validateCredentials(credentials, key) === false) {
+            spinner.fail('Failed to login');
+            credentials = await this.promptForCredentials();
+            spinner.start();
+        }
+
+        spinner.succeed('Logged in');
+
+        const linuxGsm = await this.ensureValidLinuxGsm(flags.linuxGsmInstanceConfig);
 
         Config.setAll({
             credentials: {
@@ -205,6 +215,19 @@ export default class Initialize extends Command {
             }
 
             return credentials;
+    }
+
+    private async validateCredentials(credentials: ISteamCredentials, key: string): Promise<boolean> {
+        const password = new Encrypter(key).encrypt(credentials.password);
+        const successfulLogin = await SteamCmd.login({ username: credentials.username, password }, key);
+
+        if (! successfulLogin) {
+            if (this.nonInteractive) {
+                throw new Error('Failed to login. Did you provide the username and the password correcly?');
+            }
+        }
+
+        return successfulLogin;
     }
 
     private async promptForCredentials(): Promise<ISteamCredentials> {
