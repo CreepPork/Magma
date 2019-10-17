@@ -1,4 +1,4 @@
-import * as pty from 'node-pty-prebuilt';
+import * as pty from 'node-pty';
 import * as os from 'os';
 
 import Config from '../config';
