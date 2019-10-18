@@ -1,6 +1,7 @@
+import { EModType } from '../enums/eModType';
+
 export default interface IMod {
-    clientSide: boolean;
-    serverSide: boolean;
+    type: EModType;
     id: number;
     name: string;
     updatedAt?: Date;
