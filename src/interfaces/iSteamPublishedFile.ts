@@ -22,5 +22,5 @@ export default interface ISteamPublishedFile {
     lifetime_subscriptions: number;
     lifetime_favorited: number;
     views: number;
-    tags: { tag: string }[]
+    tags: { tag: string }[];
 }
