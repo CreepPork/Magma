@@ -1,8 +1,8 @@
 import axios, { AxiosResponse } from 'axios';
 import ISteamPublishedFile from '../interfaces/iSteamPublishedFile';
+import ISteamRemoteStorage from '../interfaces/iSteamRemoteStorage';
 
 import * as qs from 'qs';
-import ISteamRemoteStorage from '../interfaces/iSteamRemoteStorage';
 
 export default class SteamApi {
     public static async getPublishedItem(id: number): Promise<ISteamPublishedFile> {
