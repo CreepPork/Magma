@@ -23,7 +23,7 @@ export default class Add extends Command {
         const mods = [];
 
         for (const id of ids) {
-            // todo: think how to get type
+            // Todo: think how to get type
             mods.push(await Mod.getModsFromApi({ id, type }));
         }
 
