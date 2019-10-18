@@ -7,6 +7,6 @@ export default class Mod {
     }
 
     public static async getModsFromApi(...mods: [{ id: number, type: EModType }]): Promise<IMod[]> {
-        //
+        return [];
     }
 }

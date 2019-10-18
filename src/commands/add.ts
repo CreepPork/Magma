@@ -1,9 +1,11 @@
 import Command from '@oclif/command';
 import { IArg } from '@oclif/parser/lib/args';
+
 import Config from '../config';
+import { EModType } from '../enums/eModType';
+import Mod from '../mod';
 
 import ora = require('ora');
-import Mod from '../mod';
 
 export default class Add extends Command {
     public static description = 'Adds Steam Workshop items to the configuration files (does not download them).';
@@ -24,6 +26,7 @@ export default class Add extends Command {
 
         for (const id of ids) {
             // Todo: think how to get type
+            const type = EModType.forAll;
             mods.push(await Mod.getModsFromApi({ id, type }));
         }
 
