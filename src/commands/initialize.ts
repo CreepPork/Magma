@@ -7,7 +7,7 @@ import Filesystem from '../filesystem';
 import Server from '../constants/server';
 import Encrypter from '../encrypter';
 import ISteamCredentials from '../interfaces/iSteamCredentials';
-import SteamCmd from '../steam/cmd';
+import SteamCmd from '../steam/steamCmd';
 
 import ora = require('ora');
 
