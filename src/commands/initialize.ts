@@ -1,4 +1,4 @@
-import Command, { flags } from '@oclif/command';
+import Command, { flags as flag } from '@oclif/command';
 import { prompt } from 'inquirer';
 
 import Config from '../config';
@@ -15,33 +15,33 @@ export default class Initialize extends Command {
     public static description = 'Initializes the configuration data required for Magma to operate.';
     public static aliases = ['init'];
     public static flags = {
-        force: flags.boolean({
+        force: flag.boolean({
             char: 'f',
             default: false,
             description: 'Skip the check for the magma.json file. If it exists, it will be overwritten.',
         }),
-        linuxGsmInstanceConfig: flags.string({
+        linuxGsmInstanceConfig: flag.string({
             char: 'l',
             description: 'Absolute path to the LinuxGSM instance configuration file (where it handles mods/servermods)',
         }),
-        nonInteractive: flags.boolean({
+        nonInteractive: flag.boolean({
             char: 'n',
             default: false,
             description: 'Do not prompt for any input.',
         }),
-        password: flags.string({
+        password: flag.string({
             char: 'p',
             description: 'Steam user password.',
         }),
-        server: flags.string({
+        server: flag.string({
             char: 's',
             description: 'Absolute path to the directory where the server is (where the server executable is).',
         }),
-        steamCmd: flags.string({
+        steamCmd: flag.string({
             char: 'c',
             description: 'Absolute path to the SteamCMD executable (including the file itself).',
         }),
-        username: flags.string({
+        username: flag.string({
             char: 'u',
             description: 'Steam username.',
         }),
@@ -50,7 +50,6 @@ export default class Initialize extends Command {
     private nonInteractive: boolean = false;
 
     public async run(): Promise<void> {
-        // tslint:disable-next-line: no-shadowed-variable
         const { flags } = this.parse(Initialize);
         this.nonInteractive = flags.nonInteractive;
 
