@@ -11,7 +11,7 @@ import SteamCmd from '../steam/steamCmd';
 
 import ora = require('ora');
 
-export default class Initialize extends Command {
+export default class InitializeCommand extends Command {
     public static description = 'Initializes the configuration data required for Magma to operate.';
     public static aliases = ['init'];
     public static flags = {
@@ -50,7 +50,7 @@ export default class Initialize extends Command {
     private nonInteractive: boolean = false;
 
     public async run(): Promise<void> {
-        const { flags } = this.parse(Initialize);
+        const { flags } = this.parse(InitializeCommand);
         this.nonInteractive = flags.nonInteractive;
 
         await this.ensureNoConfig(flags.force);

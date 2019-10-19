@@ -1,7 +1,7 @@
 import Command from '@oclif/command';
 import Config from '../config';
 
-export default class Deactivate extends Command {
+export default class DeactivateCommand extends Command {
     public async init(): Promise<void> {
         Config.ensureIsInitialized();
     }

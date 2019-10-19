@@ -7,7 +7,7 @@ import Mod from '../mod';
 
 import ora = require('ora');
 
-export default class Add extends Command {
+export default class AddCommand extends Command {
     public static description = 'Adds Steam Workshop items to the configuration files (does not download them).';
     public static examples = ['magma add 723217262', 'magma add 450814997 723217262 713709341'];
     public static strict = false;
@@ -18,7 +18,7 @@ export default class Add extends Command {
     }
 
     public async run(): Promise<void> {
-        const { argv } = this.parse(Add);
+        const { argv } = this.parse(AddCommand);
         const ids = argv.map(arg => parseInt(arg, 10));
 
         // Get info from API
