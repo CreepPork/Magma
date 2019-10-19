@@ -20,6 +20,8 @@ export default class SteamCmd {
                     loginSuccessful = true;
                 } else if (loginSuccessful && data === 'OK\r\n') {
                     resolve(true);
+                } else if (data.startsWith('FAILED login with result code')) {
+                    resolve(false);
                 } else if (data === 'exit\r\n') {
                     resolve(false);
                 }
@@ -30,7 +32,8 @@ export default class SteamCmd {
     public static async download(...ids: number[]): Promise<void> {
         const serverPath = Config.get('serverPath');
 
-        await this.login(undefined, undefined, false);
+        const loggedIn = await this.login({ username: 'ArmaAchilles', password: 'fakepass' }, undefined, false);
+        if (! loggedIn) { throw new Error('Failed to log in into Steam'); }
 
         if (this.process) {
             this.process.write(
