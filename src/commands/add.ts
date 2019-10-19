@@ -11,7 +11,7 @@ export default class Add extends Command {
     public static description = 'Adds Steam Workshop items to the configuration files (does not download them).';
     public static examples = ['magma add 723217262', 'magma add 450814997 723217262 713709341'];
     public static strict = false;
-    public static args = [{ description: 'Steam Workshop IDs.', name: 'id', required: true }] as IArg[];
+    public static args = [{ description: 'Steam Workshop item IDs.', name: 'id', required: true }] as IArg[];
 
     public async init(): Promise<void> {
         Config.ensureIsInitialized();

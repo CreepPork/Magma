@@ -58,7 +58,7 @@ USAGE
   $ magma add ID
 
 ARGUMENTS
-  ID  Steam Workshop IDs.
+  ID  Steam Workshop item IDs.
 
 EXAMPLES
   magma add 723217262
