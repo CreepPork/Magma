@@ -61,9 +61,9 @@ describe('List.run()', () => {
 
     test('Non-installed mods displays properly', async () => {
         const mods: IMod[] = [
-            { id: 1234, name: 'Mod 1', type: EModType.clientSide },
-            { id: 9999, name: 'Mod 2', type: EModType.forAll },
-            { id: 555, name: 'Mod 3', type: EModType.serverSide },
+            { id: 1234, name: 'Mod 1', type: EModType.client },
+            { id: 9999, name: 'Mod 2', type: EModType.all },
+            { id: 555, name: 'Mod 3', type: EModType.server },
         ];
 
         fs.writeFileSync(file, JSON.stringify({ mods }));
@@ -96,11 +96,11 @@ describe('List.run()', () => {
     test('Installed mods displays properly', async () => {
         // tslint:disable: object-literal-sort-keys
         const mods: IMod[] = [
-            { id: 1234, name: 'Mod 1', type: EModType.clientSide,
+            { id: 1234, name: 'Mod 1', type: EModType.client,
                 keys: ['some/key/path', 'path/to/key'], updatedAt: Time.toEpoch(new Date()) },
-            { id: 9999, name: 'Mod 2', type: EModType.forAll,
+            { id: 9999, name: 'Mod 2', type: EModType.all,
                 keys: ['some/key/path'], updatedAt: Time.toEpoch(new Date()) },
-            { id: 555, name: 'Mod 3', type: EModType.serverSide,
+            { id: 555, name: 'Mod 3', type: EModType.server,
                 keys: ['some/key/path', 'path/to/key', 'more/keys'], updatedAt: Time.toEpoch(new Date()) },
         ];
 
