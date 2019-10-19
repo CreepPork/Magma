@@ -13,7 +13,7 @@ let orgPath: string;
 let file: string;
 
 describe('List.run()', () => {
-    beforeAll(() => {
+    beforeEach(() => {
         // @ts-ignore Private method
         orgPath = Config.path;
 
@@ -27,7 +27,7 @@ describe('List.run()', () => {
         }));
     });
 
-    afterAll(() => {
+    afterEach(() => {
         if (fs.existsSync(file)) {
             fs.removeSync(file);
         }
