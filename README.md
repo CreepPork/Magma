@@ -29,24 +29,40 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-- [Magma](#magma)
-- [Usage](#usage)
-- [Commands](#commands)
-  - [`magma add`](#magma-add)
-  - [`magma cron`](#magma-cron)
-  - [`magma download`](#magma-download)
-  - [`magma help [COMMAND]`](#magma-help-command)
-  - [`magma initialize`](#magma-initialize)
-  - [`magma install`](#magma-install)
-  - [`magma login`](#magma-login)
-  - [`magma remove`](#magma-remove)
-  - [`magma update`](#magma-update)
+* [`magma activate`](#magma-activate)
+* [`magma add ID`](#magma-add-id)
+* [`magma cron`](#magma-cron)
+* [`magma deactivate`](#magma-deactivate)
+* [`magma help [COMMAND]`](#magma-help-command)
+* [`magma initialize`](#magma-initialize)
+* [`magma install`](#magma-install)
+* [`magma list`](#magma-list)
+* [`magma remove`](#magma-remove)
+* [`magma update`](#magma-update)
 
-## `magma add`
+## `magma activate`
 
 ```
 USAGE
-  $ magma add
+  $ magma activate
+```
+
+_See code: [src/commands/activate.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/activate.ts)_
+
+## `magma add ID`
+
+Adds Steam Workshop items to the configuration files (does not download them).
+
+```
+USAGE
+  $ magma add ID
+
+ARGUMENTS
+  ID  Steam Workshop IDs.
+
+EXAMPLES
+  magma add 723217262
+  magma add 450814997 723217262 713709341
 ```
 
 _See code: [src/commands/add.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/add.ts)_
@@ -60,14 +76,14 @@ USAGE
 
 _See code: [src/commands/cron.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/cron.ts)_
 
-## `magma download`
+## `magma deactivate`
 
 ```
 USAGE
-  $ magma download
+  $ magma deactivate
 ```
 
-_See code: [src/commands/download.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/download.ts)_
+_See code: [src/commands/deactivate.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/deactivate.ts)_
 
 ## `magma help [COMMAND]`
 
@@ -88,9 +104,33 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.1
 
 ## `magma initialize`
 
+Initializes the configuration data required for Magma to operate.
+
 ```
 USAGE
   $ magma initialize
+
+OPTIONS
+  -c, --steamCmd=steamCmd                              Absolute path to the SteamCMD executable (including the file
+                                                       itself).
+
+  -f, --force                                          Skip the check for the magma.json file. If it exists, it will be
+                                                       overwritten.
+
+  -l, --linuxGsmInstanceConfig=linuxGsmInstanceConfig  Absolute path to the LinuxGSM instance configuration file (where
+                                                       it handles mods/servermods)
+
+  -n, --nonInteractive                                 Do not prompt for any input.
+
+  -p, --password=password                              Steam user password.
+
+  -s, --server=server                                  Absolute path to the directory where the server is (where the
+                                                       server executable is).
+
+  -u, --username=username                              Steam username.
+
+ALIASES
+  $ magma init
 ```
 
 _See code: [src/commands/initialize.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/initialize.ts)_
@@ -104,14 +144,16 @@ USAGE
 
 _See code: [src/commands/install.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/install.ts)_
 
-## `magma login`
+## `magma list`
+
+Lists all mods that have been added or installed by Magma.
 
 ```
 USAGE
-  $ magma login
+  $ magma list
 ```
 
-_See code: [src/commands/login.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/login.ts)_
+_See code: [src/commands/list.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/list.ts)_
 
 ## `magma remove`
 

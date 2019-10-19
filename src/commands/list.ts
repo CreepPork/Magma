@@ -7,6 +7,8 @@ import Table = require('cli-table');
 import Time from '../time';
 
 export default class List extends Command {
+    public static description = 'Lists all mods that have been added or installed by Magma.';
+
     public async init(): Promise<void> {
         Config.ensureIsInitialized();
     }
