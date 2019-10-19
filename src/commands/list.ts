@@ -4,6 +4,7 @@ import Config from '../config';
 import { EModType } from '../enums/eModType';
 
 import Table = require('cli-table');
+import Time from '../time';
 
 export default class List extends Command {
     public async init(): Promise<void> {
@@ -26,7 +27,7 @@ export default class List extends Command {
         for (const mod of mods) {
             table.push([
                 mod.id, mod.name, this.getModType(mod.type),
-                mod.updatedAt ? mod.updatedAt.toUTCString() : 'Not Updated',
+                mod.updatedAt ? Time.epochToDate(mod.updatedAt).toUTCString() : 'Not Updated',
                 mod.keys ? mod.keys.length : 0,
             ]);
         }
@@ -42,6 +43,8 @@ export default class List extends Command {
                 return 'Client-side';
             case EModType.serverSide:
                 return 'Server-side';
+            default:
+                return 'Unknown';
         }
     }
 }
