@@ -1,7 +1,7 @@
 Magma
 =====
 
-A CLI app that is a mod updater for Arma 3 servers.
+Magma is a CLI tool for Arma 3 server mod managment that works both on Windows and Linux.
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/@creeppork/magma.svg)](https://npmjs.org/package/@creeppork/magma)
@@ -10,9 +10,23 @@ A CLI app that is a mod updater for Arma 3 servers.
 [![License](https://img.shields.io/npm/l/@creeppork/magma.svg)](https://github.com/CreepPork/Magma/blob/master/package.json)
 
 <!-- toc -->
+* [Features](#features)
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
+
+# Features
+
+- Downloads mods from Steam Workshop, moves to directories, installs keys, updates config files
+- Windows and Linux server support
+- Server mod support (`-serverMod=...`)
+- Client-side mod support (only installs keys)
+- Fully supports non-interactive shells
+- Support for a cron job (or task scheduler on Windows) that checks for mod updates and if found notifies Discord or Slack
+- Ability to update and remove mods
+- Supports mod activation and deactivation (doesn't remove them from disk)
+- Allows mod preset managment to quickly swap large amounts of mods
+
 # Usage
 <!-- usage -->
 ```sh-session

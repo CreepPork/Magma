@@ -1,6 +1,6 @@
 {
   "name": "@creeppork/magma",
-  "description": "A CLI app that is a mod updater for Arma 3 servers.",
+  "description": "Magma is a CLI tool for Arma 3 server mod managment that works both on Windows and Linux.",
   "version": "2.0.0",
   "author": "CreepPork",
   "bin": {
