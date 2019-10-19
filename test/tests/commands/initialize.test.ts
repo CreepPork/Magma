@@ -4,7 +4,6 @@ import * as path from 'path';
 
 import InitializeCommand from '../../../src/commands/initialize';
 import Config from '../../../src/config';
-import Encrypter from '../../../src/encrypter';
 import SteamCmd from '../../../src/steam/steamCmd';
 
 let orgPath: any;
