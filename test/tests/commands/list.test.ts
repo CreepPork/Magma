@@ -9,7 +9,7 @@ import NotInitializedError from '../../../src/errors/notInitializedError';
 import IMod from '../../../src/interfaces/iMod';
 import Time from '../../../src/time';
 
-let orgPath: string;
+let orgPath: any;
 let file: string;
 
 describe('List.run()', () => {
