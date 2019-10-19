@@ -32,7 +32,7 @@ export default class SteamCmd {
     public static async download(...ids: number[]): Promise<void> {
         const serverPath = Config.get('serverPath');
 
-        const loggedIn = await this.login({ username: 'ArmaAchilles', password: 'fakepass' }, undefined, false);
+        const loggedIn = await this.login(undefined, undefined, false);
         if (! loggedIn) { throw new Error('Failed to log in into Steam'); }
 
         if (this.process) {
