@@ -6,6 +6,7 @@ import Filesystem from '../filesystem';
 
 import Server from '../constants/server';
 import Encrypter from '../encrypter';
+import { nonInteractive } from '../flags';
 import ISteamCredentials from '../interfaces/iSteamCredentials';
 import SteamCmd from '../steam/steamCmd';
 
@@ -24,11 +25,7 @@ export default class InitializeCommand extends Command {
             char: 'l',
             description: 'Absolute path to the LinuxGSM instance configuration file (where it handles mods/servermods)',
         }),
-        nonInteractive: flag.boolean({
-            char: 'n',
-            default: false,
-            description: 'Do not prompt for any input.',
-        }),
+        nonInteractive,
         password: flag.string({
             char: 'p',
             description: 'Steam user password.',
