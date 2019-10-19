@@ -39,11 +39,11 @@ export default class ListCommand extends Command {
 
     private getModType(type: EModType): string {
         switch (type) {
-            case EModType.forAll:
+            case EModType.all:
                 return 'Required';
-            case EModType.clientSide:
+            case EModType.client:
                 return 'Client-side';
-            case EModType.serverSide:
+            case EModType.server:
                 return 'Server-side';
             default:
                 return 'Unknown';
