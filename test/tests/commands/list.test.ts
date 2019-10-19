@@ -73,7 +73,23 @@ describe('List.run()', () => {
 
         await List.run();
 
-        expect(console.log).toHaveBeenCalled();
+        expect(console.log).toHaveBeenCalledTimes(1);
+        console.log = org;
+    });
+
+    test('Mod with unknown type is displayed correctly', async () => {
+        const mods: IMod[] = [
+            { id: 1234, name: 'Mod 1', type: -5 },
+        ];
+
+        fs.writeFileSync(file, JSON.stringify({ mods }));
+
+        const org = console.log;
+        console.log = jest.fn();
+
+        await List.run();
+
+        expect(console.log).toHaveBeenCalledTimes(1);
         console.log = org;
     });
 
