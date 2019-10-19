@@ -3,6 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 
 import Config from '../../src/config';
+import NotInitializedError from '../../src/errors/notInitializedError';
 
 describe('Config.get()', () => {
     test('Returns the correct key from JSON', () => {
@@ -62,7 +63,7 @@ describe('Config.ensureIsInitialized()', () => {
         mock.mockReturnValue(false);
 
         expect(() => Config.ensureIsInitialized()).toThrowError(
-            new Error('Magma is not initialized. Run `magma init` to initialize your project.'),
+            new NotInitializedError(),
         );
     });
 

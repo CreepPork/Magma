@@ -1,6 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
+import NotInitializedError from './errors/notInitializedError';
 import IConfig from './interfaces/iConfig';
 
 export default class Config {
@@ -38,7 +39,7 @@ export default class Config {
 
     public static ensureIsInitialized(): never | void {
         if (! this.exists()) {
-            throw new Error('Magma is not initialized. Run `magma init` to initialize your project.');
+            throw new NotInitializedError();
         }
     }
 
