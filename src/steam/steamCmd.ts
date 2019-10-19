@@ -2,10 +2,14 @@ import * as pty from 'node-pty';
 import * as os from 'os';
 
 import Config from '../config';
+import CServer from '../constants/server';
 import Encrypter from '../encrypter';
 
 export default class SteamCmd {
-    public static login(credentials = Config.get('credentials'), key = Config.get('key')): Promise<boolean> {
+    public static process?: pty.IPty;
+
+    public static login(credentials = Config.get('credentials'), key = Config.get('key'), exit?: boolean):
+    Promise<boolean> {
         return new Promise(resolve => {
             const password = new Encrypter(key).decrypt(credentials.password);
 
@@ -19,11 +23,33 @@ export default class SteamCmd {
                 } else if (data === 'exit\r\n') {
                     resolve(false);
                 }
-            });
+            }, exit);
         });
     }
 
-    private static runCommand(command: string, onData: (data: string) => void): void {
+    public static async download(...ids: number[]): Promise<void> {
+        const serverPath = Config.get('serverPath');
+
+        await this.login(undefined, undefined, false);
+
+        if (this.process) {
+            this.process.write(
+                process.platform === 'win32'
+                    ? `force_install_dir "${serverPath}"\r`
+                    : `force_install_dir ${serverPath}\r`,
+            );
+
+            for (const id of ids) {
+                this.process.write(`workshop_download_item ${CServer.id} ${id}\r`);
+            }
+
+            this.exitTerminal();
+        } else {
+            throw new Error('Failed to write to the SteamCMD console. Seems like the process did not start.');
+        }
+    }
+
+    private static runCommand(command: string, onData: (data: string) => void, exit = true): void {
         const shell = os.platform() === 'win32' ? 'powershell.exe' : 'bash';
         const steamCmd = Config.get('steamCmdPath');
 
@@ -32,8 +58,17 @@ export default class SteamCmd {
             { handleFlowControl: true },
         );
 
+        this.process = process;
+
         process.on('data', onData);
 
-        process.write(`${steamCmd} ${command} +exit && exit 0\r`);
+        process.write(`${steamCmd} ${command} ${exit ? '+exit && exit 0' : ''}\r`);
+    }
+
+    private static exitTerminal(): void {
+        if (this.process) {
+            this.process.write('exit\r');
+            this.process.write('exit 0\r');
+        }
     }
 }
