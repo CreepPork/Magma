@@ -4,6 +4,6 @@ export default interface IMod {
     type: EModType;
     id: number;
     name: string;
-    updatedAt?: Date;
+    updatedAt?: number;
     keys?: string[];
 }
