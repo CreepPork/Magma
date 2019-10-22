@@ -26,4 +26,16 @@ export default class Mod {
 
         return processed;
     }
+
+    public static async getModUpdatedAtFromApi(mods: IMod[]): Promise<IMod[]> {
+        if (mods.length === 0) { return []; }
+
+        const items = await SteamApi.getPublishedItems(...mods.map(mod => mod.id));
+
+        for (const [index, mod] of mods.entries()) {
+            mod.updatedAt = items[index].time_updated;
+        }
+
+        return mods;
+    }
 }
