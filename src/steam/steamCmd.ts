@@ -29,27 +29,33 @@ export default class SteamCmd {
         });
     }
 
-    public static async download(...ids: number[]): Promise<void> {
-        const serverPath = Config.get('serverPath');
+    public static download(...ids: number[]): Promise<void> {
+        return new Promise(async (resolve, reject) => {
+            const serverPath = Config.get('serverPath');
 
-        const loggedIn = await this.login(undefined, undefined, false);
-        if (! loggedIn) { throw new Error('Failed to log in into Steam'); }
+            const loggedIn = await this.login(undefined, undefined, false);
+            if (! loggedIn) { reject(new Error('Failed to log in into Steam')); }
 
-        if (this.process) {
-            this.process.write(
-                process.platform === 'win32'
-                    ? `force_install_dir "${serverPath}"\r`
-                    : `force_install_dir ${serverPath}\r`,
-            );
+            if (this.process) {
+                this.process.on('exit', () => {
+                    resolve();
+                });
 
-            for (const id of ids) {
-                this.process.write(`workshop_download_item ${CServer.id} ${id}\r`);
+                this.process.write(
+                    process.platform === 'win32'
+                        ? `force_install_dir "${serverPath}"\r`
+                        : `force_install_dir ${serverPath}\r`,
+                );
+
+                for (const id of ids) {
+                    this.process.write(`workshop_download_item ${CServer.id} ${id}\r`);
+                }
+
+                this.exitTerminal();
+            } else {
+                reject(new Error('Failed to write to the SteamCMD console. Seems like the process did not start.'));
             }
-
-            this.exitTerminal();
-        } else {
-            throw new Error('Failed to write to the SteamCMD console. Seems like the process did not start.');
-        }
+        });
     }
 
     private static runCommand(command: string, onData: (data: string) => void, exit = true): void {
