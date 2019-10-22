@@ -7,6 +7,8 @@ import Table = require('cli-table');
 import Mod from '../mod';
 import Time from '../time';
 
+import chalk from 'chalk';
+
 export default class ListCommand extends Command {
     public static description = 'Lists all mods that have been added or installed by Magma.';
 
@@ -32,7 +34,7 @@ export default class ListCommand extends Command {
         for (const [index, mod] of mods.entries()) {
             table.push([
                 mod.id, mod.name, this.getModType(mod.type),
-                apiMods[index].updatedAt === mod.updatedAt ? 'Yes' : 'No',
+                apiMods[index].updatedAt === mod.updatedAt ? 'Yes' : chalk.redBright.bold('No'),
                 mod.updatedAt ? Time.epochToDate(mod.updatedAt).toUTCString() : 'Not Installed',
                 mod.keys ? mod.keys.length : 0,
             ]);
