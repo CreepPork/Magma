@@ -9,10 +9,29 @@ import NotInitializedError from '../../../src/errors/notInitializedError';
 import IMod from '../../../src/interfaces/iMod';
 import Time from '../../../src/time';
 
+import nock = require('nock');
+
 let orgPath: any;
 let file: string;
 
 describe('List.run()', () => {
+    beforeAll(() => {
+        const data = {
+            response: {
+                publishedfiledetails: [
+                    { result: 1, title: 'Mod 1', time_updated: 11 },
+                    { result: 1, title: 'Mod 2', time_updated: 11 },
+                    { result: 1, title: 'Mod 3', time_updated: 11 },
+                ] as any[],
+                result: 1,
+                resultcount: 2,
+            },
+        };
+
+        nock('https://api.steampowered.com').post('/ISteamRemoteStorage/GetPublishedFileDetails/v1/')
+            .reply(200, data).persist();
+    });
+
     beforeEach(() => {
         // @ts-ignore Private method
         orgPath = Config.path;
@@ -61,9 +80,9 @@ describe('List.run()', () => {
 
     test('Non-installed mods displays properly', async () => {
         const mods: IMod[] = [
-            { id: 1234, name: 'Mod 1', type: EModType.client },
-            { id: 9999, name: 'Mod 2', type: EModType.all },
-            { id: 555, name: 'Mod 3', type: EModType.server },
+            { id: 1234, name: 'Mod 1', type: EModType.client, updatedAt: 11 },
+            { id: 9999, name: 'Mod 2', type: EModType.all, updatedAt: 11 },
+            { id: 555, name: 'Mod 3', type: EModType.server, updatedAt: 11 },
         ];
 
         fs.writeFileSync(file, JSON.stringify({ mods }));
@@ -79,7 +98,7 @@ describe('List.run()', () => {
 
     test('Mod with unknown type is displayed correctly', async () => {
         const mods: IMod[] = [
-            { id: 1234, name: 'Mod 1', type: -5 },
+            { id: 1234, name: 'Mod 1', type: -5, updatedAt: 11 },
         ];
 
         fs.writeFileSync(file, JSON.stringify({ mods }));
@@ -97,11 +116,11 @@ describe('List.run()', () => {
         // tslint:disable: object-literal-sort-keys
         const mods: IMod[] = [
             { id: 1234, name: 'Mod 1', type: EModType.client,
-                keys: ['some/key/path', 'path/to/key'], updatedAt: Time.toEpoch(new Date()) },
+                keys: ['some/key/path', 'path/to/key'], updatedAt: 11 },
             { id: 9999, name: 'Mod 2', type: EModType.all,
-                keys: ['some/key/path'], updatedAt: Time.toEpoch(new Date()) },
+                keys: ['some/key/path'], updatedAt: 11 },
             { id: 555, name: 'Mod 3', type: EModType.server,
-                keys: ['some/key/path', 'path/to/key', 'more/keys'], updatedAt: Time.toEpoch(new Date()) },
+                keys: ['some/key/path', 'path/to/key', 'more/keys'], updatedAt: 11 },
         ];
 
         fs.writeFileSync(file, JSON.stringify({ mods }));

@@ -4,6 +4,7 @@ import Config from '../config';
 import { EModType } from '../enums/eModType';
 
 import Table = require('cli-table');
+import Mod from '../mod';
 import Time from '../time';
 
 export default class ListCommand extends Command {
@@ -15,7 +16,7 @@ export default class ListCommand extends Command {
 
     public async run(): Promise<void> {
         const table = new Table({
-            head: ['ID', 'Name', 'Type', 'Updated At', 'Key Count'],
+            head: ['ID', 'Name', 'Type', 'Up-To-Date', 'Updated At', 'Key Count'],
         });
 
         const mods = Config.get('mods');
@@ -26,10 +27,13 @@ export default class ListCommand extends Command {
             return;
         }
 
-        for (const mod of mods) {
+        const apiMods = await Mod.getModUpdatedAtFromApi(mods);
+
+        for (const [index, mod] of mods.entries()) {
             table.push([
                 mod.id, mod.name, this.getModType(mod.type),
-                mod.updatedAt ? Time.epochToDate(mod.updatedAt).toUTCString() : 'Not Updated',
+                apiMods[index].updatedAt === mod.updatedAt ? 'Yes' : 'No',
+                mod.updatedAt ? Time.epochToDate(mod.updatedAt).toUTCString() : 'Not Installed',
                 mod.keys ? mod.keys.length : 0,
             ]);
         }
