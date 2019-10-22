@@ -23,7 +23,7 @@ export default class InitializeCommand extends Command {
         }),
         linuxGsmInstanceConfig: flag.string({
             char: 'l',
-            description: 'Absolute path to the LinuxGSM instance configuration file (where it handles mods/servermods)',
+            description: 'Absolute path to the LinuxGSM instance configuration file (where it handles mods/servermods) (only supported on Linux)',
         }),
         nonInteractive,
         password: flag.string({
@@ -243,6 +243,8 @@ export default class InitializeCommand extends Command {
     }
 
     private async ensureValidLinuxGsm(path: string | undefined): Promise<string | undefined | never> {
+        if (process.platform === 'win32') { return; }
+
         if (path) {
             if (Filesystem.isFile(path)) {
                 return path;
