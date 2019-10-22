@@ -25,11 +25,19 @@ export default class Processor {
     }
 
     public static updateKeys(mods: IMod[]): IMod[] {
-        // ToDo: extend support for already present keys
         const serverPath = Config.get('serverPath');
         fs.mkdirpSync(path.join(serverPath, 'keys'));
 
         for (const mod of mods) {
+            // If keys already exist, then remove them from disk
+            if (mod.keys && mod.keys.length > 0) {
+                for (const key of mod.keys) {
+                    if (fs.existsSync(key)) {
+                        fs.removeSync(key);
+                    }
+                }
+            }
+
             mod.keys = [];
 
             // Find mod dir
