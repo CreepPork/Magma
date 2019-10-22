@@ -5,6 +5,8 @@ import Processor from '../processor';
 import SteamCmd from '../steam/steamCmd';
 
 export default class ActivateCommand extends Command {
+    public static description = 'Updates currently installed mods from Steam Workshop.';
+
     public async init(): Promise<void> {
         Config.ensureIsInitialized();
     }
