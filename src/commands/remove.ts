@@ -43,6 +43,9 @@ export default class RemoveCommand extends Command {
         for (const id of ids) {
             const mod = mods[mods.findIndex(m => m.id === id)];
 
+            // If user gave a non-existant mod id
+            if (mod === undefined) { continue; }
+
             // Remove mod keys
             if (mod.keys) {
                 for (const key of mod.keys) {
