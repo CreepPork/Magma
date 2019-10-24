@@ -34,14 +34,17 @@ describe('Mod.getModsFromApi()', () => {
     });
 
     test('Given two mods it correctly forms the correct output', async () => {
-        const mods: IMod[] = [{ id: 12, name: 'Mod 1', type: 0}, { id: 23, name: 'Mod 2', type: 1 }];
+        const mods: IMod[] = [
+            { id: 12, name: 'Mod 1', type: 0, isActive: true},
+            { id: 23, name: 'Mod 2', type: 1, isActive: true }
+        ];
 
         const fetched = await Mod.getModsFromApi(
             ...mods.map(mod => ({ id: mod.id, type: mod.type })),
         );
 
         expect(fetched).toStrictEqual([
-            { id: 12, name: 'Mod 1', type: 0 }, { id: 23, name: 'Mod 2', type: 1 },
+            { id: 12, name: 'Mod 1', type: 0, isActive: true }, { id: 23, name: 'Mod 2', type: 1, isActive: true },
         ]);
     });
 });
