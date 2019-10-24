@@ -49,19 +49,19 @@ export default class Filesystem {
     public static renameContentsToLowercase(filepath: string): void {
         const dirs = this.getAllDirectoriesRecursively(filepath);
 
-        for (const [i, dir] of dirs.entries()) {
-            if (fs.existsSync(dir)) {
-                fs.renameSync(dir, path.join(dir, '..', this.getFilename(dir).toLowerCase()));
-            } else {
-                const newDirs = this.getAllDirectoriesRecursively(filepath);
-                const updatedDir = newDirs[i];
+        // Sort the directories by their amount of subdirectories (more subdirs the closer it gets to the first element)
+        dirs.sort((a, b) =>
+            a.split(path.sep).length > b.split(path.sep).length
+                ? -1
+                : (a.split(path.sep).length === b.split(path.sep).length ? 0 : 1),
+        );
 
-                fs.renameSync(updatedDir, path.join(updatedDir, '..', this.getFilename(updatedDir).toLowerCase()));
-            }
+        for (const dir of dirs) {
+            fs.renameSync(dir, path.join(dir, '..', this.getFilename(dir).toLowerCase()));
         }
 
+        // Rename files individually to prevent file does not exist errors
         const files = this.getAllFilesRecursively(filepath);
-
         for (const file of files) {
             fs.renameSync(file, path.join(file, '..', this.getFilename(file).toLowerCase()));
         }
