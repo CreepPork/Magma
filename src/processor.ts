@@ -25,19 +25,12 @@ export default class Processor {
     }
 
     public static updateKeys(mods: IMod[]): IMod[] {
-        const serverPath = Config.get('serverPath');
+        const serverPath = this.serverPath;
         fs.mkdirpSync(path.join(serverPath, 'keys'));
 
         for (const mod of mods) {
             // If keys already exist, then remove them from disk
-            if (mod.keys && mod.keys.length > 0) {
-                for (const key of mod.keys) {
-                    if (fs.existsSync(key)) {
-                        fs.removeSync(key);
-                    }
-                }
-            }
-
+            this.removeKeysFromMod(mod);
             mod.keys = [];
 
             // Find mod dir
@@ -61,6 +54,16 @@ export default class Processor {
         return mods;
     }
 
+    public static removeKeysFromMod(mod: IMod): void {
+        if (mod.keys) {
+            for (const key of mod.keys) {
+                if (fs.existsSync(key)) {
+                    fs.removeSync(key);
+                }
+            }
+        }
+    }
+
     public static linkMods(mods: IMod[]): void {
         const serverPath = this.serverPath;
 
@@ -82,8 +85,33 @@ export default class Processor {
         }
     }
 
-    public static updateServerConfigFile(requiredMods: IMod[], serverMods: IMod[]): void {
+    public static unlinkMod(mod: IMod): void {
+        if (mod.type !== EModType.client) {
+            const linkPath = path.join(
+                this.serverPath,
+                mod.type === EModType.all ? 'mods' : 'servermods',
+                `@${_.snakeCase(mod.name)}`,
+            );
+
+            if (fs.existsSync(linkPath)) {
+                fs.removeSync(linkPath);
+            }
+        }
+    }
+
+    public static pruneWorkshopContents(mod: IMod): void {
+        const steamPath = this.getWorkshopModPath(mod.id);
+
+        if (fs.existsSync(steamPath)) {
+            fs.removeSync(steamPath);
+        }
+    }
+
+    public static updateServerConfigFile(mods: IMod[]): void {
         if (process.platform === 'win32') { return; }
+
+        const requiredMods = mods.filter(mod => mod.type === EModType.all && mod.isActive === true);
+        const serverMods = mods.filter(mod => mod.type === EModType.server && mod.isActive === true);
 
         const serverConfigPath = Config.get('linuxGsm');
 
