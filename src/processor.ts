@@ -11,7 +11,7 @@ import IMod from './interfaces/iMod';
 export default class Processor {
     public static getWorkshopModPath(id: number): string {
         return path.join(
-            Config.get('serverPath'), `steamapps/workshop/content/${CServer.id}/${id}`,
+            this.serverPath, `steamapps/workshop/content/${CServer.id}/${id}`,
         );
     }
 
@@ -62,7 +62,7 @@ export default class Processor {
     }
 
     public static linkMods(mods: IMod[]): void {
-        const serverPath = Config.get('serverPath');
+        const serverPath = this.serverPath;
 
         fs.mkdirpSync(path.join(serverPath, 'mods'));
         fs.mkdirpSync(path.join(serverPath, 'servermods'));
@@ -120,4 +120,6 @@ export default class Processor {
 
         fs.writeFileSync(serverConfigPath, configText.join('\n'));
     }
+
+    private static serverPath = Config.get('serverPath');
 }
