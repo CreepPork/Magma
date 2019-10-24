@@ -1,4 +1,5 @@
 import * as fs from 'fs-extra';
+import * as klaw from 'klaw-sync';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -53,6 +54,46 @@ describe('Filesystem.directoryContains()', () => {
         fs.writeFileSync(filepath, 'Some random data.');
 
         expect(Filesystem.directoryContains(os.tmpdir(), 'exampleTesty.txt')).toBe(true);
+
+        if (fs.existsSync(filepath)) {
+            fs.removeSync(filepath);
+        }
+    });
+});
+
+describe('Filesystem.renameContentsToLowercase()', () => {
+    test('It correctly renames a directory with multiple directories and files all to lowercase', () => {
+        const filepath = path.join(os.tmpdir(), 'magmaRandomFolderForTests');
+        fs.mkdirsSync(filepath);
+
+        // Make some contents
+        const dir1 = path.join(filepath, 'BigFolder');
+        const dir2 = path.join(filepath, 'BigFolder', 'OtherFolder');
+        const dir3 = path.join(filepath, 'SomeOtherFolder');
+
+        fs.mkdirsSync(dir1);
+        fs.mkdirsSync(dir2);
+        fs.mkdirsSync(dir3);
+
+        fs.writeFileSync(path.join(filepath, 'FileOne.txt'), '');
+        fs.writeFileSync(path.join(filepath, 'FileTwo.md'), '');
+        fs.writeFileSync(path.join(filepath, 'FileThree.exe'), '');
+
+        fs.writeFileSync(path.join(dir1, 'SomeFie.EXT1'), '');
+        fs.writeFileSync(path.join(dir1, 'DirTwo.test'), '');
+
+        fs.writeFileSync(path.join(dir2, 'lowercase.txt'), '');
+        fs.writeFileSync(path.join(dir2, 'biggerCase.txt'), '');
+
+        fs.writeFileSync(path.join(dir3, 'someNewFIle.txt'), '');
+        fs.writeFileSync(path.join(dir3, 'randomFile.ZIP'), '');
+
+        Filesystem.renameContentsToLowercase(filepath);
+
+        for (const relativePath of klaw(filepath).map(item => item.path)) {
+            const cutDir = path.relative(filepath, relativePath);
+            expect(cutDir).toBe(cutDir.toLowerCase());
+        }
 
         if (fs.existsSync(filepath)) {
             fs.removeSync(filepath);
