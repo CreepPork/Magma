@@ -2,12 +2,11 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 
-import List from '../../../src/commands/list';
+import ListCommand from '../../../src/commands/list';
 import Config from '../../../src/config';
 import { EModType } from '../../../src/enums/eModType';
 import NotInitializedError from '../../../src/errors/notInitializedError';
 import IMod from '../../../src/interfaces/iMod';
-import Time from '../../../src/time';
 
 import nock = require('nock');
 
@@ -60,7 +59,7 @@ describe('List.run()', () => {
 
         // As it is a promise, async () => await List.run() .toThrow doesn't work
         try {
-            await List.run();
+            await ListCommand.run();
         } catch (e) {
             expect(e).toEqual(new NotInitializedError());
         }
@@ -72,7 +71,7 @@ describe('List.run()', () => {
         const org = console.log;
         console.log = jest.fn();
 
-        await List.run();
+        await ListCommand.run();
 
         expect(console.log).toHaveBeenCalledWith('No mods were found.');
         console.log = org;
@@ -90,7 +89,7 @@ describe('List.run()', () => {
         const org = console.log;
         console.log = jest.fn();
 
-        await List.run();
+        await ListCommand.run();
 
         expect(console.log).toHaveBeenCalledTimes(1);
         console.log = org;
@@ -106,7 +105,7 @@ describe('List.run()', () => {
         const org = console.log;
         console.log = jest.fn();
 
-        await List.run();
+        await ListCommand.run();
 
         expect(console.log).toHaveBeenCalledTimes(1);
         console.log = org;
@@ -128,7 +127,7 @@ describe('List.run()', () => {
         const org = console.log;
         console.log = jest.fn();
 
-        await List.run();
+        await ListCommand.run();
 
         expect(console.log).toHaveBeenCalledTimes(1);
         console.log = org;
