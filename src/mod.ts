@@ -19,6 +19,7 @@ export default class Mod {
 
             processed.push({
                 id: mod.id,
+                isActive: true,
                 name,
                 type: mod.type,
             });
