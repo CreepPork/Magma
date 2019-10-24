@@ -80,9 +80,9 @@ describe('List.run()', () => {
 
     test('Non-installed mods displays properly', async () => {
         const mods: IMod[] = [
-            { id: 1234, name: 'Mod 1', type: EModType.client, updatedAt: 11 },
-            { id: 9999, name: 'Mod 2', type: EModType.all, updatedAt: 11 },
-            { id: 555, name: 'Mod 3', type: EModType.server, updatedAt: 11 },
+            { id: 1234, name: 'Mod 1', type: EModType.client, updatedAt: 11, isActive: true },
+            { id: 9999, name: 'Mod 2', type: EModType.all, updatedAt: 11, isActive: true },
+            { id: 555, name: 'Mod 3', type: EModType.server, updatedAt: 11, isActive: true },
         ];
 
         fs.writeFileSync(file, JSON.stringify({ mods }));
@@ -98,7 +98,7 @@ describe('List.run()', () => {
 
     test('Mod with unknown type is displayed correctly', async () => {
         const mods: IMod[] = [
-            { id: 1234, name: 'Mod 1', type: -5, updatedAt: 11 },
+            { id: 1234, name: 'Mod 1', type: -5, updatedAt: 11, isActive: true },
         ];
 
         fs.writeFileSync(file, JSON.stringify({ mods }));
@@ -116,11 +116,11 @@ describe('List.run()', () => {
         // tslint:disable: object-literal-sort-keys
         const mods: IMod[] = [
             { id: 1234, name: 'Mod 1', type: EModType.client,
-                keys: ['some/key/path', 'path/to/key'], updatedAt: 11 },
+                keys: ['some/key/path', 'path/to/key'], updatedAt: 11, isActive: true },
             { id: 9999, name: 'Mod 2', type: EModType.all,
-                keys: ['some/key/path'], updatedAt: 11 },
+                keys: ['some/key/path'], updatedAt: 11, isActive: true },
             { id: 555, name: 'Mod 3', type: EModType.server,
-                keys: ['some/key/path', 'path/to/key', 'more/keys'], updatedAt: 11 },
+                keys: ['some/key/path', 'path/to/key', 'more/keys'], updatedAt: 11, isActive: true },
         ];
 
         fs.writeFileSync(file, JSON.stringify({ mods }));
