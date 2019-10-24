@@ -3,7 +3,6 @@ import * as _ from 'lodash';
 import Command from '@oclif/command';
 
 import Config from '../config';
-import { EModType } from '../enums/eModType';
 import IMod from '../interfaces/iMod';
 import Mod from '../mod';
 import Processor from '../processor';
@@ -28,9 +27,6 @@ export default class InstallCommand extends Command {
         // Fetch updatedAt property
         mods = await Mod.getModUpdatedAtFromApi(mods);
 
-        const requiredMods = mods.filter(mod => mod.type === EModType.all);
-        const serverMods = mods.filter(mod => mod.type === EModType.server);
-
         // Rename all mod contents to lowercase
         Processor.renameModsToLower(mods);
 
@@ -39,17 +35,17 @@ export default class InstallCommand extends Command {
 
         mods = Processor.updateKeys(mods);
 
-        // Update LinuxGSM config
-        Processor.updateServerConfigFile(requiredMods, serverMods);
-
         this.updateConfigFile(mods);
+
+        // Update LinuxGSM config
+        Processor.updateServerConfigFile(Config.get('mods'));
     }
 
     private updateConfigFile(mods: IMod[]): void {
         const installedMods = Config.get('mods').filter(mod => mod.updatedAt !== undefined);
 
-        const mergedMods = _.merge(installedMods, mods);
+        installedMods.push(...mods);
 
-        Config.set('mods', mergedMods);
+        Config.set('mods', installedMods);
     }
 }
