@@ -1,15 +1,11 @@
-import * as fs from 'fs-extra';
 import * as _ from 'lodash';
-import * as path from 'path';
 
 import Command from '@oclif/command';
 import { IArg } from '@oclif/parser/lib/args';
 
-import { prompt } from 'inquirer';
-
 import Config from '../config';
-import { EModType } from '../enums/eModType';
 import { nonInteractive } from '../flags';
+import Insurers from '../insurers';
 import Processor from '../processor';
 
 export default class RemoveCommand extends Command {
@@ -34,10 +30,15 @@ export default class RemoveCommand extends Command {
         let ids = argv.map(arg => parseInt(arg, 10));
 
         const mods = Config.get('mods');
-        const serverPath = Config.get('serverPath');
+
+        if (mods.length === 0) {
+            console.log('There are no mods to remove.');
+
+            return;
+        }
 
         if (ids.length === 0) {
-            ids = await this.ensureValidIds(flags.nonInteractive);
+            ids = await Insurers.ensureValidIds(mods, flags.nonInteractive, 'What mods would you like to remove?');
         }
 
         for (const id of ids) {
@@ -47,72 +48,20 @@ export default class RemoveCommand extends Command {
             if (mod === undefined) { continue; }
 
             // Remove mod keys
-            if (mod.keys) {
-                for (const key of mod.keys) {
-                    if (fs.existsSync(key)) {
-                        fs.removeSync(key);
-                    }
-                }
-            }
-
-            const steamPath = Processor.getWorkshopModPath(id);
+            Processor.removeKeysFromMod(mod);
 
             // Remove symlink
-            if (mod.type !== EModType.client) {
-                const linkPath = path.join(
-                    serverPath,
-                    mod.type === EModType.all ? 'mods' : 'servermods',
-                    `@${_.snakeCase(mod.name)}`,
-                );
-
-                if (fs.existsSync(linkPath)) {
-                    fs.removeSync(linkPath);
-                }
-            }
+            Processor.unlinkMod(mod);
 
             // Remove workshop contents
-            if (fs.existsSync(steamPath)) {
-                fs.removeSync(steamPath);
-            }
+            Processor.pruneWorkshopContents(mod);
 
             // Remove from config
             _.remove(mods, m => m.id === id);
         }
 
-        Processor.updateServerConfigFile(
-            mods.filter(mod => mod.type === EModType.all),
-            mods.filter(mod => mod.type === EModType.server),
-        );
+        Processor.updateServerConfigFile(mods);
 
         Config.set('mods', mods);
-    }
-
-    private async ensureValidIds(noInteraction: boolean): Promise<number[]> {
-        const mods = Config.get('mods');
-        const ids = [];
-
-        if (noInteraction) {
-            throw new Error(
-                'Steam Workshop item IDs have to be specified as arguments when running in non interactive mode.',
-            );
-        } else {
-            const choices = mods.map(mod => mod.name);
-
-            const response: { mods: string[] } = await prompt({
-                choices,
-                message: 'Which mod would you like to remove?',
-                name: 'mods',
-                type: 'checkbox',
-                validate: list => list.length > 0,
-            });
-
-            for (const name of response.mods) {
-                const index = mods.findIndex(mod => mod.name === name);
-
-                ids.push(mods[index].id);
-            }
-        }
-
-        return ids;
     }
 }
