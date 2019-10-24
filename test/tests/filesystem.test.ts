@@ -61,6 +61,24 @@ describe('Filesystem.directoryContains()', () => {
     });
 });
 
+describe('Filesystem.findFilesWithExtension()', () => {
+    test('From two files selects the correct one with the correct extension', () => {
+        const filepath = path.join(os.tmpdir(), 'magmaFindFilesWithExtension');
+        fs.mkdirsSync(filepath);
+
+        const filename = 'exampleKey.bikey';
+
+        fs.writeFileSync(path.join(filepath, filename), '');
+        fs.writeFileSync(path.join(filepath, 'example.txt'), '');
+
+        expect(Filesystem.findFilesWithExtension(filepath, '.bikey')[0]).toBe(path.join(filepath, filename));
+
+        if (fs.existsSync(filepath)) {
+            fs.removeSync(filepath);
+        }
+    });
+});
+
 describe('Filesystem.renameContentsToLowercase()', () => {
     test('It correctly renames a directory with multiple directories and files all to lowercase', () => {
         const filepath = path.join(os.tmpdir(), 'magmaRandomFolderForTests');
