@@ -32,13 +32,11 @@ describe('List.run()', () => {
     });
 
     beforeEach(() => {
-        // @ts-ignore Private method
-        orgPath = Config.path;
+        orgPath = Config['path'];
 
         file = path.join(os.tmpdir(), 'exampleMagma.json');
 
-        // @ts-ignore Private method
-        Config.path = jest.fn().mockReturnValue(file);
+        Config['path'] = jest.fn().mockReturnValue(file);
 
         fs.writeFileSync(file, JSON.stringify({
             mods: [],
@@ -50,8 +48,7 @@ describe('List.run()', () => {
             fs.removeSync(file);
         }
 
-        // @ts-ignore Private method
-        Config.path = orgPath;
+        Config['path'] = orgPath;
     });
 
     test('If config file does not exist, it exits.', async () => {

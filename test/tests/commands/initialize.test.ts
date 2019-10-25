@@ -11,15 +11,13 @@ let file: string;
 
 describe('Initialize.run()', () => {
     beforeAll(() => {
-        // @ts-ignore Private method
-        orgPath = Config.path;
+        orgPath = Config['path'];
 
         fs.mkdirsSync(path.join(os.tmpdir(), 'magmaInitTest'));
 
         file = path.join(os.tmpdir(), 'magmaInitTest/exampleMagma.json');
 
-        // @ts-ignore Private method
-        Config.path = jest.fn().mockReturnValue(file);
+        Config['path'] = jest.fn().mockReturnValue(file);
     });
 
     afterAll(() => {
@@ -27,8 +25,7 @@ describe('Initialize.run()', () => {
             fs.removeSync(file);
         }
 
-        // @ts-ignore Private method
-        Config.path = orgPath;
+        Config['path'] = orgPath;
     });
 
     test('Command runs in non interactive mode', async () => {

@@ -26,13 +26,11 @@ describe('Config.get()', () => {
 
 describe('Config.set()', () => {
     test('Data is written correctly', () => {
-        // @ts-ignore Private method
-        const orgPath = Config.path;
+        const orgPath = Config['path'];
 
         const file = path.join(os.tmpdir(), 'exampleMagma.json');
 
-        // @ts-ignore Private method
-        Config.path = jest.fn().mockReturnValue(file);
+        Config['path'] = jest.fn().mockReturnValue(file);
 
         fs.writeFileSync(file, JSON.stringify({
             key: 'exampleTest',
@@ -50,8 +48,7 @@ describe('Config.set()', () => {
             fs.removeSync(file);
         }
 
-        // @ts-ignore Private method
-        Config.path = orgPath;
+        Config['path'] = orgPath;
     });
 });
 

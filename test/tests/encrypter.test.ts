@@ -69,8 +69,7 @@ describe('Encrypter.encrypt() & Encrypter.decrypt()', () => {
 
         const cipher = new Encrypter(key);
 
-        // @ts-ignore Private method
-        cipher.validPayload = jest.fn().mockReturnValue(false);
+        cipher['validPayload'] = jest.fn().mockReturnValue(false);
 
         const encrypted = cipher.encrypt(subject);
         expect(encrypted).not.toBe(subject);
@@ -83,8 +82,7 @@ describe('Encrypter.encrypt() & Encrypter.decrypt()', () => {
 
         const cipher = new Encrypter(key);
 
-        // @ts-ignore Private method
-        cipher.validMac = jest.fn().mockReturnValue(false);
+        cipher['validMac'] = jest.fn().mockReturnValue(false);
 
         const encrypted = cipher.encrypt(subject);
         expect(encrypted).not.toBe(subject);
