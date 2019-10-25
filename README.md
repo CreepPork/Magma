@@ -43,22 +43,36 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`magma activate`](#magma-activate)
+* [`magma activate [ID]`](#magma-activate-id)
 * [`magma add ID`](#magma-add-id)
 * [`magma cron`](#magma-cron)
-* [`magma deactivate`](#magma-deactivate)
+* [`magma deactivate [ID]`](#magma-deactivate-id)
 * [`magma help [COMMAND]`](#magma-help-command)
 * [`magma initialize`](#magma-initialize)
 * [`magma install`](#magma-install)
 * [`magma list`](#magma-list)
-* [`magma remove`](#magma-remove)
+* [`magma preset`](#magma-preset)
+* [`magma remove [ID]`](#magma-remove-id)
 * [`magma update`](#magma-update)
 
-## `magma activate`
+## `magma activate [ID]`
+
+Activates mods by adding their symlinks and keys back.
 
 ```
 USAGE
-  $ magma activate
+  $ magma activate [ID]
+
+ARGUMENTS
+  ID  Steam Workshop item IDs.
+
+OPTIONS
+  -n, --nonInteractive  Do not prompt for any input.
+
+EXAMPLES
+  magma activate
+  magma activate 723217262
+  magma activate 450814997 723217262 713709341
 ```
 
 _See code: [src/commands/activate.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/activate.ts)_
@@ -74,9 +88,13 @@ USAGE
 ARGUMENTS
   ID  Steam Workshop item IDs.
 
+OPTIONS
+  -n, --nonInteractive          Do not prompt for any input.
+  -t, --type=all|client|server  [default: all]
+
 EXAMPLES
-  magma add 723217262
-  magma add 450814997 723217262 713709341
+  magma add 723217262 --type client
+  magma add 450814997 723217262 713709341 --type all client server
 ```
 
 _See code: [src/commands/add.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/add.ts)_
@@ -90,11 +108,24 @@ USAGE
 
 _See code: [src/commands/cron.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/cron.ts)_
 
-## `magma deactivate`
+## `magma deactivate [ID]`
+
+Deactivates mods by removing their symlinks and keys.
 
 ```
 USAGE
-  $ magma deactivate
+  $ magma deactivate [ID]
+
+ARGUMENTS
+  ID  Steam Workshop item IDs.
+
+OPTIONS
+  -n, --nonInteractive  Do not prompt for any input.
+
+EXAMPLES
+  magma deactivate
+  magma deactivate 723217262
+  magma deactivate 450814997 723217262 713709341
 ```
 
 _See code: [src/commands/deactivate.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/deactivate.ts)_
@@ -132,7 +163,7 @@ OPTIONS
                                                        overwritten.
 
   -l, --linuxGsmInstanceConfig=linuxGsmInstanceConfig  Absolute path to the LinuxGSM instance configuration file (where
-                                                       it handles mods/servermods)
+                                                       it handles mods/servermods) (only supported on Linux)
 
   -n, --nonInteractive                                 Do not prompt for any input.
 
@@ -150,6 +181,8 @@ ALIASES
 _See code: [src/commands/initialize.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/initialize.ts)_
 
 ## `magma install`
+
+Downloads and installs mods that have not been previously installed.
 
 ```
 USAGE
@@ -169,16 +202,40 @@ USAGE
 
 _See code: [src/commands/list.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/list.ts)_
 
-## `magma remove`
+## `magma preset`
 
 ```
 USAGE
-  $ magma remove
+  $ magma preset
+```
+
+_See code: [src/commands/preset.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/preset.ts)_
+
+## `magma remove [ID]`
+
+Removes mod files from disk.
+
+```
+USAGE
+  $ magma remove [ID]
+
+ARGUMENTS
+  ID  Steam Workshop item IDs.
+
+OPTIONS
+  -n, --nonInteractive  Do not prompt for any input.
+
+EXAMPLES
+  magma remove
+  magma remove 723217262
+  magma remove 450814997 723217262 713709341
 ```
 
 _See code: [src/commands/remove.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/remove.ts)_
 
 ## `magma update`
+
+Updates currently downloaded mods from Steam Workshop.
 
 ```
 USAGE
