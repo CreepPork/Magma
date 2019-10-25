@@ -41,7 +41,7 @@ export default class ActivateCommand extends Command {
 
         if (ids.length === 0) {
             ids = await Insurers.ensureValidIds(
-                filteredMods, flags.nonInteractive, 'What mods would you like to activate?'
+                filteredMods, flags.nonInteractive, 'What mods would you like to activate?',
             );
         }
 
