@@ -9,12 +9,15 @@ import NotInitializedError from '../../../src/errors/notInitializedError';
 import IMod from '../../../src/interfaces/iMod';
 
 import nock = require('nock');
+import setupCommand from '../../setup';
 
 let orgPath: any;
 let file: string;
 
 describe('List.run()', () => {
     beforeAll(() => {
+        setupCommand();
+
         const data = {
             response: {
                 publishedfiledetails: [

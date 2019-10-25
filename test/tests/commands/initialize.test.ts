@@ -5,12 +5,15 @@ import * as path from 'path';
 import InitializeCommand from '../../../src/commands/initialize';
 import Config from '../../../src/config';
 import SteamCmd from '../../../src/steam/steamCmd';
+import setupCommand from '../../setup';
 
 let orgPath: any;
 let file: string;
 
 describe('Initialize.run()', () => {
     beforeAll(() => {
+        setupCommand();
+
         orgPath = Config['path'];
 
         fs.mkdirsSync(path.join(os.tmpdir(), 'magmaInitTest'));
