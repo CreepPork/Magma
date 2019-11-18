@@ -30,7 +30,7 @@
     "@types/inquirer": "^6.5.0",
     "@types/jest": "^24.0.18",
     "@types/klaw-sync": "^6.0.0",
-    "@types/lodash": "^4.14.144",
+    "@types/lodash": "^4.14.148",
     "@types/node": "^12.11.2",
     "@types/ora": "^3.2.0",
     "@types/qs": "^6.5.3",
