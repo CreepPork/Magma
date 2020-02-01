@@ -42,6 +42,10 @@ export default class InitializeCommand extends Command {
             char: 'u',
             description: 'Steam username.',
         }),
+        webhookUrl: flag.string({
+            char: 'w',
+            description: 'Webhook URL to which the magma cron command will respond to.',
+        })
     };
 
     private nonInteractive: boolean = false;
@@ -72,6 +76,8 @@ export default class InitializeCommand extends Command {
 
         const linuxGsm = await this.ensureValidLinuxGsm(flags.linuxGsmInstanceConfig);
 
+        const webhookUrl = await this.ensureValidWebhookUrl(flags.webhookUrl);
+
         Config.setAll({
             credentials: {
                 password: new Encrypter(key).encrypt(credentials.password),
@@ -82,11 +88,13 @@ export default class InitializeCommand extends Command {
             mods: [],
             serverPath,
             steamCmdPath,
+            webhookUrl,
+            cronMessages: [],
         });
     }
 
     private async ensureNoConfig(force: boolean): Promise<never | void> {
-        if (! force) {
+        if (!force) {
             if (Config.exists()) {
                 if (this.nonInteractive) {
                     throw new Error('Magma is already initialized. Add the --force flag to overwrite the magma.json file.');
@@ -103,11 +111,11 @@ export default class InitializeCommand extends Command {
         }
     }
 
-    private async ensureValidSteamCmd(steamCmd: string | undefined): Promise<never | string> {
+    private async ensureValidSteamCmd(steamCmd?: string): Promise<never | string> {
         if (steamCmd) {
             const valid = this.validateSteamCmd(steamCmd);
 
-            if (! valid) {
+            if (!valid) {
                 if (this.nonInteractive) {
                     throw new Error('The given SteamCMD path is invalid. Did you include the executable as well?');
                 }
@@ -144,11 +152,11 @@ export default class InitializeCommand extends Command {
         return response.path;
     }
 
-    private async ensureValidServer(server: string | undefined): Promise<never | string> {
+    private async ensureValidServer(server?: string): Promise<never | string> {
         if (server) {
             const valid = this.validateServer(server);
 
-            if (! valid) {
+            if (!valid) {
                 if (this.nonInteractive) {
                     throw new Error(
                         'The given Arma 3 server directory is invalid.' +
@@ -188,36 +196,36 @@ export default class InitializeCommand extends Command {
         return response.path;
     }
 
-    private async ensureValidLogin(username: string | undefined, password: string | undefined):
+    private async ensureValidLogin(username?: string, password?: string):
         Promise<never | ISteamCredentials> {
-            let credentials;
+        let credentials;
 
-            if (username && password) {
-                if (username === '' || password === '') {
-                    if (this.nonInteractive) {
-                        throw new Error('The given credentials were invalid. Did you enter empty credentials?');
-                    }
-
-                    credentials = await this.promptForCredentials();
-                } else {
-                    credentials = { username, password };
-                }
-            } else {
+        if (username && password) {
+            if (username === '' || password === '') {
                 if (this.nonInteractive) {
-                    throw new Error('The Steam users credentials were not given.');
+                    throw new Error('The given credentials were invalid. Did you enter empty credentials?');
                 }
 
                 credentials = await this.promptForCredentials();
+            } else {
+                credentials = { username, password };
+            }
+        } else {
+            if (this.nonInteractive) {
+                throw new Error('The Steam users credentials were not given.');
             }
 
-            return credentials;
+            credentials = await this.promptForCredentials();
+        }
+
+        return credentials;
     }
 
     private async validateCredentials(credentials: ISteamCredentials, key: string): Promise<boolean> {
         const password = new Encrypter(key).encrypt(credentials.password);
         const successfulLogin = await SteamCmd.login({ username: credentials.username, password }, key);
 
-        if (! successfulLogin) {
+        if (!successfulLogin) {
             if (this.nonInteractive) {
                 throw new Error('Failed to login. Did you provide the username and the password correcly?');
             }
@@ -242,7 +250,7 @@ export default class InitializeCommand extends Command {
         return response;
     }
 
-    private async ensureValidLinuxGsm(path: string | undefined): Promise<string | undefined | never> {
+    private async ensureValidLinuxGsm(path?: string): Promise<string | undefined | never> {
         if (process.platform === 'win32') { return; }
 
         if (path) {
@@ -256,7 +264,7 @@ export default class InitializeCommand extends Command {
                 return await this.promptForLinuxGsm();
             }
         } else {
-            if (! this.nonInteractive) {
+            if (!this.nonInteractive) {
                 const response: { uses: boolean } = await prompt({
                     message: 'Are you using LinuxGSM?',
                     name: 'uses',
@@ -279,5 +287,42 @@ export default class InitializeCommand extends Command {
         });
 
         return response.path;
+    }
+
+    private async ensureValidWebhookUrl(url?: string): Promise<string | undefined | never> {
+        if (url) {
+            if (url.startsWith('https://')) {
+                return url;
+            } else {
+                if (this.nonInteractive) {
+                    throw new Error('The webhook URL is invalid. Is it a HTTPS URL?');
+                }
+
+                return await this.promptForWebhookUrl();
+            }
+        } else {
+            if (!this.nonInteractive) {
+                const response: { uses: boolean } = await prompt({
+                    message: 'Do you want to use a webhook for the cron command?',
+                    name: 'uses',
+                    type: 'confirm',
+                });
+
+                if (response.uses) {
+                    return await this.promptForWebhookUrl();
+                }
+            }
+        }
+    }
+
+    private async promptForWebhookUrl(): Promise<string> {
+        const response: { url: string } = await prompt({
+            message: 'A webhook URL for the cron command to use (must use a HTTPS connection)?',
+            name: 'url',
+            type: 'input',
+            validate: (input: string) => input.startsWith('https://'),
+        });
+
+        return response.url;
     }
 }

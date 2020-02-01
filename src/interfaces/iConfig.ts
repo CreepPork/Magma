@@ -8,4 +8,5 @@ export default interface IConfig {
     linuxGsm?: string;
     key: string;
     credentials: ISteamCredentials;
+    webhookUrl?: string;
 }
