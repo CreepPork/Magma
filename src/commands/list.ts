@@ -7,7 +7,7 @@ import Table = require('cli-table');
 import Mod from '../mod';
 import Time from '../time';
 
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 
 export default class ListCommand extends Command {
     public static description = 'Lists all mods that have been added or installed by Magma.';
