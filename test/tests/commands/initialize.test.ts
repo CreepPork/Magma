@@ -59,6 +59,7 @@ describe('Initialize.run()', () => {
             mods: [],
             serverPath,
             steamCmdPath: cmdPath,
+            cronMessages: [],
         });
 
         if (fs.existsSync(gsmPath)) { fs.removeSync(gsmPath); }

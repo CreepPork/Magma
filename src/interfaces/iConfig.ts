@@ -9,4 +9,5 @@ export default interface IConfig {
     key: string;
     credentials: ISteamCredentials;
     webhookUrl?: string;
+    cronMessages: number[];
 }
