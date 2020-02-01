@@ -1,8 +1,8 @@
 import Command from '@oclif/command';
 import Config from '../config';
-import Mod from '../mod';
 import Processor from '../processor';
 import SteamCmd from '../steam/steamCmd';
+import SteamApi from '../steam/steamApi';
 
 export default class ActivateCommand extends Command {
     public static description = 'Updates currently downloaded mods from Steam Workshop.';
@@ -19,12 +19,16 @@ export default class ActivateCommand extends Command {
         if (mods.length === 0) { return; }
 
         // Check for those mods that need updates from SteamAPI
-        const apiMods = await Mod.getModUpdatedAtFromApi(mods);
+        const apiMods = await SteamApi.getPublishedItems(...mods.map(mod => mod.id));
 
         const queuedMods = [];
 
         for (const [index, mod] of mods.entries()) {
-            if (apiMods[index].updatedAt !== mod.updatedAt) {
+            const apiMod = apiMods[index];
+
+            if (apiMod.time_updated !== mod.updatedAt) {
+                mod.updatedAt = apiMod.time_updated;
+
                 queuedMods.push(mod);
             }
         }
