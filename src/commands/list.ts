@@ -4,8 +4,8 @@ import Config from '../config';
 import { EModType } from '../enums/eModType';
 
 import Table = require('cli-table');
-import Mod from '../mod';
 import Time from '../time';
+import SteamApi from '../steam/steamApi';
 
 import * as chalk from 'chalk';
 
@@ -29,12 +29,12 @@ export default class ListCommand extends Command {
             return;
         }
 
-        const apiMods = await Mod.getModUpdatedAtFromApi(mods);
+        const apiMods = await SteamApi.getPublishedItems(...mods.map(mod => mod.id));
 
         for (const [index, mod] of mods.entries()) {
             table.push([
                 mod.id, mod.name, this.getModType(mod.type),
-                apiMods[index].updatedAt === mod.updatedAt ? 'Yes' : chalk.redBright.bold('No'),
+                apiMods[index].time_updated === mod.updatedAt ? 'Yes' : chalk.redBright.bold('No'),
                 mod.updatedAt ? Time.epochToDate(mod.updatedAt).toUTCString() : 'Not Installed',
                 mod.keys ? mod.keys.length : 0,
             ]);
