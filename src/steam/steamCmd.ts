@@ -33,8 +33,12 @@ export default class SteamCmd {
         return new Promise(async (resolve, reject) => {
             const serverPath = Config.get('serverPath');
 
+            console.log('Logging in...');
+
             const loggedIn = await this.login(undefined, undefined, false);
             if (!loggedIn) { reject(new Error('Failed to log in into Steam')); }
+
+            console.log('Logged in');
 
             if (this.process) {
                 this.process.on('exit', () => {
@@ -46,6 +50,19 @@ export default class SteamCmd {
                         ? `force_install_dir "${serverPath}"\r`
                         : `force_install_dir ${serverPath}\r`,
                 );
+
+                // Output download process information somewhat (steamcmd is terrible at output)
+                this.process.on('data', data => {
+                    if (data.startsWith('Downloading item')) {
+                        console.log(data.trim());
+                    } else if (data.startsWith('Success.')) {
+                        console.log(
+                            data.substr(0, data.lastIndexOf(' '))
+                        );
+                    } else if (data.includes('ERROR!')) {
+                        reject(new Error(data));
+                    }
+                });
 
                 for (const id of ids) {
                     this.process.write(`workshop_download_item ${CServer.id} ${id}\r`);
