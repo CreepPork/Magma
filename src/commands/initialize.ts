@@ -50,13 +50,15 @@ export default class InitializeCommand extends Command {
 
     private nonInteractive: boolean = false;
 
+    private steamCmdPath?: string;
+
     public async run(): Promise<void> {
         const { flags } = this.parse(InitializeCommand);
         this.nonInteractive = flags.nonInteractive;
 
         await this.ensureNoConfig(flags.force);
 
-        const steamCmdPath = await this.ensureValidSteamCmd(flags.steamCmd);
+        this.steamCmdPath = await this.ensureValidSteamCmd(flags.steamCmd);
 
         const serverPath = await this.ensureValidServer(flags.server);
 
@@ -87,7 +89,7 @@ export default class InitializeCommand extends Command {
             linuxGsm,
             mods: [],
             serverPath,
-            steamCmdPath,
+            steamCmdPath: this.steamCmdPath,
             webhookUrl,
             cronMessages: [],
         });
@@ -223,7 +225,9 @@ export default class InitializeCommand extends Command {
 
     private async validateCredentials(credentials: ISteamCredentials, key: string): Promise<boolean> {
         const password = new Encrypter(key).encrypt(credentials.password);
-        const successfulLogin = await SteamCmd.login({ username: credentials.username, password }, key);
+        const successfulLogin = await SteamCmd.login(
+            { username: credentials.username, password }, key, undefined, this.steamCmdPath
+        );
 
         if (!successfulLogin) {
             if (this.nonInteractive) {

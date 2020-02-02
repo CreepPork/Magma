@@ -8,8 +8,8 @@ import Encrypter from '../encrypter';
 export default class SteamCmd {
     public static process?: pty.IPty;
 
-    public static login(credentials = Config.get('credentials'), key = Config.get('key'), exit?: boolean):
-    Promise<boolean> {
+    public static login(credentials = Config.get('credentials'), key = Config.get('key'), exit?: boolean, path?: string):
+        Promise<boolean> {
         return new Promise(resolve => {
             const password = new Encrypter(key).decrypt(credentials.password);
 
@@ -25,7 +25,7 @@ export default class SteamCmd {
                 } else if (data === 'exit\r\n') {
                     resolve(false);
                 }
-            }, exit);
+            }, exit, path);
         });
     }
 
@@ -34,7 +34,7 @@ export default class SteamCmd {
             const serverPath = Config.get('serverPath');
 
             const loggedIn = await this.login(undefined, undefined, false);
-            if (! loggedIn) { reject(new Error('Failed to log in into Steam')); }
+            if (!loggedIn) { reject(new Error('Failed to log in into Steam')); }
 
             if (this.process) {
                 this.process.on('exit', () => {
@@ -58,9 +58,9 @@ export default class SteamCmd {
         });
     }
 
-    private static runCommand(command: string, onData: (data: string) => void, exit = true): void {
+    private static runCommand(command: string, onData: (data: string) => void, exit = true, path?: string): void {
         const shell = os.platform() === 'win32' ? 'powershell.exe' : 'bash';
-        const steamCmd = Config.get('steamCmdPath');
+        const steamCmd = path ?? Config.get('steamCmdPath');
 
         const process = pty.spawn(shell, [],
             // @ts-ignore Per the docs it exists, but it's not in the typings.
