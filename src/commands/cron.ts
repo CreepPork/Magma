@@ -27,7 +27,8 @@ export default class CronCommand extends Command {
 
         if (mods.length === 0) {
             console.log('No mods are present in the configuration file.');
-            this.exit(0);
+
+            return;
         }
 
         const apiReturn = await SteamApi.getPublishedItems(...mods.map(mod => mod.id));
