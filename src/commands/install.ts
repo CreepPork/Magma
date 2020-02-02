@@ -20,7 +20,11 @@ export default class InstallCommand extends Command {
         let mods = Config.get('mods').filter(mod => mod.updatedAt === undefined);
 
         // If all mods have been already installed, exit
-        if (mods.length === 0) { return; }
+        if (mods.length === 0) {
+            console.log('All mods have been already installed/no mods are present.');
+
+            return;
+        }
 
         await SteamCmd.download(...mods.map(mod => mod.id));
 
