@@ -101,9 +101,14 @@ _See code: [src/commands/add.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/
 
 ## `magma cron`
 
+A command designed to be run in a time-based job scheduler to notify on social platforms for mod updates.
+
 ```
 USAGE
   $ magma cron
+
+EXAMPLE
+  magma cron
 ```
 
 _See code: [src/commands/cron.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/cron.ts)_
@@ -173,6 +178,8 @@ OPTIONS
                                                        server executable is).
 
   -u, --username=username                              Steam username.
+
+  -w, --webhookUrl=webhookUrl                          Webhook URL to which the magma cron command will respond to.
 
 ALIASES
   $ magma init
