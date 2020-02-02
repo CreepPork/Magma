@@ -87,6 +87,6 @@ export default class AddCommand extends Command {
             type: 'list',
         });
 
-        return EModType[choices.indexOf(response.type)] as any;
+        return choices.indexOf(response.type);
     }
 }
