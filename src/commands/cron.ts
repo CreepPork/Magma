@@ -25,6 +25,11 @@ export default class CronCommand extends Command {
             this.error('A webhook URL is not given in the configuration file.');
         }
 
+        if (mods.length === 0) {
+            this.warn('No mods are present in the configuration file.');
+            this.exit(0);
+        }
+
         const apiReturn = await SteamApi.getPublishedItems(...mods.map(mod => mod.id));
 
         let updatesRequiredFor = apiReturn.filter(
