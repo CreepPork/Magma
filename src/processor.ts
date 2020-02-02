@@ -115,7 +115,7 @@ export default class Processor {
 
         const serverConfigPath = Config.get('linuxGsm');
 
-        if (! serverConfigPath) { return; }
+        if (!serverConfigPath) { return; }
 
         let requiredModString = 'mods="';
         let serverModString = 'servermods="';
@@ -149,5 +149,6 @@ export default class Processor {
         fs.writeFileSync(serverConfigPath, configText.join('\n'));
     }
 
-    private static serverPath = Config.get('serverPath');
+    // Fix error on npm pack if no magma.json file exists
+    private static serverPath = Config.exists() ? Config.get('serverPath') : '';
 }

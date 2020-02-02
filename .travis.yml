@@ -9,7 +9,6 @@ before_script:
 
 script:
   - npm test
-  - curl https://gist.githubusercontent.com/CreepPork/829202bdf499efdf96d9df96434f6c7b/raw/d6f5ad2dc7c1254f5973d1f671278f7fc5e92b68/magma.json > magma.json
   - npm pack
 
 notifications:
