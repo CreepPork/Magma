@@ -26,7 +26,7 @@ export default class CronCommand extends Command {
         }
 
         if (mods.length === 0) {
-            this.warn('No mods are present in the configuration file.');
+            console.log('No mods are present in the configuration file.');
             this.exit(0);
         }
 
