@@ -33,7 +33,13 @@ export default class CronCommand extends Command {
         const apiReturn = await SteamApi.getPublishedItems(...mods.map(mod => mod.id));
 
         let updatesRequiredFor = apiReturn.filter(
-            workshop => workshop.time_updated !== (mods.find(mod => `${mod.id}` === workshop.publishedfileid))?.updatedAt
+            workshop =>
+                workshop.time_updated !== (
+                    // Find the mod via id, possibly get the updatedAt property,
+                    // If property doesn't exist then it means that the mod has not been installed
+                    // Thus, we falsify the if statement and fake that the mod is up to date to prevent spam.
+                    (mods.find(mod => `${mod.id}` === workshop.publishedfileid))?.updatedAt ?? workshop.time_updated
+                )
         );
 
         const modsWhichHaveBeenPosted = apiReturn.filter(
