@@ -8,12 +8,12 @@ import { nonInteractive } from '../flags';
 import Insurers from '../insurers';
 import Processor from '../processor';
 
-export default class RemoveCommand extends Command {
-    public static description = 'Removes mod files from disk.';
+export default class DeactivateCommand extends Command {
+    public static description = 'Deactivates mods by removing their symlinks and keys.';
     public static examples = [
-        'magma remove',
-        'magma remove 723217262',
-        'magma remove 450814997 723217262 713709341',
+        'magma deactivate',
+        'magma deactivate 723217262',
+        'magma deactivate 450814997 723217262 713709341',
     ];
     public static strict = false;
     public static args = [{ description: 'Steam Workshop item IDs.', name: 'id' }] as IArg[];
@@ -26,19 +26,23 @@ export default class RemoveCommand extends Command {
     }
 
     public async run(): Promise<void> {
-        const { argv, flags } = this.parse(RemoveCommand);
+        const { argv, flags } = this.parse(DeactivateCommand);
         let ids = argv.map(arg => parseInt(arg, 10));
 
+        // Get only those mods that are activated
         const mods = Config.get('mods');
+        const filteredMods = mods.filter(mod => mod.isActive === true);
 
-        if (mods.length === 0) {
-            console.log('There are no mods to remove.');
+        if (filteredMods.length === 0) {
+            console.log('There are no mods to deactivate.');
 
             return;
         }
 
         if (ids.length === 0) {
-            ids = await Insurers.ensureValidIds(mods, flags.nonInteractive, 'What mods would you like to remove?');
+            ids = await Insurers.ensureValidIds(
+                filteredMods, flags.nonInteractive, 'What mods would you like to deactivate?',
+            );
         }
 
         for (const id of ids) {
@@ -49,15 +53,13 @@ export default class RemoveCommand extends Command {
 
             // Remove mod keys
             Processor.removeKeysFromMod(mod);
+            mod.keys = undefined;
 
             // Remove symlink
             Processor.unlinkMod(mod);
 
-            // Remove workshop contents
-            Processor.pruneWorkshopContents(mod);
-
             // Remove from config
-            _.remove(mods, m => m.id === id);
+            mod.isActive = false;
         }
 
         Processor.updateServerConfigFile(mods);

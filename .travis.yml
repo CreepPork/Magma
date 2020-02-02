@@ -8,7 +8,8 @@ before_script:
   - npm i -g codecov
 
 script:
-  - npm run test
+  - npm test
+  - npm pack
 
 notifications:
   email: false

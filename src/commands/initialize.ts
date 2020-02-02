@@ -1,207 +1,332 @@
-import { flags } from '@oclif/command';
-import ora from 'ora';
-import Command from '../command';
+import Command, { flags as flag } from '@oclif/command';
+import { prompt } from 'inquirer';
 
-import File from '../file';
-import { IMod, popularMods } from '../mod';
-import { ISupportedServer, supportedServers } from '../servers';
-import Settings, { ISettings } from '../settings';
-import SteamApi from '../steam/api';
-import Login from './login';
+import Config from '../config';
+import Filesystem from '../filesystem';
 
-import * as inquirer from 'inquirer';
-import * as _ from 'lodash';
+import Server from '../constants/server';
+import Encrypter from '../encrypter';
+import { nonInteractive } from '../flags';
+import ISteamCredentials from '../interfaces/iSteamCredentials';
+import SteamCmd from '../steam/steamCmd';
 
-export default class Initialize extends Command {
-    public static description = 'Initializes servers configuration data.';
-    public static aliases = [
-        'init',
-    ];
+import ora = require('ora');
 
+export default class InitializeCommand extends Command {
+    public static description = 'Initializes the configuration data required for Magma to operate.';
+    public static aliases = ['init'];
     public static flags = {
-        force: flags.boolean({
+        force: flag.boolean({
             char: 'f',
-            description: 'Skip the check for a settings file. If exists, it will be overwritten.',
+            default: false,
+            description: 'Skip the check for the magma.json file. If it exists, it will be overwritten.',
         }),
+        linuxGsmInstanceConfig: flag.string({
+            char: 'l',
+            description: 'Absolute path to the LinuxGSM instance configuration file (where it handles mods/servermods) (only supported on Linux)',
+        }),
+        nonInteractive,
+        password: flag.string({
+            char: 'p',
+            description: 'Steam user password.',
+        }),
+        server: flag.string({
+            char: 's',
+            description: 'Absolute path to the directory where the server is (where the server executable is).',
+        }),
+        steamCmd: flag.string({
+            char: 'c',
+            description: 'Absolute path to the SteamCMD executable (including the file itself).',
+        }),
+        username: flag.string({
+            char: 'u',
+            description: 'Steam username.',
+        }),
+        webhookUrl: flag.string({
+            char: 'w',
+            description: 'Webhook URL to which the magma cron command will respond to.',
+        })
     };
 
+    private nonInteractive: boolean = false;
+
+    private steamCmdPath?: string;
+
     public async run(): Promise<void> {
-        // tslint:disable-next-line: no-shadowed-variable
-        const { flags } = this.parse(Initialize);
+        const { flags } = this.parse(InitializeCommand);
+        this.nonInteractive = flags.nonInteractive;
 
-        if (Settings.fileExists() && ! flags.force) {
-            const settingsExist: { proceed: boolean } = await inquirer.prompt({
-                default: false,
-                message: 'Setting file already exists. If you proceed it will be overwritten. Proceed?',
-                name: 'proceed',
-                type: 'confirm',
-            });
+        await this.ensureNoConfig(flags.force);
 
-            if (! settingsExist.proceed) {
-                this.exit();
-            }
+        this.steamCmdPath = await this.ensureValidSteamCmd(flags.steamCmd);
+
+        const serverPath = await this.ensureValidServer(flags.server);
+
+        let credentials = await this.ensureValidLogin(flags.username, flags.password);
+
+        const key = Encrypter.generateKey();
+
+        const spinner = ora({ discardStdin: true, text: 'Validating Steam credentials' }).start();
+
+        while (await this.validateCredentials(credentials, key) === false) {
+            spinner.fail('Failed to login');
+            credentials = await this.promptForCredentials();
+            spinner.start();
         }
 
-        const server: { type: string } = await inquirer.prompt({
-            choices: supportedServers,
-            message: 'What server are you going to use?',
-            name: 'type',
-            type: 'list',
+        spinner.succeed('Logged in');
+
+        const linuxGsm = await this.ensureValidLinuxGsm(flags.linuxGsmInstanceConfig);
+
+        const webhookUrl = await this.ensureValidWebhookUrl(flags.webhookUrl);
+
+        Config.setAll({
+            credentials: {
+                password: new Encrypter(key).encrypt(credentials.password),
+                username: credentials.username,
+            },
+            key,
+            linuxGsm,
+            mods: [],
+            serverPath,
+            steamCmdPath: this.steamCmdPath,
+            webhookUrl,
+            cronMessages: [],
         });
+    }
 
-        const serverType = _.find(supportedServers, { name: server.type }) as ISupportedServer;
-
-        const steamCmd: { path: string } = await inquirer.prompt({
-            message: 'Path to SteamCMD executable or script (including file itself)',
-            name: 'path',
-            type: 'input',
-            validate: path => File.isFile(path) && File.getFilenameNoExt(path) === 'steamcmd',
-        });
-
-        const gameServer: { path: string } = await inquirer.prompt({
-            message: 'Path to server directory',
-            name: 'path',
-            type: 'input',
-            validate: path => File.isDirectory(path) && File.directoryContains(path, serverType.executableName),
-        });
-
-        const mods: IMod[] = [];
-        const availableMods = popularMods.filter(mod => mod.gameId === serverType.gameAppId);
-
-        if (availableMods.length > 0) {
-            const selectedMods: { mods: string[] } = await inquirer.prompt({
-                choices: availableMods,
-                message: 'Do you want any of these mods?',
-                name: 'mods',
-                type: 'checkbox',
-            });
-
-            for (const name of selectedMods.mods) {
-                const mod = _.find(popularMods, { name }) as IMod;
-
-                if (mod.isClientSideMod) {
-                    const installAsClient: { mod: boolean } = await inquirer.prompt({
-                        default: true,
-                        message: `${mod.name} can be a client-side mod. Install as client-side only?`,
-                        name: 'mod',
-                        type: 'confirm',
-                    });
-
-                    mod.isClientSideMod = installAsClient.mod;
+    private async ensureNoConfig(force: boolean): Promise<never | void> {
+        if (!force) {
+            if (Config.exists()) {
+                if (this.nonInteractive) {
+                    throw new Error('Magma is already initialized. Add the --force flag to overwrite the magma.json file.');
                 }
 
-                if (mod.isServerMod) {
-                    const installAsServer: { mod: boolean } = await inquirer.prompt({
-                        default: true,
-                        message: `${mod.name} can be a server-side mod. Install as server-side only?`,
-                        name: 'mod',
-                        type: 'confirm',
-                    });
-
-                    mod.isServerMod = installAsServer.mod;
-                }
-
-                mods.push(mod);
-            }
-        }
-
-        const moreMods: { add: boolean } = await inquirer.prompt({
-            default: true,
-            message: 'Do you want to add other mods?',
-            name: 'add',
-            type: 'confirm',
-        });
-
-        if (moreMods.add) {
-            const modsToAdd: { count: number } = await inquirer.prompt({
-                default: 1,
-                message: 'How many mods would you like to add?',
-                name: 'count',
-                type: 'number',
-                validate: (num: any) => !isNaN(parseInt(num, 10)),
-            });
-
-            for (let i = 0; i < modsToAdd.count; i++) {
-                const mod: { url: string } = await inquirer.prompt({
-                    message: `Steam Workshop URL ${i + 1}/${modsToAdd.count}`,
-                    name: 'url',
-                    type: 'input',
-                    validate: url => {
-                        return RegExp(
-                            /(https:\/\/steamcommunity.com\/(workshop|sharedfiles)\/filedetails\/\?id=[0-9])\w+/g,
-                        ).test(url);
-                    },
-                });
-
-                let isServerMod = false;
-                let isClientSideMod = false;
-
-                const isRequired: { forAll: boolean } = await inquirer.prompt({
-                    default: true,
-                    message: 'Is this mod required for all clients?',
-                    name: 'forAll',
+                const response: { overwrite: boolean } = await prompt({
+                    message: 'The magma.json file exists here. Do you want to overwrite it?',
+                    name: 'overwrite',
                     type: 'confirm',
                 });
 
-                if (! isRequired.forAll) {
-                    const isMod: { type: string[] } = await inquirer.prompt({
-                        choices: ['Server-side mod', 'Client-side mod'],
-                        message: 'Is this mod a',
-                        name: 'type',
-                        type: 'list',
-                    });
+                if (response.overwrite === false) { this.exit(1); }
+            }
+        }
+    }
 
-                    if (isMod.type.includes('Server-side mod')) {
-                        isServerMod = true;
-                    }
+    private async ensureValidSteamCmd(steamCmd?: string): Promise<never | string> {
+        if (steamCmd) {
+            const valid = this.validateSteamCmd(steamCmd);
 
-                    if (isMod.type.includes('Client-side mod')) {
-                        isClientSideMod = true;
-                    }
+            if (!valid) {
+                if (this.nonInteractive) {
+                    throw new Error('The given SteamCMD path is invalid. Did you include the executable as well?');
                 }
 
-                const id = parseInt((mod.url.match(RegExp(/([0-9])\w+/g)) as RegExpMatchArray).toString(), 10);
-                const axiosSpinner = ora('Fetching info');
+                steamCmd = await this.promptForSteamCmd();
+            }
+        } else {
+            if (this.nonInteractive) {
+                throw new Error('The SteamCMD path was not given.');
+            }
 
-                try {
-                    axiosSpinner.start();
+            steamCmd = await this.promptForSteamCmd();
+        }
 
-                    const data = await SteamApi.getPublishedItemDetails(id);
+        return steamCmd;
+    }
 
-                    axiosSpinner.succeed();
+    private validateSteamCmd(path: string): boolean {
+        if (Filesystem.isFile(path) && Filesystem.getFilenameNoExt(path) === 'steamcmd') {
+            return true;
+        }
 
-                    mods.push({
-                        gameId: serverType.gameAppId,
-                        isClientSideMod,
-                        isServerMod,
-                        itemId: parseInt(id.toString(), 10),
-                        name: data.response.publishedfiledetails[0].title,
-                    });
-                } catch (error) {
-                    axiosSpinner.fail();
-                    this.warn('Failed to retrieve data from Steam Workshop. Adding only ID.');
+        return false;
+    }
 
-                    mods.push({
-                        gameId: serverType.gameAppId,
-                        isClientSideMod,
-                        isServerMod,
-                        itemId: parseInt(id.toString(), 10),
-                        name: `Unknown Addon (${id})`,
-                    });
+    private async promptForSteamCmd(): Promise<string> {
+        const response: { path: string } = await prompt({
+            message: 'Absolute path to the SteamCMD executable (including the file itself)',
+            name: 'path',
+            type: 'input',
+            validate: this.validateSteamCmd,
+        });
+
+        return response.path;
+    }
+
+    private async ensureValidServer(server?: string): Promise<never | string> {
+        if (server) {
+            const valid = this.validateServer(server);
+
+            if (!valid) {
+                if (this.nonInteractive) {
+                    throw new Error(
+                        'The given Arma 3 server directory is invalid.' +
+                        'Did you enter the directory where the arma3server executable resides?',
+                    );
                 }
+
+                server = await this.promptForServer();
+            }
+        } else {
+            if (this.nonInteractive) {
+                throw new Error('The Arma 3 server directory was not given.');
+            }
+
+            server = await this.promptForServer();
+        }
+
+        return server;
+    }
+
+    private validateServer(path: string): boolean {
+        if (Filesystem.isDirectory(path) && Filesystem.directoryContains(path, Server.executable)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private async promptForServer(): Promise<string> {
+        const response: { path: string } = await prompt({
+            message: 'Absolute path to the directory where the server is (where the server executable is)',
+            name: 'path',
+            type: 'input',
+            validate: this.validateServer,
+        });
+
+        return response.path;
+    }
+
+    private async ensureValidLogin(username?: string, password?: string):
+        Promise<never | ISteamCredentials> {
+        let credentials;
+
+        if (username && password) {
+            if (username === '' || password === '') {
+                if (this.nonInteractive) {
+                    throw new Error('The given credentials were invalid. Did you enter empty credentials?');
+                }
+
+                credentials = await this.promptForCredentials();
+            } else {
+                credentials = { username, password };
+            }
+        } else {
+            if (this.nonInteractive) {
+                throw new Error('The Steam users credentials were not given.');
+            }
+
+            credentials = await this.promptForCredentials();
+        }
+
+        return credentials;
+    }
+
+    private async validateCredentials(credentials: ISteamCredentials, key: string): Promise<boolean> {
+        const password = new Encrypter(key).encrypt(credentials.password);
+        const successfulLogin = await SteamCmd.login(
+            { username: credentials.username, password }, key, undefined, this.steamCmdPath
+        );
+
+        if (!successfulLogin) {
+            if (this.nonInteractive) {
+                throw new Error('Failed to login. Did you provide the username and the password correcly?');
             }
         }
 
-        Settings.createFile();
-        Settings.writeAll({
-            gameServerPath: gameServer.path,
-            mods,
-            server: serverType,
-            steamCmdPath: steamCmd.path,
-        } as ISettings);
+        return successfulLogin;
+    }
 
-        await Login.run();
+    private async promptForCredentials(): Promise<ISteamCredentials> {
+        const response: ISteamCredentials = await prompt([{
+            message: 'Steam username',
+            name: 'username',
+            type: 'input',
+            validate: user => user !== '',
+        }, {
+            message: 'Steam user password',
+            name: 'password',
+            type: 'password',
+            validate: pass => pass !== '',
+        }]);
 
-        this.log('Initialize procedure completed.');
+        return response;
+    }
+
+    private async ensureValidLinuxGsm(path?: string): Promise<string | undefined | never> {
+        if (process.platform === 'win32') { return; }
+
+        if (path) {
+            if (Filesystem.isFile(path)) {
+                return path;
+            } else {
+                if (this.nonInteractive) {
+                    throw new Error('The LinuxGSM configuration file path is invalid. Did you include the file?');
+                }
+
+                return await this.promptForLinuxGsm();
+            }
+        } else {
+            if (!this.nonInteractive) {
+                const response: { uses: boolean } = await prompt({
+                    message: 'Are you using LinuxGSM?',
+                    name: 'uses',
+                    type: 'confirm',
+                });
+
+                if (response.uses) {
+                    return await this.promptForLinuxGsm();
+                }
+            }
+        }
+    }
+
+    private async promptForLinuxGsm(): Promise<string> {
+        const response: { path: string } = await prompt({
+            message: 'Absolute path to the LinuxGSM instance configuration file (where it handles mods/servermods)',
+            name: 'path',
+            type: 'input',
+            validate: Filesystem.isFile,
+        });
+
+        return response.path;
+    }
+
+    private async ensureValidWebhookUrl(url?: string): Promise<string | undefined | never> {
+        if (url) {
+            if (url.startsWith('https://')) {
+                return url;
+            } else {
+                if (this.nonInteractive) {
+                    throw new Error('The webhook URL is invalid. Is it a HTTPS URL?');
+                }
+
+                return await this.promptForWebhookUrl();
+            }
+        } else {
+            if (!this.nonInteractive) {
+                const response: { uses: boolean } = await prompt({
+                    message: 'Do you want to use a webhook for the cron command?',
+                    name: 'uses',
+                    type: 'confirm',
+                });
+
+                if (response.uses) {
+                    return await this.promptForWebhookUrl();
+                }
+            }
+        }
+    }
+
+    private async promptForWebhookUrl(): Promise<string> {
+        const response: { url: string } = await prompt({
+            message: 'A webhook URL for the cron command to use (must use a HTTPS connection)?',
+            name: 'url',
+            type: 'input',
+            validate: (input: string) => input.startsWith('https://'),
+        });
+
+        return response.url;
     }
 }

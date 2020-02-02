@@ -11,3 +11,5 @@ tests/coverage
 *.tsbuildinfo
 magma.json
 *.tgz
+oclif.manifest.json
+test/coverage
