@@ -43,21 +43,16 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-- [Magma](#magma)
-- [Features](#features)
-- [Usage](#usage)
-- [Commands](#commands)
-  - [`magma activate [ID]`](#magma-activate-id)
-  - [`magma add ID`](#magma-add-id)
-  - [`magma cron`](#magma-cron)
-  - [`magma deactivate [ID]`](#magma-deactivate-id)
-  - [`magma help [COMMAND]`](#magma-help-command)
-  - [`magma initialize`](#magma-initialize)
-  - [`magma install`](#magma-install)
-  - [`magma list`](#magma-list)
-  - [`magma preset`](#magma-preset)
-  - [`magma remove [ID]`](#magma-remove-id)
-  - [`magma update`](#magma-update)
+* [`magma activate [ID]`](#magma-activate-id)
+* [`magma add ID`](#magma-add-id)
+* [`magma cron`](#magma-cron)
+* [`magma deactivate [ID]`](#magma-deactivate-id)
+* [`magma help [COMMAND]`](#magma-help-command)
+* [`magma initialize`](#magma-initialize)
+* [`magma install`](#magma-install)
+* [`magma list`](#magma-list)
+* [`magma remove [ID]`](#magma-remove-id)
+* [`magma update`](#magma-update)
 
 ## `magma activate [ID]`
 
@@ -212,15 +207,6 @@ USAGE
 ```
 
 _See code: [src/commands/list.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/list.ts)_
-
-## `magma preset`
-
-```
-USAGE
-  $ magma preset
-```
-
-_See code: [src/commands/preset.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/preset.ts)_
 
 ## `magma remove [ID]`
 
