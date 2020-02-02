@@ -22,7 +22,7 @@ Magma is a CLI tool for Arma 3 server mod managment that works both on Windows a
 - Server mod support (`-serverMod=...`)
 - Client-side mod support (only installs keys)
 - Fully supports non-interactive shells
-- Support for a cron job (or task scheduler on Windows) that checks for mod updates and if found notifies Discord or Slack
+- Support for a cron job (or task scheduler on Windows) that checks for mod updates and if found notifies Discord
 - Ability to update and remove mods
 - Supports mod activation and deactivation (doesn't remove them from disk)
 - Allows mod preset managment to quickly swap large amounts of mods
@@ -43,17 +43,21 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`magma activate [ID]`](#magma-activate-id)
-* [`magma add ID`](#magma-add-id)
-* [`magma cron`](#magma-cron)
-* [`magma deactivate [ID]`](#magma-deactivate-id)
-* [`magma help [COMMAND]`](#magma-help-command)
-* [`magma initialize`](#magma-initialize)
-* [`magma install`](#magma-install)
-* [`magma list`](#magma-list)
-* [`magma preset`](#magma-preset)
-* [`magma remove [ID]`](#magma-remove-id)
-* [`magma update`](#magma-update)
+- [Magma](#magma)
+- [Features](#features)
+- [Usage](#usage)
+- [Commands](#commands)
+  - [`magma activate [ID]`](#magma-activate-id)
+  - [`magma add ID`](#magma-add-id)
+  - [`magma cron`](#magma-cron)
+  - [`magma deactivate [ID]`](#magma-deactivate-id)
+  - [`magma help [COMMAND]`](#magma-help-command)
+  - [`magma initialize`](#magma-initialize)
+  - [`magma install`](#magma-install)
+  - [`magma list`](#magma-list)
+  - [`magma preset`](#magma-preset)
+  - [`magma remove [ID]`](#magma-remove-id)
+  - [`magma update`](#magma-update)
 
 ## `magma activate [ID]`
 
