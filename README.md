@@ -25,7 +25,6 @@ Magma is a CLI tool for Arma 3 server mod managment that works both on Windows a
 - Support for a cron job (or task scheduler on Windows) that checks for mod updates and if found notifies Discord
 - Ability to update and remove mods
 - Supports mod activation and deactivation (doesn't remove them from disk)
-- Allows mod preset managment to quickly swap large amounts of mods
 
 # Usage
 <!-- usage -->
