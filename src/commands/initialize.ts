@@ -106,6 +106,7 @@ export default class InitializeCommand extends Command {
                     message: 'The magma.json file exists here. Do you want to overwrite it?',
                     name: 'overwrite',
                     type: 'confirm',
+                    default: false
                 });
 
                 if (response.overwrite === false) { this.exit(1); }
