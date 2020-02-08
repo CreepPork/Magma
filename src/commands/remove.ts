@@ -38,7 +38,9 @@ export default class RemoveCommand extends Command {
         }
 
         if (ids.length === 0) {
-            ids = await Insurer.ensureValidIds(mods, flags.nonInteractive, 'What mods would you like to remove?');
+            const insurer = new Insurer(flags.nonInteractive);
+
+            ids = await insurer.ensureValidIds(mods, 'What mods would you like to remove?');
         }
 
         for (const id of ids) {

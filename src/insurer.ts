@@ -22,10 +22,10 @@ export default class Insurer {
         this.prompt = new Prompt(nonInteractive, spinner);
     }
 
-    public static async ensureValidIds(mods: IMod[], noInteraction: boolean, message: string): Promise<number[]> {
+    public async ensureValidIds(mods: IMod[], message: string): Promise<number[]> {
         const ids = [];
 
-        if (noInteraction) {
+        if (this.nonInteractive) {
             throw new Error(
                 'Steam Workshop item IDs have to be specified as arguments when running in non interactive mode.',
             );

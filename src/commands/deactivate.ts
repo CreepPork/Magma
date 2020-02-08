@@ -40,9 +40,9 @@ export default class DeactivateCommand extends Command {
         }
 
         if (ids.length === 0) {
-            ids = await Insurer.ensureValidIds(
-                filteredMods, flags.nonInteractive, 'What mods would you like to deactivate?',
-            );
+            const insurer = new Insurer(flags.nonInteractive);
+
+            ids = await insurer.ensureValidIds(filteredMods, 'What mods would you like to deactivate?');
         }
 
         for (const id of ids) {
