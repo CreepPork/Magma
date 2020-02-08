@@ -26,6 +26,11 @@ export const steamCmd = flags.string({
     description: 'Absolute path to the SteamCMD executable (including the file itself).',
 });
 
+export const steamGuard = flags.string({
+    char: 'g',
+    description: 'Steam Guard code to use when authenticating.'
+});
+
 export const username = flags.string({
     char: 'u',
     description: 'Steam username.',

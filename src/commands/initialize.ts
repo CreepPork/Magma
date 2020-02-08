@@ -6,7 +6,7 @@ import Filesystem from '../filesystem';
 
 import Server from '../constants/server';
 import Encrypter from '../encrypter';
-import { linuxGsmInstanceConfig, nonInteractive, password, server, steamCmd, username, webhookUrl } from '../flags';
+import { linuxGsmInstanceConfig, nonInteractive, password, server, steamCmd, steamGuard, username, webhookUrl } from '../flags';
 import ISteamCredentials from '../interfaces/iSteamCredentials';
 import SteamCmd from '../steam/steamCmd';
 
@@ -26,10 +26,7 @@ export default class InitializeCommand extends Command {
         password,
         server,
         steamCmd,
-        steamGuard: flag.string({
-            char: 'g',
-            description: 'Steam Guard code to use when authenticating.'
-        }),
+        steamGuard,
         username,
         webhookUrl,
     };
