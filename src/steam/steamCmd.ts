@@ -8,15 +8,31 @@ import Encrypter from '../encrypter';
 export default class SteamCmd {
     public static process?: pty.IPty;
 
-    public static login(credentials = Config.get('credentials'), key = Config.get('key'), exit?: boolean, path?: string):
+    public static login(credentials = Config.get('credentials'), key = Config.get('key'), exit?: boolean, path?: string, onGuardPrompt?: () => Promise<string>, guardCode?: string):
         Promise<boolean> {
         return new Promise(resolve => {
             const password = new Encrypter(key).decrypt(credentials.password);
 
             let loginSuccessful = false;
 
-            this.runCommand(`+login ${credentials.username} ${password}`, data => {
-                if (data === 'Logged in OK\r\nWaiting for user info...') {
+            this.runCommand(`+login ${credentials.username} ${password}`, async data => {
+                console.log(data);
+
+                if (data.includes('Steam Guard code:')) {
+                    if (guardCode) {
+                        if (this.process) {
+                            this.process.write(`${guardCode}\r`);
+                        }
+                    } else if (onGuardPrompt) {
+                        const code = await onGuardPrompt();
+
+                        if (this.process) {
+                            this.process.write(`${code}\r`);
+                        }
+                    } else {
+                        resolve(false);
+                    }
+                } else if (data === 'Logged in OK\r\nWaiting for user info...') {
                     loginSuccessful = true;
                 } else if (loginSuccessful && data === 'OK\r\n') {
                     resolve(true);

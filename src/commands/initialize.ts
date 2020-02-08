@@ -38,6 +38,10 @@ export default class InitializeCommand extends Command {
             char: 'c',
             description: 'Absolute path to the SteamCMD executable (including the file itself).',
         }),
+        steamGuard: flag.string({
+            char: 'g',
+            description: 'Steam Guard code to use when authenticating.'
+        }),
         username: flag.string({
             char: 'u',
             description: 'Steam username.',
@@ -49,8 +53,8 @@ export default class InitializeCommand extends Command {
     };
 
     private nonInteractive: boolean = false;
-
     private steamCmdPath?: string;
+    private spinner?: ora.Ora;
 
     public async run(): Promise<void> {
         const { flags } = this.parse(InitializeCommand);
@@ -66,15 +70,15 @@ export default class InitializeCommand extends Command {
 
         const key = Encrypter.generateKey();
 
-        const spinner = ora({ discardStdin: true, text: 'Validating Steam credentials' }).start();
+        this.spinner = ora({ discardStdin: true, text: 'Validating Steam credentials' }).start();
 
-        while (await this.validateCredentials(credentials, key) === false) {
-            spinner.fail('Failed to login');
+        while (await this.validateCredentials(credentials, key, flags.steamGuard) === false) {
+            this.spinner.fail('Failed to login');
             credentials = await this.promptForCredentials();
-            spinner.start();
+            this.spinner.start();
         }
 
-        spinner.succeed('Logged in');
+        this.spinner.succeed('Logged in');
 
         const linuxGsm = await this.ensureValidLinuxGsm(flags.linuxGsmInstanceConfig);
 
@@ -224,15 +228,19 @@ export default class InitializeCommand extends Command {
         return credentials;
     }
 
-    private async validateCredentials(credentials: ISteamCredentials, key: string): Promise<boolean> {
+    private async validateCredentials(credentials: ISteamCredentials, key: string, guardCode?: string): Promise<boolean> {
         const password = new Encrypter(key).encrypt(credentials.password);
+
+        // As the function will be executed in the SteamCmd scope, InitializeCommand this variables will not persist
+        const promptForSteamGuard = this.promptForSteamGuard.bind(this);
+
         const successfulLogin = await SteamCmd.login(
-            { username: credentials.username, password }, key, undefined, this.steamCmdPath
+            { username: credentials.username, password }, key, undefined, this.steamCmdPath, promptForSteamGuard, guardCode
         );
 
         if (!successfulLogin) {
             if (this.nonInteractive) {
-                throw new Error('Failed to login. Did you provide the username and the password correcly?');
+                throw new Error('Failed to login. Did you provide the username and the password (guard code) correcly?');
             }
         }
 
@@ -253,6 +261,25 @@ export default class InitializeCommand extends Command {
         }]);
 
         return response;
+    }
+
+    private async promptForSteamGuard(): Promise<string> {
+        if (this.nonInteractive) {
+            throw new Error('Steam Guard code has not been provided. Did you enter the code in the flag?');
+        }
+
+        this.spinner?.stop();
+
+        const response: { guardCode: string } = await prompt({
+            message: 'Steam Guard code',
+            name: 'guardCode',
+            type: 'input',
+            validate: (input: string) => input !== '',
+        });
+
+        this.spinner?.start();
+
+        return response.guardCode;
     }
 
     private async ensureValidLinuxGsm(path?: string): Promise<string | undefined | never> {
