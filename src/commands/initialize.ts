@@ -6,7 +6,7 @@ import Filesystem from '../filesystem';
 
 import Server from '../constants/server';
 import Encrypter from '../encrypter';
-import { nonInteractive } from '../flags';
+import { linuxGsmInstanceConfig, nonInteractive, password, server, steamCmd, username, webhookUrl } from '../flags';
 import ISteamCredentials from '../interfaces/iSteamCredentials';
 import SteamCmd from '../steam/steamCmd';
 
@@ -21,35 +21,17 @@ export default class InitializeCommand extends Command {
             default: false,
             description: 'Skip the check for the magma.json file. If it exists, it will be overwritten.',
         }),
-        linuxGsmInstanceConfig: flag.string({
-            char: 'l',
-            description: 'Absolute path to the LinuxGSM instance configuration file (where it handles mods/servermods) (only supported on Linux)',
-        }),
+        linuxGsmInstanceConfig,
         nonInteractive,
-        password: flag.string({
-            char: 'p',
-            description: 'Steam user password.',
-        }),
-        server: flag.string({
-            char: 's',
-            description: 'Absolute path to the directory where the server is (where the server executable is).',
-        }),
-        steamCmd: flag.string({
-            char: 'c',
-            description: 'Absolute path to the SteamCMD executable (including the file itself).',
-        }),
+        password,
+        server,
+        steamCmd,
         steamGuard: flag.string({
             char: 'g',
             description: 'Steam Guard code to use when authenticating.'
         }),
-        username: flag.string({
-            char: 'u',
-            description: 'Steam username.',
-        }),
-        webhookUrl: flag.string({
-            char: 'w',
-            description: 'Webhook URL to which the magma cron command will respond to.',
-        })
+        username,
+        webhookUrl,
     };
 
     private nonInteractive: boolean = false;
