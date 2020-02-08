@@ -61,16 +61,19 @@ export default class ConfigureCommand extends Command {
                 for (const key of Object.keys(flags)) {
                     if (key === 'steamCmd' || key === 'steamGuard' || key === 'nonInteractive') { continue; }
 
+                    let configKey: keyof IConfig;
                     let value;
 
                     switch (key) {
                         case 'linuxGsmInstanceConfig':
+                            configKey = 'linuxGsm';
                             value = await this.validateEntry(
                                 this.convertFlagToEntry('linuxGsm'), flags.linuxGsmInstanceConfig
                             );
                             break;
 
                         case 'password':
+                            configKey = 'credentials';
                             if (!flags.username) { throw new Error('The --password flag requires the --username flag.'); }
 
                             value = await this.validateEntry(
@@ -79,16 +82,19 @@ export default class ConfigureCommand extends Command {
                             break;
 
                         case 'server':
+                            configKey = 'serverPath';
                             value = await this.validateEntry(
                                 this.convertFlagToEntry('serverPath'), flags.server
                             );
                             break;
 
                         case 'username':
+                            configKey = 'credentials';
                             if (!flags.password) { throw new Error('The --username flag requires the --password flag.'); }
                             break;
 
                         case 'webhookUrl':
+                            configKey = 'webhookUrl';
                             value = await this.validateEntry(
                                 this.convertFlagToEntry('webhookUrl'), flags.webhookUrl
                             );
@@ -98,7 +104,7 @@ export default class ConfigureCommand extends Command {
                             throw new Error(`Encountered an undefined flag: ${key}`);
                     }
 
-                    Config.set((key === 'password' || key === 'username') ? 'credentials' as any : key, value);
+                    Config.set(configKey, value as any);
                 }
             }
         } else {
