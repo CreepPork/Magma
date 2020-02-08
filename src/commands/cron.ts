@@ -79,7 +79,7 @@ export default class CronCommand extends Command {
                 await discord.sendEmbed(embed);
             } else {
                 // Don't post the message again
-                updatesRequiredFor = _.remove(updatesRequiredFor, workshop);
+                updatesRequiredFor = updatesRequiredFor.filter(m => m.publishedfileid !== workshop.publishedfileid);
             }
         }
 
