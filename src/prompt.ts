@@ -100,9 +100,20 @@ export default class Prompt {
     }
 
     public async forConfigEntries(): Promise<IConfigEntry[]> {
+        const cmdPathName = ConfigEntries.find(e => e.config === 'steamCmdPath')?.displayName;
+
+        // Get only those constants where their condition is true or doesn't have one
+        // Return only the display names (for user output)
+
+        // Sort the array by setting the 'SteamCMD path' property to the top
+        // This is because we want that property to be ran first later in the execution chain
+        // Thus, preventing issues when later the user might have specified to change the steamcmd path and credentials.
+        // We could imagine a situation that the SteamCMD executable was moved and would result in the credential
+        // Verification to fail because the verification method could not open the executable.
         const choices = ConfigEntries
             .filter(entry => entry.condition === undefined || entry.condition() === true)
-            .map(entry => entry.displayName);
+            .map(entry => entry.displayName)
+            .sort((a, b) => a === cmdPathName ? -1 : b === cmdPathName ? 1 : 0);
 
         const response: { entries: string[] } = await prompt({
             choices,
