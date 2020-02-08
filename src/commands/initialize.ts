@@ -323,15 +323,7 @@ export default class InitializeCommand extends Command {
 
     private async ensureValidWebhookUrl(url?: string): Promise<string | undefined | never> {
         if (url) {
-            if (url.startsWith('https://')) {
-                return url;
-            } else {
-                if (this.nonInteractive) {
-                    throw new Error('The webhook URL is invalid. Is it a HTTPS URL?');
-                }
-
-                return await this.promptForWebhookUrl();
-            }
+            return url;
         } else {
             if (!this.nonInteractive) {
                 const response: { uses: boolean } = await prompt({
@@ -350,10 +342,10 @@ export default class InitializeCommand extends Command {
 
     private async promptForWebhookUrl(): Promise<string> {
         const response: { url: string } = await prompt({
-            message: 'A webhook URL for the cron command to use (must use a HTTPS connection)?',
+            message: 'A webhook URL for the cron command to use?',
             name: 'url',
             type: 'input',
-            validate: (input: string) => input.startsWith('https://'),
+            validate: (input: string) => input !== '',
         });
 
         return response.url;
