@@ -6,9 +6,10 @@ import Filesystem from '../filesystem';
 
 import Server from '../constants/server';
 import Encrypter from '../encrypter';
-import { linuxGsmInstanceConfig, nonInteractive, password, server, steamCmd, steamGuard, username, webhookUrl } from '../flags';
 import ISteamCredentials from '../interfaces/iSteamCredentials';
 import SteamCmd from '../steam/steamCmd';
+
+import * as setFlag from '../flags';
 
 import ora = require('ora');
 
@@ -21,14 +22,14 @@ export default class InitializeCommand extends Command {
             default: false,
             description: 'Skip the check for the magma.json file. If it exists, it will be overwritten.',
         }),
-        linuxGsmInstanceConfig,
-        nonInteractive,
-        password,
-        server,
-        steamCmd,
-        steamGuard,
-        username,
-        webhookUrl,
+        linuxGsmInstanceConfig: setFlag.linuxGsmInstanceConfig,
+        nonInteractive: setFlag.nonInteractive,
+        password: setFlag.password,
+        server: setFlag.server,
+        steamCmd: setFlag.steamCmd,
+        steamGuard: setFlag.steamGuard,
+        username: setFlag.username,
+        webhookUrl: setFlag.webhookUrl,
     };
 
     private nonInteractive: boolean = false;
