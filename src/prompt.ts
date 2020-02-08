@@ -4,6 +4,7 @@ import ora = require('ora');
 
 import Filesystem from './filesystem';
 import Validate from './validator';
+import ConfigEntries from './constants/configEntries';
 import ISteamCredentials from './interfaces/iSteamCredentials';
 
 export default class Prompt {
@@ -95,5 +96,21 @@ export default class Prompt {
         });
 
         return response.url;
+    }
+
+    public async forConfigEntries(): Promise<string[]> {
+        const choices = ConfigEntries
+            .filter(entry => entry.condition === undefined || entry.condition() === true)
+            .map(entry => entry.displayName);
+
+        const response: { entries: string[] } = await prompt({
+            choices,
+            message: 'What config entries would you like to edit?',
+            name: 'entries',
+            type: 'checkbox',
+            validate: list => list.length > 0,
+        });
+
+        return response.entries;
     }
 }
