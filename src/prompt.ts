@@ -6,6 +6,7 @@ import Filesystem from './filesystem';
 import Validate from './validator';
 import ConfigEntries from './constants/configEntries';
 import ISteamCredentials from './interfaces/iSteamCredentials';
+import IConfigEntry from './interfaces/iConfigEntry';
 
 export default class Prompt {
     private nonInteractive: boolean;
@@ -98,7 +99,7 @@ export default class Prompt {
         return response.url;
     }
 
-    public async forConfigEntries(): Promise<string[]> {
+    public async forConfigEntries(): Promise<IConfigEntry[]> {
         const choices = ConfigEntries
             .filter(entry => entry.condition === undefined || entry.condition() === true)
             .map(entry => entry.displayName);
@@ -111,6 +112,15 @@ export default class Prompt {
             validate: list => list.length > 0,
         });
 
-        return response.entries;
+        // Get config keys from selected choices
+        const entries = [];
+
+        for (const entry of response.entries) {
+            const configEntryIndex = ConfigEntries.findIndex(e => e.displayName === entry);
+
+            entries.push(ConfigEntries[configEntryIndex]);
+        }
+
+        return entries;
     }
 }
