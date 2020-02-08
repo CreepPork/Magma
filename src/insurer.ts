@@ -10,7 +10,7 @@ import IMod from './interfaces/iMod';
 import ISteamCredentials from './interfaces/iSteamCredentials';
 
 export default class Insurer {
-    public validator: Validate;
+    public validate: Validate;
     public prompt: Prompt;
 
     private nonInteractive: boolean;
@@ -18,7 +18,7 @@ export default class Insurer {
     constructor(nonInteractive: boolean, spinner?: ora.Ora) {
         this.nonInteractive = nonInteractive;
 
-        this.validator = new Validate(nonInteractive, spinner);
+        this.validate = new Validate(nonInteractive, spinner);
         this.prompt = new Prompt(nonInteractive, spinner);
     }
 
@@ -71,7 +71,7 @@ export default class Insurer {
 
     public async ensureValidSteamCmd(steamCmd?: string): Promise<never | string> {
         if (steamCmd) {
-            const valid = this.validator.steamCmd(steamCmd);
+            const valid = this.validate.steamCmd(steamCmd);
 
             if (!valid) {
                 if (this.nonInteractive) {
@@ -93,7 +93,7 @@ export default class Insurer {
 
     public async ensureValidServer(server?: string): Promise<never | string> {
         if (server) {
-            const valid = this.validator.server(server);
+            const valid = this.validate.server(server);
 
             if (!valid) {
                 if (this.nonInteractive) {
@@ -116,8 +116,7 @@ export default class Insurer {
         return server;
     }
 
-    public async ensureValidLogin(username?: string, password?: string):
-        Promise<never | ISteamCredentials> {
+    public async ensureValidLogin(username?: string, password?: string): Promise<never | ISteamCredentials> {
         let credentials;
 
         if (username && password) {
