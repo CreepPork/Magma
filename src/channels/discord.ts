@@ -68,7 +68,11 @@ export default class Discord implements INotificationChannel {
         }
     }
 
-    public async send(embed: IDiscordWebhookPayload): Promise<AxiosResponse> {
+    public async sendText(content: string): Promise<AxiosResponse> {
+        return await axios.post(this.webhookUrl, { content });
+    }
+
+    public async sendEmbed(embed: IDiscordWebhookPayload): Promise<AxiosResponse> {
         return await axios.post(this.webhookUrl, embed);
     }
 }

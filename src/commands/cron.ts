@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-import Command from '@oclif/command';
+import Command, { flags as flag } from '@oclif/command';
 
 import Config from '../config';
 import Discord from '../channels/discord';
@@ -11,12 +11,21 @@ export default class CronCommand extends Command {
     public static examples = [
         'magma cron',
     ];
+    public static flags = {
+        test: flag.boolean({
+            char: 't',
+            default: false,
+            description: 'Enabling will send a simple test message to your specified webhook.'
+        }),
+    };
 
     public async init(): Promise<void> {
         Config.ensureIsInitialized();
     }
 
     public async run(): Promise<void> {
+        const { flags } = this.parse(CronCommand);
+
         const config = Config.getAll();
         const { webhookUrl, mods, serverPath } = config;
         let { cronMessages } = config;
@@ -27,6 +36,14 @@ export default class CronCommand extends Command {
 
         if (mods.length === 0) {
             console.log('No mods are present in the configuration file.');
+
+            return;
+        }
+
+        const discord = new Discord(webhookUrl);
+
+        if (flags.test) {
+            discord.sendText('This is a test message from Magma because the `--test` flag was specified.');
 
             return;
         }
@@ -47,8 +64,6 @@ export default class CronCommand extends Command {
             workshop => cronMessages.includes(parseInt(workshop.publishedfileid, 10))
         );
 
-        const discord = new Discord(webhookUrl);
-
         // Check if posted mods have been updated
         for (const workshop of modsWhichHaveBeenPosted) {
             const mod = mods.find(m => m.id === parseInt(workshop.publishedfileid, 10));
@@ -63,7 +78,7 @@ export default class CronCommand extends Command {
                 // Post a confirmation message that the mod has been updated
                 const embed = discord.generateConfirmationMessage(mod, serverPath);
 
-                await discord.send(embed);
+                await discord.sendEmbed(embed);
             } else {
                 // Don't post the message again
                 updatesRequiredFor = _.remove(updatesRequiredFor, workshop);
@@ -78,7 +93,7 @@ export default class CronCommand extends Command {
 
                 const embed = discord.generateEmbed(mod, workshop, serverPath);
 
-                await discord.send(embed);
+                await discord.sendEmbed(embed);
             }
         }
 

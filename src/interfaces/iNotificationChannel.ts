@@ -5,5 +5,6 @@ import ISteamPublishedFile from './iSteamPublishedFile';
 
 export default interface INotificationChannel {
     generateEmbed(mod: IMod, workshop: ISteamPublishedFile, serverPath: string): object;
-    send(embed: object): Promise<AxiosResponse>;
+    sendText(content: string): Promise<AxiosResponse>;
+    sendEmbed(embed: object): Promise<AxiosResponse>;
 }
