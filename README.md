@@ -34,7 +34,7 @@ $ npm install -g @creeppork/magma
 $ magma COMMAND
 running command...
 $ magma (-v|--version|version)
-@creeppork/magma/2.0.0-beta.0 linux-x64 node-v10.16.0
+@creeppork/magma/2.0.0-beta.1 linux-x64 node-v10.16.0
 $ magma --help [COMMAND]
 USAGE
   $ magma COMMAND
@@ -43,20 +43,17 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-- [Magma](#magma)
-- [Features](#features)
-- [Usage](#usage)
-- [Commands](#commands)
-  - [`magma activate [ID]`](#magma-activate-id)
-  - [`magma add ID`](#magma-add-id)
-  - [`magma cron`](#magma-cron)
-  - [`magma deactivate [ID]`](#magma-deactivate-id)
-  - [`magma help [COMMAND]`](#magma-help-command)
-  - [`magma initialize`](#magma-initialize)
-  - [`magma install`](#magma-install)
-  - [`magma list`](#magma-list)
-  - [`magma remove [ID]`](#magma-remove-id)
-  - [`magma update`](#magma-update)
+* [`magma activate [ID]`](#magma-activate-id)
+* [`magma add ID`](#magma-add-id)
+* [`magma configure`](#magma-configure)
+* [`magma cron`](#magma-cron)
+* [`magma deactivate [ID]`](#magma-deactivate-id)
+* [`magma help [COMMAND]`](#magma-help-command)
+* [`magma initialize`](#magma-initialize)
+* [`magma install`](#magma-install)
+* [`magma list`](#magma-list)
+* [`magma remove [ID]`](#magma-remove-id)
+* [`magma update`](#magma-update)
 
 ## `magma activate [ID]`
 
@@ -78,7 +75,7 @@ EXAMPLES
   magma activate 450814997 723217262 713709341
 ```
 
-_See code: [src/commands/activate.ts](https://github.com/CreepPork/Magma/blob/v2.0.0-beta.0/src/commands/activate.ts)_
+_See code: [src/commands/activate.ts](https://github.com/CreepPork/Magma/blob/v2.0.0-beta.1/src/commands/activate.ts)_
 
 ## `magma add ID`
 
@@ -100,7 +97,46 @@ EXAMPLES
   magma add 450814997 723217262 713709341 --type all client server
 ```
 
-_See code: [src/commands/add.ts](https://github.com/CreepPork/Magma/blob/v2.0.0-beta.0/src/commands/add.ts)_
+_See code: [src/commands/add.ts](https://github.com/CreepPork/Magma/blob/v2.0.0-beta.1/src/commands/add.ts)_
+
+## `magma configure`
+
+Allows to modify the existing configuration file. In interactive mode all flags will be ignored (except Steam Guard).
+
+```
+USAGE
+  $ magma configure
+
+OPTIONS
+  -c, --steamCmd=steamCmd                              Absolute path to the SteamCMD executable (including the file
+                                                       itself).
+
+  -g, --steamGuard=steamGuard                          Steam Guard code to use when authenticating.
+
+  -l, --linuxGsmInstanceConfig=linuxGsmInstanceConfig  Absolute path to the LinuxGSM instance configuration file (where
+                                                       it handles mods/servermods) (only supported on Linux)
+
+  -n, --nonInteractive                                 Do not prompt for any input.
+
+  -p, --password=password                              Steam user password.
+
+  -s, --server=server                                  Absolute path to the directory where the server is (where the
+                                                       server executable is).
+
+  -u, --username=username                              Steam username.
+
+  -w, --webhookUrl=webhookUrl                          Webhook URL to which the magma cron command will respond to.
+
+ALIASES
+  $ magma config
+
+EXAMPLES
+  magma configure
+  magma configure --steamCmd "/var/steamcmd"
+  magma configure -n -u UserName
+```
+
+_See code: [src/commands/configure.ts](https://github.com/CreepPork/Magma/blob/v2.0.0-beta.1/src/commands/configure.ts)_
 
 ## `magma cron`
 
@@ -110,11 +146,14 @@ A command designed to be run in a time-based job scheduler to notify on social p
 USAGE
   $ magma cron
 
+OPTIONS
+  -t, --test  Enabling will send a simple test message to your specified webhook.
+
 EXAMPLE
   magma cron
 ```
 
-_See code: [src/commands/cron.ts](https://github.com/CreepPork/Magma/blob/v2.0.0-beta.0/src/commands/cron.ts)_
+_See code: [src/commands/cron.ts](https://github.com/CreepPork/Magma/blob/v2.0.0-beta.1/src/commands/cron.ts)_
 
 ## `magma deactivate [ID]`
 
@@ -136,7 +175,7 @@ EXAMPLES
   magma deactivate 450814997 723217262 713709341
 ```
 
-_See code: [src/commands/deactivate.ts](https://github.com/CreepPork/Magma/blob/v2.0.0-beta.0/src/commands/deactivate.ts)_
+_See code: [src/commands/deactivate.ts](https://github.com/CreepPork/Magma/blob/v2.0.0-beta.1/src/commands/deactivate.ts)_
 
 ## `magma help [COMMAND]`
 
@@ -190,7 +229,7 @@ ALIASES
   $ magma init
 ```
 
-_See code: [src/commands/initialize.ts](https://github.com/CreepPork/Magma/blob/v2.0.0-beta.0/src/commands/initialize.ts)_
+_See code: [src/commands/initialize.ts](https://github.com/CreepPork/Magma/blob/v2.0.0-beta.1/src/commands/initialize.ts)_
 
 ## `magma install`
 
@@ -201,7 +240,7 @@ USAGE
   $ magma install
 ```
 
-_See code: [src/commands/install.ts](https://github.com/CreepPork/Magma/blob/v2.0.0-beta.0/src/commands/install.ts)_
+_See code: [src/commands/install.ts](https://github.com/CreepPork/Magma/blob/v2.0.0-beta.1/src/commands/install.ts)_
 
 ## `magma list`
 
@@ -212,7 +251,7 @@ USAGE
   $ magma list
 ```
 
-_See code: [src/commands/list.ts](https://github.com/CreepPork/Magma/blob/v2.0.0-beta.0/src/commands/list.ts)_
+_See code: [src/commands/list.ts](https://github.com/CreepPork/Magma/blob/v2.0.0-beta.1/src/commands/list.ts)_
 
 ## `magma remove [ID]`
 
@@ -234,7 +273,7 @@ EXAMPLES
   magma remove 450814997 723217262 713709341
 ```
 
-_See code: [src/commands/remove.ts](https://github.com/CreepPork/Magma/blob/v2.0.0-beta.0/src/commands/remove.ts)_
+_See code: [src/commands/remove.ts](https://github.com/CreepPork/Magma/blob/v2.0.0-beta.1/src/commands/remove.ts)_
 
 ## `magma update`
 
@@ -245,5 +284,5 @@ USAGE
   $ magma update
 ```
 
-_See code: [src/commands/update.ts](https://github.com/CreepPork/Magma/blob/v2.0.0-beta.0/src/commands/update.ts)_
+_See code: [src/commands/update.ts](https://github.com/CreepPork/Magma/blob/v2.0.0-beta.1/src/commands/update.ts)_
 <!-- commandsstop -->
