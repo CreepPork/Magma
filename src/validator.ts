@@ -5,9 +5,9 @@ import Encrypter from './encrypter';
 import Server from './constants/server';
 import ISteamCredentials from './interfaces/iSteamCredentials';
 import SteamCmd from './steam/steamCmd';
-import Prompts from './prompts';
+import Prompt from './prompt';
 
-export default class Validators {
+export default class Validator {
     private nonInteractive: boolean;
     private spinner?: ora.Ora;
 
@@ -16,7 +16,7 @@ export default class Validators {
         this.spinner = spinner;
     }
 
-    public validateSteamCmd(path: string): boolean {
+    public steamCmd(path: string): boolean {
         if (Filesystem.isFile(path) && Filesystem.getFilenameNoExt(path) === 'steamcmd') {
             return true;
         }
@@ -24,7 +24,7 @@ export default class Validators {
         return false;
     }
 
-    public validateServer(path: string): boolean {
+    public server(path: string): boolean {
         if (Filesystem.isDirectory(path) && Filesystem.directoryContains(path, Server.executable)) {
             return true;
         }
@@ -32,13 +32,13 @@ export default class Validators {
         return false;
     }
 
-    public async validateCredentials(credentials: ISteamCredentials, key: string, steamCmdPath: string, guardCode?: string): Promise<boolean> {
+    public async credentials(credentials: ISteamCredentials, key: string, steamCmdPath: string, guardCode?: string): Promise<boolean> {
         const password = new Encrypter(key).encrypt(credentials.password);
 
-        const prompt = new Prompts(this.nonInteractive, this.spinner);
+        const prompt = new Prompt(this.nonInteractive, this.spinner);
 
         // As the function will be executed in the SteamCmd scope, InitializeCommand this variables will not persist
-        const promptForSteamGuard = prompt.promptForSteamGuard.bind(this);
+        const promptForSteamGuard = prompt.forSteamGuard.bind(this);
 
         const successfulLogin = await SteamCmd.login(
             { username: credentials.username, password }, key, undefined, steamCmdPath, promptForSteamGuard, guardCode

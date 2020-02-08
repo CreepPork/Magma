@@ -5,7 +5,7 @@ import { IArg } from '@oclif/parser/lib/args';
 
 import Config from '../config';
 import { nonInteractive } from '../flags';
-import Insurers from '../insurers';
+import Insurer from '../insurer';
 import Processor from '../processor';
 
 export default class RemoveCommand extends Command {
@@ -38,7 +38,7 @@ export default class RemoveCommand extends Command {
         }
 
         if (ids.length === 0) {
-            ids = await Insurers.ensureValidIds(mods, flags.nonInteractive, 'What mods would you like to remove?');
+            ids = await Insurer.ensureValidIds(mods, flags.nonInteractive, 'What mods would you like to remove?');
         }
 
         for (const id of ids) {

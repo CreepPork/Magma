@@ -5,7 +5,7 @@ import { IArg } from '@oclif/parser/lib/args';
 
 import Config from '../config';
 import { nonInteractive } from '../flags';
-import Insurers from '../insurers';
+import Insurer from '../insurer';
 import Processor from '../processor';
 
 export default class DeactivateCommand extends Command {
@@ -40,7 +40,7 @@ export default class DeactivateCommand extends Command {
         }
 
         if (ids.length === 0) {
-            ids = await Insurers.ensureValidIds(
+            ids = await Insurer.ensureValidIds(
                 filteredMods, flags.nonInteractive, 'What mods would you like to deactivate?',
             );
         }

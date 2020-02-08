@@ -4,22 +4,22 @@ import ora = require('ora');
 
 import Config from './config';
 import Filesystem from './filesystem';
-import Prompts from './prompts';
-import Validators from './validators';
+import Prompt from './prompt';
+import Validate from './validator';
 import IMod from './interfaces/iMod';
 import ISteamCredentials from './interfaces/iSteamCredentials';
 
-export default class Insurers {
-    public validator: Validators;
-    public prompt: Prompts;
+export default class Insurer {
+    public validator: Validate;
+    public prompt: Prompt;
 
     private nonInteractive: boolean;
 
     constructor(nonInteractive: boolean, spinner?: ora.Ora) {
         this.nonInteractive = nonInteractive;
 
-        this.validator = new Validators(nonInteractive, spinner);
-        this.prompt = new Prompts(nonInteractive, spinner);
+        this.validator = new Validate(nonInteractive, spinner);
+        this.prompt = new Prompt(nonInteractive, spinner);
     }
 
     public static async ensureValidIds(mods: IMod[], noInteraction: boolean, message: string): Promise<number[]> {
@@ -71,21 +71,21 @@ export default class Insurers {
 
     public async ensureValidSteamCmd(steamCmd?: string): Promise<never | string> {
         if (steamCmd) {
-            const valid = this.validator.validateSteamCmd(steamCmd);
+            const valid = this.validator.steamCmd(steamCmd);
 
             if (!valid) {
                 if (this.nonInteractive) {
                     throw new Error('The given SteamCMD path is invalid. Did you include the executable as well?');
                 }
 
-                steamCmd = await this.prompt.promptForSteamCmd();
+                steamCmd = await this.prompt.forSteamCmd();
             }
         } else {
             if (this.nonInteractive) {
                 throw new Error('The SteamCMD path was not given.');
             }
 
-            steamCmd = await this.prompt.promptForSteamCmd();
+            steamCmd = await this.prompt.forSteamCmd();
         }
 
         return steamCmd;
@@ -93,7 +93,7 @@ export default class Insurers {
 
     public async ensureValidServer(server?: string): Promise<never | string> {
         if (server) {
-            const valid = this.validator.validateServer(server);
+            const valid = this.validator.server(server);
 
             if (!valid) {
                 if (this.nonInteractive) {
@@ -103,14 +103,14 @@ export default class Insurers {
                     );
                 }
 
-                server = await this.prompt.promptForServer();
+                server = await this.prompt.forServer();
             }
         } else {
             if (this.nonInteractive) {
                 throw new Error('The Arma 3 server directory was not given.');
             }
 
-            server = await this.prompt.promptForServer();
+            server = await this.prompt.forServer();
         }
 
         return server;
@@ -126,7 +126,7 @@ export default class Insurers {
                     throw new Error('The given credentials were invalid. Did you enter empty credentials?');
                 }
 
-                credentials = await this.prompt.promptForCredentials();
+                credentials = await this.prompt.forCredentials();
             } else {
                 credentials = { username, password };
             }
@@ -135,7 +135,7 @@ export default class Insurers {
                 throw new Error('The Steam users credentials were not given.');
             }
 
-            credentials = await this.prompt.promptForCredentials();
+            credentials = await this.prompt.forCredentials();
         }
 
         return credentials;
@@ -152,7 +152,7 @@ export default class Insurers {
                     throw new Error('The LinuxGSM configuration file path is invalid. Did you include the file?');
                 }
 
-                return await this.prompt.promptForLinuxGsm();
+                return await this.prompt.forLinuxGsm();
             }
         } else {
             if (!this.nonInteractive) {
@@ -163,7 +163,7 @@ export default class Insurers {
                 });
 
                 if (response.uses) {
-                    return await this.prompt.promptForLinuxGsm();
+                    return await this.prompt.forLinuxGsm();
                 }
             }
         }
@@ -182,7 +182,7 @@ export default class Insurers {
                 });
 
                 if (response.uses) {
-                    return await this.prompt.promptForWebhookUrl();
+                    return await this.prompt.forWebhookUrl();
                 }
             }
         }

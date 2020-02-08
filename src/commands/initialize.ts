@@ -2,7 +2,7 @@ import Command, { flags as flag } from '@oclif/command';
 
 import Config from '../config';
 import Encrypter from '../encrypter';
-import Insurers from '../insurers';
+import Insurer from '../insurer';
 
 import * as setFlag from '../flags';
 
@@ -33,7 +33,7 @@ export default class InitializeCommand extends Command {
 
         const spinner = ora({ discardStdin: true, text: 'Validating Steam credentials' });
 
-        const insurer = new Insurers(nonInteractive, spinner);
+        const insurer = new Insurer(nonInteractive, spinner);
 
         await insurer.ensureNoConfig(flags.force);
 
@@ -47,10 +47,10 @@ export default class InitializeCommand extends Command {
 
         spinner.start();
 
-        while (await insurer.validator.validateCredentials(credentials, key, steamCmdPath, flags.steamGuard) === false) {
+        while (await insurer.validator.credentials(credentials, key, steamCmdPath, flags.steamGuard) === false) {
             spinner.fail('Failed to login');
 
-            credentials = await insurer.prompt.promptForCredentials();
+            credentials = await insurer.prompt.forCredentials();
 
             spinner.start();
         }
