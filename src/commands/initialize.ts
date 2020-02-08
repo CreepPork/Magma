@@ -310,6 +310,7 @@ export default class InitializeCommand extends Command {
                     message: 'Do you want to use a webhook for the cron command?',
                     name: 'uses',
                     type: 'confirm',
+                    default: false,
                 });
 
                 if (response.uses) {
