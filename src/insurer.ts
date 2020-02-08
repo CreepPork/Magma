@@ -10,7 +10,7 @@ import IMod from './interfaces/iMod';
 import ISteamCredentials from './interfaces/iSteamCredentials';
 
 export default class Insurer {
-    public validate: Validate;
+    public validator: Validate;
     public prompt: Prompt;
 
     private nonInteractive: boolean;
@@ -18,7 +18,7 @@ export default class Insurer {
     constructor(nonInteractive: boolean, spinner?: ora.Ora) {
         this.nonInteractive = nonInteractive;
 
-        this.validate = new Validate(nonInteractive, spinner);
+        this.validator = new Validate(nonInteractive, spinner);
         this.prompt = new Prompt(nonInteractive, spinner);
     }
 
@@ -71,7 +71,7 @@ export default class Insurer {
 
     public async ensureValidSteamCmd(steamCmd?: string): Promise<never | string> {
         if (steamCmd) {
-            const valid = this.validate.steamCmd(steamCmd);
+            const valid = this.validator.steamCmd(steamCmd);
 
             if (!valid) {
                 if (this.nonInteractive) {
@@ -93,12 +93,12 @@ export default class Insurer {
 
     public async ensureValidServer(server?: string): Promise<never | string> {
         if (server) {
-            const valid = this.validate.server(server);
+            const valid = this.validator.server(server);
 
             if (!valid) {
                 if (this.nonInteractive) {
                     throw new Error(
-                        'The given Arma 3 server directory is invalid.' +
+                        'The given Arma 3 server directory is invalid. ' +
                         'Did you enter the directory where the arma3server executable resides?',
                     );
                 }
