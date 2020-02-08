@@ -47,7 +47,7 @@ export default class InitializeCommand extends Command {
 
         spinner.start();
 
-        while (await insurer.validator.credentials(credentials, key, steamCmdPath, flags.steamGuard) === false) {
+        while (await insurer.validate.credentials(credentials, key, steamCmdPath, flags.steamGuard) === false) {
             spinner.fail('Failed to login');
 
             credentials = await insurer.prompt.forCredentials();
