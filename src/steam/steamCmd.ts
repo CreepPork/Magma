@@ -16,8 +16,6 @@ export default class SteamCmd {
             let loginSuccessful = false;
 
             this.runCommand(`+login ${credentials.username} ${password}`, async data => {
-                console.log(data);
-
                 if (data.includes('Steam Guard code:')) {
                     if (guardCode) {
                         if (this.process) {
