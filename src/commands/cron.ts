@@ -70,8 +70,6 @@ export default class CronCommand extends Command {
 
             if (!mod) { continue; }
 
-            console.log(mod.updatedAt, workshop.time_updated);
-
             if (mod.updatedAt === workshop.time_updated) {
                 cronMessages = _.remove(cronMessages, mod.id);
 
