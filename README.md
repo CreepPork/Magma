@@ -25,6 +25,7 @@ Magma is a CLI tool for Arma 3 server mod managment that works both on Windows a
 - Support for a cron job (or task scheduler on Windows) that checks for mod updates and if found notifies Discord
 - Ability to update and remove mods
 - Supports mod activation and deactivation (doesn't remove them from disk)
+- Supports Steam Guard
 
 # Usage
 <!-- usage -->
@@ -42,16 +43,20 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`magma activate [ID]`](#magma-activate-id)
-* [`magma add ID`](#magma-add-id)
-* [`magma cron`](#magma-cron)
-* [`magma deactivate [ID]`](#magma-deactivate-id)
-* [`magma help [COMMAND]`](#magma-help-command)
-* [`magma initialize`](#magma-initialize)
-* [`magma install`](#magma-install)
-* [`magma list`](#magma-list)
-* [`magma remove [ID]`](#magma-remove-id)
-* [`magma update`](#magma-update)
+- [Magma](#magma)
+- [Features](#features)
+- [Usage](#usage)
+- [Commands](#commands)
+  - [`magma activate [ID]`](#magma-activate-id)
+  - [`magma add ID`](#magma-add-id)
+  - [`magma cron`](#magma-cron)
+  - [`magma deactivate [ID]`](#magma-deactivate-id)
+  - [`magma help [COMMAND]`](#magma-help-command)
+  - [`magma initialize`](#magma-initialize)
+  - [`magma install`](#magma-install)
+  - [`magma list`](#magma-list)
+  - [`magma remove [ID]`](#magma-remove-id)
+  - [`magma update`](#magma-update)
 
 ## `magma activate [ID]`
 
@@ -164,6 +169,8 @@ OPTIONS
 
   -f, --force                                          Skip the check for the magma.json file. If it exists, it will be
                                                        overwritten.
+
+  -g, --steamGuard=steamGuard                          Steam Guard code to use when authenticating.
 
   -l, --linuxGsmInstanceConfig=linuxGsmInstanceConfig  Absolute path to the LinuxGSM instance configuration file (where
                                                        it handles mods/servermods) (only supported on Linux)
