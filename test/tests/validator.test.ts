@@ -18,8 +18,8 @@ describe('Validator.server', () => {
     });
 });
 
-describe('Validator.credentials', async () => {
-    test('Passing invalid credentials in non-interactive mode will throw', () => {
+describe('Validator.credentials', () => {
+    test('Passing invalid credentials in non-interactive mode will throw', async () => {
         const validate = new Validator(true);
         const enMock = jest.spyOn(Encrypter.prototype, 'encrypt').mockReturnValue('random');
         const mock = jest.spyOn(SteamCmd, 'login').mockResolvedValue(false);
