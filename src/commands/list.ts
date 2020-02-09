@@ -36,7 +36,7 @@ export default class ListCommand extends Command {
             table.push([
                 mod.id, mod.name, this.getModType(mod.type),
                 apiMods[index].time_updated === mod.updatedAt ? 'Yes' : chalk.redBright.bold('No'),
-                mod.updatedAt ? Time.epochToDate(mod.updatedAt).toUTCString() : 'Not Installed',
+                mod.updatedAt ? Time.epochToDate(mod.updatedAt).toUTCString() : 'Never',
                 mod.keys ? mod.keys.length : 0,
             ]);
         }
