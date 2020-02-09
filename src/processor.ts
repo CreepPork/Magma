@@ -135,15 +135,29 @@ export default class Processor {
         // Read config file and transform it into a line array
         const configText = fs.readFileSync(serverConfigPath).toString().replace(/[\r]/g, '').trim().split('\n');
 
+        let requiredModStringAdded = false;
+        let serverModStringAdded = false;
+
         for (const [index, line] of configText.entries()) {
             // If the line is commented out, we ignore it (or is an empty line)
             if (line.charAt(0) === '#' || line === '') { continue; }
 
             if (line.startsWith('mods=')) {
                 configText[index] = requiredModString;
+                requiredModStringAdded = true;
             } else if (line.startsWith('servermods=')) {
                 configText[index] = serverModString;
+                serverModStringAdded = true;
             }
+        }
+
+        // If mods= or servermods= is not present then we add them
+        if (!requiredModStringAdded) {
+            configText.push(requiredModString);
+        }
+
+        if (!serverModStringAdded) {
+            configText.push(serverModString);
         }
 
         fs.writeFileSync(serverConfigPath, configText.join('\n'));
