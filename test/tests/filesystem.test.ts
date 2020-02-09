@@ -118,3 +118,17 @@ describe('Filesystem.renameContentsToLowercase()', () => {
         }
     });
 });
+
+describe('Filesystem.fileSizeForHumans()', () => {
+    test('If 0 is passed then it returns 0 Bytes', () => {
+        expect(Filesystem.fileSizeForHumans(0)).toBe('0 Bytes');
+    });
+
+    test('If 1 is passed then it returns 1 Byte', () => {
+        expect(Filesystem.fileSizeForHumans(1)).toBe('1 Bytes');
+    });
+
+    test('If uneven GBs are passed then it returns with multiple decimals', () => {
+        expect(Filesystem.fileSizeForHumans(500 * 1024 * 1024 * 2.3, 3)).toBe('1.123 GB');
+    });
+});
