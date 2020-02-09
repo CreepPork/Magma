@@ -8,6 +8,7 @@ import Time from '../time';
 import SteamApi from '../steam/steamApi';
 
 import * as chalk from 'chalk';
+import * as _ from 'lodash';
 
 export default class ListCommand extends Command {
     public static description = 'Lists all mods that have been added or installed by Magma.';
@@ -18,7 +19,7 @@ export default class ListCommand extends Command {
 
     public async run(): Promise<void> {
         const table = new Table({
-            head: ['ID', 'Name', 'Type', 'Up-To-Date', 'Updated At', 'Key Count'],
+            head: ['ID', 'Name', 'Type', 'Status', 'Up-To-Date', 'Updated At', 'Key Count'],
         });
 
         let mods = Config.get('mods');
@@ -34,7 +35,7 @@ export default class ListCommand extends Command {
 
         for (const [index, mod] of mods.entries()) {
             table.push([
-                mod.id, mod.name, this.getModType(mod.type),
+                mod.id, mod.name, this.getModType(mod.type), mod.isActive ? 'Activated' : chalk.yellow('Deactivated'),
                 apiMods[index].time_updated === mod.updatedAt ? 'Yes' : chalk.redBright.bold('No'),
                 mod.updatedAt ? Time.epochToDate(mod.updatedAt).toUTCString() : 'Never',
                 mod.keys ? mod.keys.length : 0,
