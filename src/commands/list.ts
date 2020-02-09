@@ -21,7 +21,8 @@ export default class ListCommand extends Command {
             head: ['ID', 'Name', 'Type', 'Up-To-Date', 'Updated At', 'Key Count'],
         });
 
-        const mods = Config.get('mods');
+        let mods = Config.get('mods');
+        mods = _.sortBy(mods, mod => mod.name);
 
         if (mods.length === 0) {
             console.log('No mods were found.');
