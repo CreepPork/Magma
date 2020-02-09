@@ -4,10 +4,10 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Debug cmd",
+            "name": "Debug test command",
             "program": "${workspaceFolder}/bin/run",
             "args": [
-                "cmd"
+                "test"
             ]
         }
     ]

@@ -1,10 +1,4 @@
-// tslint:disable: interface-name
-
-export interface Tag {
-    tag: string;
-}
-
-export interface Publishedfiledetail {
+export default interface ISteamPublishedFile {
     publishedfileid: string;
     result: number;
     creator: string;
@@ -28,15 +22,5 @@ export interface Publishedfiledetail {
     lifetime_subscriptions: number;
     lifetime_favorited: number;
     views: number;
-    tags: Tag[];
-}
-
-export interface Response {
-    result: number;
-    resultcount: number;
-    publishedfiledetails: Publishedfiledetail[];
-}
-
-export interface ISteamPublishedFile {
-    response: Response;
+    tags: { tag: string }[];
 }

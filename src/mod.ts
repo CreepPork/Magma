@@ -1,190 +1,42 @@
-import Settings from './settings';
-import SteamApi from './steam/api';
-
-import * as inquirer from 'inquirer';
-import * as _ from 'lodash';
-
-import { Ora } from 'ora';
+import { EModType } from './enums/eModType';
+import IMod from './interfaces/iMod';
+import SteamApi from './steam/steamApi';
 
 export default class Mod {
-    public static async generateModFromId(
-        appId: number, itemId: number, skipUpdatedAt = false, spinner?: Ora,
-    ): Promise<IMod> {
-        const mods = Settings.get('mods');
+    public static async getModFromApi(id: number, type: EModType): Promise<IMod> {
+        return (await this.getModsFromApi({ id, type }))[0];
+    }
 
-        // Find if item already exists in mod list in magma.json
-        const existingMod = _.find(mods, { itemId });
+    public static async getModsFromApi(...mods: { id: number, type: EModType }[]): Promise<IMod[]> {
+        if (mods.length === 0) { return []; }
 
-        if (existingMod) {
-            return existingMod;
-        }
+        const processed: IMod[] = [];
 
-        // If not gen a new mod and append to magma.json
-        const data = await SteamApi.getPublishedItemDetails(itemId);
-        const name = data.response.publishedfiledetails[0].title;
+        const items = await SteamApi.getPublishedItems(...mods.map(mod => mod.id));
 
-        let isServerMod = false;
-        let isClientSideMod = false;
+        for (const [index, mod] of mods.entries()) {
+            const name = items[index].title;
 
-        if (spinner) {
-            if (spinner.isSpinning) {
-                spinner.stop();
-            }
-        }
-
-        const isRequired: { forAll: boolean } = await inquirer.prompt({
-            default: true,
-            message: `Is ${name} required for all clients?`,
-            name: 'forAll',
-            type: 'confirm',
-        });
-
-        if (! isRequired.forAll) {
-            const isMod: { type: string[] } = await inquirer.prompt({
-                choices: ['Server-side mod', 'Client-side mod'],
-                message: `Is ${name} a`,
-                name: 'type',
-                type: 'list',
+            processed.push({
+                id: mod.id,
+                isActive: true,
+                name,
+                type: mod.type,
             });
-
-            if (isMod.type.includes('Server-side mod')) {
-                isServerMod = true;
-            }
-
-            if (isMod.type.includes('Client-side mod')) {
-                isClientSideMod = true;
-            }
         }
 
-        if (spinner) {
-            if (! spinner.isSpinning) {
-                spinner.start();
-            }
+        return processed;
+    }
+
+    public static async getModUpdatedAtFromApi(mods: IMod[]): Promise<IMod[]> {
+        if (mods.length === 0) { return []; }
+
+        const items = await SteamApi.getPublishedItems(...mods.map(mod => mod.id));
+
+        for (const [index, mod] of mods.entries()) {
+            mod.updatedAt = items[index].time_updated;
         }
 
-        const mod = {
-            gameId: appId,
-            isClientSideMod,
-            isServerMod,
-            itemId,
-            name: data.response.publishedfiledetails[0].title,
-            updatedAt: skipUpdatedAt ? undefined : data.response.publishedfiledetails[0].time_updated,
-        };
-
-        mods.push(mod);
-        Settings.write('mods', mods);
-
-        return mod;
+        return mods;
     }
 }
-
-export interface IMod {
-    gameId: number;
-    itemId: number;
-    name: string;
-    isClientSideMod: boolean;
-    isServerMod: boolean;
-    keys?: string[];
-    updatedAt?: number;
-}
-
-export const popularMods: IMod[] = [
-    {
-        gameId: 107410,
-        isClientSideMod: false,
-        isServerMod: false,
-        itemId: 463939057,
-        name: 'ace',
-    },
-    {
-        gameId: 107410,
-        isClientSideMod: true,
-        isServerMod: false,
-        itemId: 723217262,
-        name: 'Achilles',
-    },
-    {
-        gameId: 107410,
-        isClientSideMod: false,
-        isServerMod: true,
-        itemId: 713709341,
-        name: 'Advanced Rappelling',
-    },
-    {
-        gameId: 107410,
-        isClientSideMod: true,
-        isServerMod: false,
-        itemId: 450814997,
-        name: 'CBA_A3',
-    },
-    {
-        gameId: 107410,
-        isClientSideMod: false,
-        isServerMod: false,
-        itemId: 583496184,
-        name: 'CUP Terrains - Core',
-    },
-    {
-        gameId: 107410,
-        isClientSideMod: false,
-        isServerMod: false,
-        itemId: 583544987,
-        name: 'CUP Terrains - Maps',
-    },
-    {
-        gameId: 107410,
-        isClientSideMod: false,
-        isServerMod: false,
-        itemId: 497661914,
-        name: 'CUP Units',
-    },
-    {
-        gameId: 107410,
-        isClientSideMod: false,
-        isServerMod: false,
-        itemId: 541888371,
-        name: 'CUP Vehicles',
-    },
-    {
-        gameId: 107410,
-        isClientSideMod: false,
-        isServerMod: false,
-        itemId: 497660133,
-        name: 'CUP Weapons',
-    },
-    {
-        gameId: 107410,
-        isClientSideMod: false,
-        isServerMod: false,
-        itemId: 843425103,
-        name: 'RHSAFRF',
-    },
-    {
-        gameId: 107410,
-        isClientSideMod: false,
-        isServerMod: false,
-        itemId: 843593391,
-        name: 'RHSGREF',
-    },
-    {
-        gameId: 107410,
-        isClientSideMod: false,
-        isServerMod: false,
-        itemId: 843632231,
-        name: 'RHSSAF',
-    },
-    {
-        gameId: 107410,
-        isClientSideMod: false,
-        isServerMod: false,
-        itemId: 843577117,
-        name: 'RHSUSAF',
-    },
-    {
-        gameId: 107410,
-        isClientSideMod: false,
-        isServerMod: false,
-        itemId: 620019431,
-        name: 'task_force_radio',
-    },
-];

@@ -35,8 +35,14 @@
             true,
             "camel-case"
         ],
+        "typedef": [
+            true,
+            "call-signature",
+            "property-declaration"
+        ],
         "newline-before-return": true,
         "no-console": false,
+        "no-string-literal": false,
         "no-namespace": true,
         "no-null-keyword": true,
         "no-var-keyword": true,
