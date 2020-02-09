@@ -1,9 +1,14 @@
 import * as pty from 'node-pty';
 import * as os from 'os';
+import * as progress from 'cli-progress';
 
 import Config from '../config';
 import CServer from '../constants/server';
 import Encrypter from '../encrypter';
+import SteamApi from './steamApi';
+import Filesystem from '../filesystem';
+import ISteamPublishedFile from '../interfaces/iSteamPublishedFile';
+import IProgressPayload from '../interfaces/iProgressPayload';
 
 export default class SteamCmd {
     public static process?: pty.IPty;
@@ -54,8 +59,21 @@ export default class SteamCmd {
 
             console.log('Logged in');
 
+            console.log('Fetching API data');
+
+            const apiMods = await SteamApi.getPublishedItems(...ids);
+
             if (this.process) {
+                const bar = new progress.SingleBar({
+                    format: '[{bar}] {percentage}% | Downloading {title} ({size}) | {value}/{total}'
+                });
+
+                let index = 0;
+                bar.start(ids.length, index, this.generateProgressPayload(index, apiMods, ids));
+
                 this.process.on('exit', () => {
+                    bar.increment();
+                    bar.stop();
                     resolve();
                 });
 
@@ -67,12 +85,12 @@ export default class SteamCmd {
 
                 // Output download process information somewhat (steamcmd is terrible at output)
                 this.process.on('data', data => {
-                    if (data.startsWith('Downloading item')) {
-                        console.log(data.trim());
-                    } else if (data.startsWith('Success.')) {
-                        console.log(
-                            data.substr(0, data.lastIndexOf(' '))
-                        );
+                    if (data.startsWith('Success.')) {
+                        index++;
+                        // Prevent an out-of-range exception
+                        if (index !== ids.length) {
+                            bar.increment(1, this.generateProgressPayload(index, apiMods, ids));
+                        }
                     } else if (data.includes('ERROR!')) {
                         reject(new Error(data));
                     }
@@ -109,6 +127,21 @@ export default class SteamCmd {
         if (this.process) {
             this.process.write('exit\r');
             this.process.write('exit 0\r');
+        }
+    }
+
+    private static generateProgressPayload(index: number, apiMods: ISteamPublishedFile[], ids: number[]): IProgressPayload {
+        const id = ids[index];
+        const mod = apiMods.find(m => m.publishedfileid === `${id}`);
+
+        if (!mod) {
+            throw new Error('Could not fetch mod name and other data.');
+        }
+
+        return {
+            id,
+            title: mod.title,
+            size: Filesystem.fileSizeForHumans(mod.file_size),
         }
     }
 }
