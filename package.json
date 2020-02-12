@@ -54,7 +54,15 @@
   ],
   "homepage": "https://github.com/CreepPork/Magma",
   "keywords": [
-    "oclif"
+    "arma3",
+    "arma",
+    "cli",
+    "oclif",
+    "updater",
+    "linuxgsm",
+    "windows",
+    "linux",
+    "magma"
   ],
   "license": "MIT",
   "main": "lib/index.js",
