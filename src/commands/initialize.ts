@@ -62,6 +62,7 @@ export default class InitializeCommand extends Command {
         const webhookUrl = await insurer.ensureValidWebhookUrl(flags.webhookUrl);
 
         Config.setAll({
+            version: Config.getLatestVersion(),
             credentials: {
                 password: new Encrypter(key).encrypt(credentials.password),
                 username: credentials.username,
