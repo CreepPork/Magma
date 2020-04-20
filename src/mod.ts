@@ -76,5 +76,16 @@ export default class Mod {
     public static filterSteamMods(mods: IMod[]): ISteamMod[] {
         return mods.filter(mod => mod.steamId !== undefined && mod.isLocal === false) as ISteamMod[];
     }
+
+    public static getInstalledPath(mod: IMod): string {
+        if (mod.isLocal) {
+            const dir = mod.type === EModType.all
+                ? 'mods'
+                : (mod.type === EModType.server ? 'servermods' : 'clientmods');
+
+            return path.join(Config.get('serverPath'), dir, `@${mod.name}`);
+        } else {
+            return path.join(Config.get('serverPath'), `steamapps/workshop/content/${CServer.id}/${mod.steamId}`);
+        }
     }
 }
