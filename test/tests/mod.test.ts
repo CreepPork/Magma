@@ -1,8 +1,8 @@
 import nock = require('nock');
 
-import IMod from '../../src/interfaces/iMod';
 import ISteamRemoteStorage from '../../src/interfaces/iSteamRemoteStorage';
 import Mod from '../../src/mod';
+import ISteamMod from '../../src/interfaces/iSteamMod';
 
 beforeAll(() => {
     const data: ISteamRemoteStorage = {
@@ -19,7 +19,7 @@ beforeAll(() => {
 
 describe('Mod.generateModsFromApi()', () => {
     test('Given two mods it correctly forms the correct output', async () => {
-        const mods: IMod[] = [
+        const mods: ISteamMod[] = [
             { id: 12, steamId: 12, name: 'Mod 1', type: 0, isActive: true, isLocal: false },
             { id: 23, steamId: 23, name: 'Mod 2', type: 1, isActive: true, isLocal: false }
         ];
@@ -29,7 +29,7 @@ describe('Mod.generateModsFromApi()', () => {
         );
 
         expect(fetched).toStrictEqual([
-            { id: 12, name: 'Mod 1', type: 0, isActive: true }, { id: 23, name: 'Mod 2', type: 1, isActive: true },
+            { id: 12, steamId: 12, name: 'Mod 1', type: 0, isActive: true, isLocal: false }, { id: 23, steamId: 23, name: 'Mod 2', type: 1, isActive: true, isLocal: false },
         ]);
     });
 });

@@ -10,9 +10,11 @@ import IMod from '../../../src/interfaces/iMod';
 
 import nock = require('nock');
 import setupCommand from '../../setup';
+import Table = require('cli-table');
 
 let orgPath: any;
 let file: string;
+let tableMock: any;
 
 describe('List.run()', () => {
     beforeAll(() => {
@@ -21,9 +23,9 @@ describe('List.run()', () => {
         const data = {
             response: {
                 publishedfiledetails: [
-                    { result: 1, title: 'Mod 1', time_updated: 11 },
-                    { result: 1, title: 'Mod 2', time_updated: 11 },
-                    { result: 1, title: 'Mod 3', time_updated: 11 },
+                    { result: 1, title: 'Mod 1', publishedfileid: '12', time_updated: 11 },
+                    { result: 1, title: 'Mod 2', publishedfileid: '34', time_updated: 11 },
+                    { result: 1, title: 'Mod 3', publishedfileid: '56', time_updated: 11 },
                 ] as any[],
                 result: 1,
                 resultcount: 2,
@@ -32,6 +34,9 @@ describe('List.run()', () => {
 
         nock('https://api.steampowered.com').post('/ISteamRemoteStorage/GetPublishedFileDetails/v1/')
             .reply(200, data).persist();
+
+        // Table.toString() throws error for some reason
+        tableMock = jest.spyOn(Table.prototype, 'toString').mockReturnValue('');
     });
 
     beforeEach(() => {
@@ -52,6 +57,10 @@ describe('List.run()', () => {
         }
 
         Config['path'] = orgPath;
+    });
+
+    afterAll(() => {
+        tableMock.mockRestore();
     });
 
     test('If config file does not exist, it exits.', async () => {
@@ -79,9 +88,9 @@ describe('List.run()', () => {
 
     test('Non-installed mods displays properly', async () => {
         const mods: IMod[] = [
-            { id: 1234, name: 'Mod 1', type: EModType.client, updatedAt: 11, isActive: true },
-            { id: 9999, name: 'Mod 2', type: EModType.all, updatedAt: 11, isActive: true },
-            { id: 555, name: 'Mod 3', type: EModType.server, updatedAt: 11, isActive: true },
+            { id: 1234, steamId: 12, name: 'Mod 1', type: EModType.client, updatedAt: 11, isActive: true, isLocal: false },
+            { id: 9999, steamId: 34, name: 'Mod 2', type: EModType.all, updatedAt: 11, isActive: true, isLocal: false },
+            { id: 555, steamId: 56, name: 'Mod 3', type: EModType.server, updatedAt: 11, isActive: true, isLocal: false },
         ];
 
         fs.writeFileSync(file, JSON.stringify({ mods }));
@@ -97,7 +106,7 @@ describe('List.run()', () => {
 
     test('Mod with unknown type is displayed correctly', async () => {
         const mods: IMod[] = [
-            { id: 1234, name: 'Mod 1', type: -5, updatedAt: 11, isActive: true },
+            { id: 1234, steamId: 12, name: 'Mod 1', type: -5, updatedAt: 11, isActive: true, isLocal: false },
         ];
 
         fs.writeFileSync(file, JSON.stringify({ mods }));
@@ -114,12 +123,18 @@ describe('List.run()', () => {
     test('Installed mods displays properly', async () => {
         // tslint:disable: object-literal-sort-keys
         const mods: IMod[] = [
-            { id: 1234, name: 'Mod 1', type: EModType.client,
-                keys: ['some/key/path', 'path/to/key'], updatedAt: 11, isActive: true },
-            { id: 9999, name: 'Mod 2', type: EModType.all,
-                keys: ['some/key/path'], updatedAt: 11, isActive: true },
-            { id: 555, name: 'Mod 3', type: EModType.server,
-                keys: ['some/key/path', 'path/to/key', 'more/keys'], updatedAt: 11, isActive: true },
+            {
+                id: 1234, steamId: 12, name: 'Mod 1', type: EModType.client,
+                keys: ['some/key/path', 'path/to/key'], updatedAt: 11, isActive: true, isLocal: false
+            },
+            {
+                id: 9999, steamId: 34, name: 'Mod 2', type: EModType.all,
+                keys: ['some/key/path'], updatedAt: 11, isActive: true, isLocal: false
+            },
+            {
+                id: 555, steamId: 56, name: 'Mod 3', type: EModType.server,
+                keys: ['some/key/path', 'path/to/key', 'more/keys'], updatedAt: 11, isActive: true, isLocal: false
+            },
         ];
 
         fs.writeFileSync(file, JSON.stringify({ mods }));

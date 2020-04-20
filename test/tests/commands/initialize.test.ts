@@ -60,6 +60,7 @@ describe('Initialize.run()', () => {
             serverPath,
             steamCmdPath: cmdPath,
             cronMessages: [],
+            version: Config.getLatestVersion(),
         });
 
         if (fs.existsSync(gsmPath)) { fs.removeSync(gsmPath); }
