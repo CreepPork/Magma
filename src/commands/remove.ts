@@ -44,6 +44,7 @@ export default class RemoveCommand extends Command {
             ids = await insurer.ensureValidIds(mods, 'What mods would you like to remove?');
         }
 
+        // Remove Steam items
         for (const id of ids) {
             const mod = mods[mods.findIndex(m => m.id === id)];
 
@@ -53,11 +54,13 @@ export default class RemoveCommand extends Command {
             // Remove mod keys
             Processor.removeKeysFromMod(mod);
 
-            // Remove symlink
+            // Remove mod
             Processor.unlinkMod(mod);
 
-            // Remove workshop contents
-            Processor.pruneWorkshopContents(mod);
+            // Remove workshop mod contents
+            if (mod.steamId !== undefined) {
+                Processor.pruneWorkshopContents(mod);
+            }
 
             // Remove from config
             _.remove(mods, m => m.id === id);
