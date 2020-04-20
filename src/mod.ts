@@ -3,6 +3,7 @@ import IMod from './interfaces/iMod';
 import SteamApi from './steam/steamApi';
 import Time from './time';
 import Config from './config';
+import ISteamMod from './interfaces/iSteamMod';
 
 export default class Mod {
     public static async generateModsFromApi(mods: { id: number, steamId: number, type: EModType }[]): Promise<IMod[]> {
@@ -57,7 +58,7 @@ export default class Mod {
         return mods;
     }
 
-    public static async getModUpdatedAtFromApi(mods: IMod[]): Promise<IMod[]> {
+    public static async getModUpdatedAtFromApi(mods: ISteamMod[]): Promise<ISteamMod[]> {
         if (mods.length === 0) { return []; }
 
         const items = await SteamApi.getPublishedItems(...mods.map(mod => mod.id));
