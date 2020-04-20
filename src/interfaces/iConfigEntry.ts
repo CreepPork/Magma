@@ -1,4 +1,4 @@
-import IConfig from '../interfaces/iConfig';
+import IConfig from './iConfig';
 
 export default interface IConfigEntry {
     displayName: string;
