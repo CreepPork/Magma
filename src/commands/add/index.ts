@@ -2,11 +2,11 @@ import Command, { flags as flag } from '@oclif/command';
 import { IArg } from '@oclif/parser/lib/args';
 import { prompt } from 'inquirer';
 
-import Config from '../config';
-import { EModType } from '../enums/eModType';
-import { nonInteractive } from '../flags';
-import Mod from '../mod';
-import SteamApi from '../steam/steamApi';
+import Config from '../../config';
+import { EModType } from '../../enums/eModType';
+import { nonInteractive } from '../../flags';
+import Mod from '../../mod';
+import SteamApi from '../../steam/steamApi';
 
 import ora = require('ora');
 
@@ -17,7 +17,7 @@ export default class AddCommand extends Command {
         'magma add 450814997 723217262 713709341 --type all client server',
     ];
     public static strict = false;
-    public static args = [{ description: 'Steam Workshop item IDs.', name: 'id', required: true }] as IArg[];
+    public static args = [{ description: 'Steam Workshop item IDs.', name: 'ids', required: true }] as IArg[];
     public static flags = {
         nonInteractive,
         type: flag.string({
@@ -34,7 +34,7 @@ export default class AddCommand extends Command {
 
     public async run(): Promise<void> {
         const { argv, flags } = this.parse(AddCommand);
-        const ids = argv.map(arg => parseInt(arg, 10));
+        const steamIds = argv.map(arg => parseInt(arg, 10));
 
         const configMods = Config.get('mods');
         const spinner = ora();
@@ -43,19 +43,19 @@ export default class AddCommand extends Command {
         const mods = [];
         const types: (keyof typeof EModType)[] = flags.type as any;
 
-        for (const [index, id] of ids.entries()) {
+        for (const [index, steamId] of steamIds.entries()) {
             let type: EModType | undefined = EModType[types[index]];
 
             if (type === undefined) {
                 if (flags.nonInteractive) {
-                    throw new Error(`Mod (id: ${id}) was not given a type. Did you enter the type with --type?`);
+                    throw new Error(`Mod (id: ${steamId}) was not given a type. Did you enter the type with --type?`);
                 }
 
-                type = await this.promptForType(id, spinner);
+                type = await this.promptForType(steamId, spinner);
             }
 
-            if (configMods.find(mod => mod.id === id) === undefined) {
-                mods.push({ id, type });
+            if (configMods.find(mod => mod.steamId === steamId) === undefined) {
+                mods.push({ id: Mod.generateModId(), steamId, type });
             }
         }
 
