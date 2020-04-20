@@ -6,11 +6,11 @@ import * as qs from 'qs';
 
 export default class SteamApi {
     public static async getPublishedItem(id: number): Promise<ISteamPublishedFile> {
-        return (await this.getPublishedItems(id))[0];
+        return (await this.getPublishedItems([id]))[0];
     }
 
-    public static async getPublishedItems(...ids: number[]): Promise<ISteamPublishedFile[]> {
-        const data: {[key: string]: number} = {};
+    public static async getPublishedItems(ids: number[]): Promise<ISteamPublishedFile[]> {
+        const data: { [key: string]: number } = {};
 
         for (const [index, id] of ids.entries()) {
             data[`publishedfileids[${index}]`] = id;
@@ -18,13 +18,15 @@ export default class SteamApi {
 
         const response: AxiosResponse<ISteamRemoteStorage> = await axios.post(
             'https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/',
-            qs.stringify({...{
-                itemcount: ids.length,
-            }, ...data}), {
-                headers: {
-                    'content-type': 'application/x-www-form-urlencoded',
-                },
+            qs.stringify({
+                ...{
+                    itemcount: ids.length,
+                }, ...data
+            }), {
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded',
             },
+        },
         );
 
         for (const item of response.data.response.publishedfiledetails) {
