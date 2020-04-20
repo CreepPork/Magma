@@ -28,6 +28,25 @@ export default class Mod {
         return processed;
     }
 
+    public static getLastModId(): number {
+        Config.ensureIsInitialized();
+
+        const mods = Config.get('mods');
+        let id = 0;
+
+        for (const mod of mods) {
+            if (mod.id > id) {
+                id = mod.id;
+            }
+        }
+
+        return id;
+    }
+
+    public static generateModId(): number {
+        return this.getLastModId() + 1;
+    }
+
     public static async getModUpdatedAtFromApi(mods: IMod[]): Promise<IMod[]> {
         if (mods.length === 0) { return []; }
 
