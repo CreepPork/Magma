@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import * as path from 'path';
 
 import Command, { flags as flag } from '@oclif/command';
 import { IArg } from '@oclif/parser/lib/args';
@@ -44,8 +45,14 @@ export default class AddLocalCommand extends Command {
         const types: (keyof typeof EModType)[] = flags.type as any;
 
         for (const [index, dir] of argv.entries()) {
-            if (!Filesystem.isDirectory(dir)) {
+            if (!Filesystem.isDirectory(dir, true)) {
                 throw new Error(`Mod (path: ${dir}) does not exist or is not a directory.`);
+            }
+
+            // The mod should be in the server directory because we don't store the location
+            // And copying is too risky.
+            if (path.join(dir, '../..') !== Config.get('serverPath')) {
+                throw new Error(`Mod (path: ${dir}) must be placed one level deep inside the server directory (e.g. mods or servermods directory).`);
             }
 
             const filename = Filesystem.getFilename(dir);
@@ -66,6 +73,10 @@ export default class AddLocalCommand extends Command {
                 type = await this.promptForType(dir);
             }
 
+            if (type === EModType.client && path.join(dir, '..') !== 'clientmods') {
+                throw new Error('Local client-side mods should be placed in a `clientmods` directory.');
+            }
+
             if (configMods.find(mod => mod.name === name) === undefined) {
                 mods.push({
                     id: Mod.generateModId(),
@@ -75,6 +86,12 @@ export default class AddLocalCommand extends Command {
                     type,
                 });
             }
+        }
+
+        // Enforce unique mod names (remove command needs unique names)
+        const modNames = mods.map(mod => mod.name);
+        if (_.uniq(modNames).length !== modNames.length) {
+            throw new Error('There are mods that have duplicate names. Mod names must be unique.');
         }
 
         if (mods.length === 0) {
