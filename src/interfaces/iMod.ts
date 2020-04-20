@@ -4,6 +4,7 @@ export default interface IMod {
     id: number;
     steamId?: number;
     isActive: boolean;
+    isLocal: boolean;
     name: string;
     updatedAt?: number;
     keys?: string[];
