@@ -29,7 +29,7 @@ export default class ActivateCommand extends Command {
         const { argv, flags } = this.parse(ActivateCommand);
         let ids = argv.map(arg => parseInt(arg, 10));
 
-        // Get only those mods that are activated
+        // Get only those mods that are deactivated
         const mods = Config.get('mods');
         const filteredMods = mods.filter(mod => mod.isActive === false);
 
@@ -51,13 +51,13 @@ export default class ActivateCommand extends Command {
             // If user gave a non-existant mod id
             if (mod === undefined) { continue; }
 
-            // Remove mod keys
+            // Add mod keys
             Processor.updateKeys([mod]);
 
-            // Remove symlink
+            // Add symlink
             Processor.linkMods([mod]);
 
-            // Remove from config
+            // Add to config
             mod.isActive = true;
         }
 
