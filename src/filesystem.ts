@@ -11,13 +11,17 @@ export default class Filesystem {
         return false;
     }
 
-    public static isDirectory(filepath: string): boolean {
+    public static isDirectory(filepath: string, includeSymLinks?: boolean): boolean {
         if (fs.existsSync(filepath)) {
             const stats = fs.lstatSync(filepath);
 
-            return stats.isSymbolicLink()
-                ? true
-                : stats.isDirectory();
+            if (includeSymLinks) {
+                return stats.isSymbolicLink()
+                    ? true
+                    : stats.isDirectory();
+            } else {
+                return stats.isDirectory();
+            }
         }
 
         return false;
@@ -51,6 +55,8 @@ export default class Filesystem {
     }
 
     public static renameContentsToLowercase(filepath: string): void {
+        const blacklistDirs = [];
+
         const dirs = this.getAllDirectoriesRecursively(filepath);
 
         // Sort the directories by their amount of subdirectories (more subdirs the closer it gets to the first element)
@@ -61,12 +67,23 @@ export default class Filesystem {
         );
 
         for (const dir of dirs) {
+            // Skip directories which start with . (e.g. .git)
+            if (this.getFilename(dir).substr(0, 1) === '.') {
+                blacklistDirs.push(dir);
+
+                continue;
+            }
+
             fs.renameSync(dir, path.join(dir, '..', this.getFilename(dir).toLowerCase()));
         }
 
         // Rename files individually to prevent file does not exist errors
         const files = this.getAllFilesRecursively(filepath);
         for (const file of files) {
+            for (const blacklistDir of blacklistDirs) {
+                if (file.startsWith(blacklistDir)) { continue; }
+            }
+
             fs.renameSync(file, path.join(file, '..', this.getFilename(file).toLowerCase()));
         }
     }
