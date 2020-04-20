@@ -63,7 +63,7 @@ export default class AddLocalCommand extends Command {
                     throw new Error(`Mod (path: ${dir}) was not given a type. Did you enter the type with --type?`);
                 }
 
-                type = await this.promptForType(name);
+                type = await this.promptForType(dir);
             }
 
             if (configMods.find(mod => mod.name === name) === undefined) {
@@ -85,12 +85,12 @@ export default class AddLocalCommand extends Command {
         }
     }
 
-    private async promptForType(name: string): Promise<EModType> {
+    private async promptForType(dir: string): Promise<EModType> {
         const choices = ['Required for all', 'Client-side only', 'Server-side only'];
 
         const response: { type: string } = await prompt({
             choices,
-            message: `What type of mod is ${name}?`,
+            message: `What type of mod is ${dir}?`,
             name: 'type',
             type: 'list',
         });
