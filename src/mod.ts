@@ -73,7 +73,8 @@ export default class Mod {
         return mods.filter(mod => mod.isLocal === true);
     }
 
-    public static filterSteamMods(mods: IMod[]): IMod[] {
-        return mods.filter(mod => mod.id !== undefined && mod.isLocal === false);
+    public static filterSteamMods(mods: IMod[]): ISteamMod[] {
+        return mods.filter(mod => mod.steamId !== undefined && mod.isLocal === false) as ISteamMod[];
+    }
     }
 }
