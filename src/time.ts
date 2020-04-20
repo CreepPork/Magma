@@ -1,6 +1,6 @@
 export default class Time {
     public static toEpoch(date: Date): number {
-        return date.getTime() / 1000;
+        return Math.trunc(date.getTime()) / 1000;
     }
 
     public static epochToDate(epoch: number): Date {
