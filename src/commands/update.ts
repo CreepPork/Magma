@@ -5,6 +5,7 @@ import SteamCmd from '../steam/steamCmd';
 import SteamApi from '../steam/steamApi';
 import ISteamMod from '../interfaces/iSteamMod';
 import Mod from '../mod';
+import CronCommand from './cron';
 
 export default class ActivateCommand extends Command {
     public static description = 'Updates currently downloaded mods from Steam Workshop.';
@@ -63,5 +64,8 @@ export default class ActivateCommand extends Command {
         console.log(`Updated ${updatedMods.map(mod => mod.name).join(', ')}`);
 
         Config.set('mods', configMods);
+
+        // Run the cron command to inform others that the mods have been updated
+        CronCommand.run([]);
     }
 }
