@@ -42,12 +42,13 @@ export default class Processor {
             // Move keys to /keys
             for (const key of keys) {
                 const keyName = Filesystem.getFilename(key);
+                const keyPath = path.join(serverPath, 'keys', keyName);
 
-                fs.copySync(key, path.join(serverPath, 'keys', keyName));
-
-                mod.keys.push(
-                    path.join(serverPath, 'keys', keyName),
-                );
+                // Don't copy duplicate keys
+                if (mod.keys.indexOf(keyPath) === -1) {
+                    fs.copySync(key, keyPath);
+                    mod.keys.push(keyPath);
+                }
             }
         }
 
