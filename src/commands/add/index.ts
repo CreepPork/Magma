@@ -63,7 +63,7 @@ export default class AddCommand extends Command {
             console.log('The given mods have already been added to the configuration file.');
         } else {
             spinner.start('Fetching Steam API data and generating mod data');
-            const fetchedMods = await Mod.getModsFromApi(...mods);
+            const fetchedMods = await Mod.generateModsFromApi(mods);
             spinner.succeed();
 
             // Add to config
