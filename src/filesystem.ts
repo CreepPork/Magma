@@ -13,7 +13,11 @@ export default class Filesystem {
 
     public static isDirectory(filepath: string): boolean {
         if (fs.existsSync(filepath)) {
-            return fs.lstatSync(filepath).isDirectory();
+            const stats = fs.lstatSync(filepath);
+
+            return stats.isSymbolicLink()
+                ? true
+                : stats.isDirectory();
         }
 
         return false;
