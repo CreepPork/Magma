@@ -23,25 +23,20 @@ export default class SteamCmd {
             this.runCommand(`+login ${credentials.username} ${password}`, async data => {
                 if (data.includes('Steam Guard code:')) {
                     if (guardCode) {
-                        if (this.process) {
-                            this.process.write(`${guardCode}\r`);
-                        }
+                        this.process?.write(`${guardCode}\r`);
                     } else if (onGuardPrompt) {
                         const code = await onGuardPrompt();
-
-                        if (this.process) {
-                            this.process.write(`${code}\r`);
-                        }
+                        this.process?.write(`${code}\r`);
                     } else {
                         resolve(false);
                     }
-                } else if (data === 'Logged in OK\r\nWaiting for user info...') {
+                } else if (data.includes('Waiting for user info...')) {
                     loginSuccessful = true;
-                } else if (loginSuccessful && data === 'OK\r\n') {
+                } else if (loginSuccessful && data.includes('OK')) {
                     resolve(true);
-                } else if (data.startsWith('FAILED login with result code')) {
+                } else if (data.includes('FAILED login with result code')) {
                     resolve(false);
-                } else if (data === 'exit\r\n') {
+                } else if (data.includes('exit\r\n')) {
                     resolve(false);
                 }
             }, exit, path);
@@ -108,19 +103,30 @@ export default class SteamCmd {
     }
 
     private static runCommand(command: string, onData: (data: string) => void, exit = true, path?: string): void {
-        const shell = os.platform() === 'win32' ? 'powershell.exe' : 'bash';
+        const shell = os.platform() === 'win32' ? 'bash.exe' : 'bash';
         const steamCmd = path ?? Config.get('steamCmdPath');
 
-        const process = pty.spawn(shell, [],
-            // @ts-ignore Per the docs it exists, but it's not in the typings.
-            { handleFlowControl: true },
-        );
+        const process = pty.spawn(shell, [], {
+            name: 'xterm-color',
+            cols: 80,
+            rows: 30,
+            cwd: __dirname
+        });
 
         this.process = process;
 
+        process.on('data', d => global.process.stdout.write(d));
+
         process.on('data', onData);
 
-        process.write(`${steamCmd} ${command} ${exit ? '+exit && exit 0' : ''}\r`);
+        setTimeout(() => {
+            console.log(process.handleFlowControl);
+            process.kill();
+            global.process.kill(process.pid, 'SIGKILL');
+        }, 10000);
+
+        process.write(`"${steamCmd}" "${command} ${exit ? '+exit"' : ''}\r`);
+        process.write('exit\r');
     }
 
     private static exitTerminal(): void {
