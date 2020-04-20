@@ -1,4 +1,8 @@
+import * as path from 'path';
+
 import { EModType } from './enums/eModType';
+
+import CServer from './constants/server';
 import IMod from './interfaces/iMod';
 import SteamApi from './steam/steamApi';
 import Time from './time';
