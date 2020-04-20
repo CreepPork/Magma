@@ -11,7 +11,7 @@ export default class Mod {
 
         const processed: IMod[] = [];
 
-        const items = await SteamApi.getPublishedItems(...mods.map(mod => mod.steamId));
+        const items = await SteamApi.getPublishedItems(mods.map(mod => mod.steamId));
 
         for (const [index, mod] of mods.entries()) {
             const name = items[index].title;
@@ -61,7 +61,7 @@ export default class Mod {
     public static async getModUpdatedAtFromApi(mods: ISteamMod[]): Promise<ISteamMod[]> {
         if (mods.length === 0) { return []; }
 
-        const items = await SteamApi.getPublishedItems(...mods.map(mod => mod.id));
+        const items = await SteamApi.getPublishedItems(mods.map(mod => mod.steamId));
 
         for (const [index, mod] of mods.entries()) {
             mod.updatedAt = items[index].time_updated;

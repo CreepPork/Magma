@@ -48,7 +48,7 @@ export default class SteamCmd {
         });
     }
 
-    public static download(...ids: number[]): Promise<void> {
+    public static download(ids: number[]): Promise<void> {
         return new Promise(async (resolve, reject) => {
             const serverPath = Config.get('serverPath');
 
@@ -61,7 +61,7 @@ export default class SteamCmd {
 
             console.log('Fetching API data');
 
-            const apiMods = await SteamApi.getPublishedItems(...ids);
+            const apiMods = await SteamApi.getPublishedItems(ids);
 
             if (this.process) {
                 const bar = new progress.SingleBar({

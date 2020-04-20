@@ -3,6 +3,8 @@ import Config from '../config';
 import Processor from '../processor';
 import SteamCmd from '../steam/steamCmd';
 import SteamApi from '../steam/steamApi';
+import ISteamMod from '../interfaces/iSteamMod';
+import Mod from '../mod';
 
 export default class ActivateCommand extends Command {
     public static description = 'Updates currently downloaded mods from Steam Workshop.';
@@ -23,7 +25,7 @@ export default class ActivateCommand extends Command {
         }
 
         // Check for those mods that need updates from SteamAPI
-        const apiMods = await SteamApi.getPublishedItems(...mods.map(mod => mod.id));
+        const apiMods = await SteamApi.getPublishedItems(mods.map(mod => mod.steamId));
 
         const queuedMods = [];
 
@@ -46,7 +48,7 @@ export default class ActivateCommand extends Command {
         }
 
         // Run SteamCmd
-        await SteamCmd.download(...queuedMods.map(mod => mod.id));
+        await SteamCmd.download(queuedMods.map(mod => mod.steamId));
 
         // Update keys
         const updatedMods = Processor.updateKeys(queuedMods);

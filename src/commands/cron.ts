@@ -48,7 +48,7 @@ export default class CronCommand extends Command {
             return;
         }
 
-        const apiReturn = await SteamApi.getPublishedItems(...mods.map(mod => mod.id));
+        const apiReturn = await SteamApi.getPublishedItems(steamMods.map(mod => mod.steamId));
 
         let updatesRequiredFor = apiReturn.filter(
             workshop =>
