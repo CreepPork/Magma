@@ -27,7 +27,7 @@ export default class Insurer {
 
         if (this.nonInteractive) {
             throw new Error(
-                'Steam Workshop item IDs have to be specified as arguments when running in non interactive mode.',
+                'Item IDs have to be specified as arguments when running in non-interactive mode.',
             );
         } else {
             const choices = mods.map(mod => mod.name);
