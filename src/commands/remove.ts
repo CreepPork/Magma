@@ -16,6 +16,7 @@ export default class RemoveCommand extends Command {
         'magma remove 450814997 723217262 713709341',
     ];
     public static strict = false;
+    public static aliases = ['uninstall'];
     public static args = [{ description: 'Steam Workshop item IDs.', name: 'id' }] as IArg[];
     public static flags = {
         nonInteractive,
