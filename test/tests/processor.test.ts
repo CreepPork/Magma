@@ -1,25 +1,7 @@
-import * as path from 'path';
-
 import Processor from '../../src/processor';
-import Server from '../../src/constants/server';
 import Filesystem from '../../src/filesystem';
 import IMod from '../../src/interfaces/iMod';
-
-describe('Processor.getWorkshopModPath()', () => {
-    test('Returns correct path', () => {
-        // @ts-ignore Private property
-        const old = Processor.serverPath;
-        // @ts-ignore Private property
-        Processor.serverPath = 'path';
-
-        expect(Processor.getWorkshopModPath(1)).toBe(
-            path.join(`path/steamapps/workshop/content/${Server.id}/1`)
-        );
-
-        // @ts-ignore Private property
-        Processor.serverPath = old;
-    });
-});
+import Mod from '../../src/mod';
 
 describe('Processor.renameModsToLower()', () => {
     test('Exits for Windows', () => {
@@ -47,7 +29,7 @@ describe('Processor.renameModsToLower()', () => {
         });
 
         const mock = jest.spyOn(Filesystem, 'renameContentsToLowercase').mockReturnValue(undefined);
-        const dirMock = jest.spyOn(Processor, 'getWorkshopModPath').mockReturnValue('some/path');
+        const dirMock = jest.spyOn(Mod, 'getInstalledPath').mockReturnValue('some/path');
 
         Processor.renameModsToLower([{ id: 0 } as IMod]);
 

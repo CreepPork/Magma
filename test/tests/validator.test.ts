@@ -21,10 +21,11 @@ describe('Validator.server', () => {
 describe('Validator.credentials', () => {
     test('Passing invalid credentials in non-interactive mode will throw', async () => {
         const validate = new Validator(true);
+        const enConstMock = jest.spyOn(Encrypter, 'supported').mockReturnValue(true);
         const enMock = jest.spyOn(Encrypter.prototype, 'encrypt').mockReturnValue('random');
         const mock = jest.spyOn(SteamCmd, 'login').mockResolvedValue(false);
 
-        expect(validate.credentials(
+        await expect(validate.credentials(
             { username: 'hello', password: 'world' },
             'someKey',
             'some/path'
@@ -33,6 +34,7 @@ describe('Validator.credentials', () => {
         );
 
         mock.mockRestore();
+        enConstMock.mockRestore();
         enMock.mockRestore();
     });
 });

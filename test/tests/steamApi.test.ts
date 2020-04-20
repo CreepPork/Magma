@@ -27,7 +27,7 @@ describe('SteamApi.getPublishedItems()', () => {
 
         nock(baseUrl).post(apiUrl).reply(200, reply);
 
-        expect(await SteamApi.getPublishedItems(12)).toStrictEqual(reply.response.publishedfiledetails);
+        expect(await SteamApi.getPublishedItems([12])).toStrictEqual(reply.response.publishedfiledetails);
     });
 
     test('Multiple items can be returned from the API', async () => {
@@ -43,7 +43,7 @@ describe('SteamApi.getPublishedItems()', () => {
 
         nock(baseUrl).post(apiUrl).reply(200, reply);
 
-        expect(await SteamApi.getPublishedItems(12, 5432)).toStrictEqual(reply.response.publishedfiledetails);
+        expect(await SteamApi.getPublishedItems([12, 5432])).toStrictEqual(reply.response.publishedfiledetails);
     });
 
     test('When a non-existant item is returned, it rejects', async () => {
@@ -54,7 +54,7 @@ describe('SteamApi.getPublishedItems()', () => {
         nock(baseUrl).post(apiUrl).reply(200, reply);
 
         try {
-            await SteamApi.getPublishedItems(-1);
+            await SteamApi.getPublishedItems([-1]);
         } catch (e) {
             expect(e).toBeInstanceOf(Error);
         }
@@ -68,7 +68,7 @@ describe('SteamApi.getPublishedItems()', () => {
         nock(baseUrl).post(apiUrl).reply(200, reply);
 
         try {
-            await SteamApi.getPublishedItems(-1);
+            await SteamApi.getPublishedItems([-1]);
         } catch (e) {
             expect(e).toBeInstanceOf(Error);
         }
