@@ -87,5 +87,8 @@
     "test": "./node_modules/.bin/jest",
     "version": "oclif-dev readme && git add README.md"
   },
-  "types": "lib/index.d.ts"
+  "types": "lib/index.d.ts",
+  "magma": {
+    "latestConfigVersion": 2
+  }
 }
