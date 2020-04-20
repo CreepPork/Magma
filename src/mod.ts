@@ -1,6 +1,8 @@
 import { EModType } from './enums/eModType';
 import IMod from './interfaces/iMod';
 import SteamApi from './steam/steamApi';
+import Time from './time';
+import Config from './config';
 
 export default class Mod {
     public static async generateModsFromApi(mods: { id: number, steamId: number, type: EModType }[]): Promise<IMod[]> {
@@ -45,6 +47,16 @@ export default class Mod {
         return this.getLastModId() + 1;
     }
 
+    public static getLocalModUpdatedAt(mods: IMod[]): IMod[] {
+        if (mods.length === 0) { return []; }
+
+        for (const mod of mods) {
+            mod.updatedAt = Time.toEpoch(new Date());
+        }
+
+        return mods;
+    }
+
     public static async getModUpdatedAtFromApi(mods: IMod[]): Promise<IMod[]> {
         if (mods.length === 0) { return []; }
 
@@ -55,5 +67,13 @@ export default class Mod {
         }
 
         return mods;
+    }
+
+    public static filterLocalMods(mods: IMod[]): IMod[] {
+        return mods.filter(mod => mod.isLocal === true);
+    }
+
+    public static filterSteamMods(mods: IMod[]): IMod[] {
+        return mods.filter(mod => mod.id !== undefined && mod.isLocal === false);
     }
 }
