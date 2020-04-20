@@ -2,6 +2,7 @@ import IMod from './iMod';
 import ISteamCredentials from './iSteamCredentials';
 
 export default interface IConfig {
+    version: number;
     mods: IMod[];
     serverPath: string;
     steamCmdPath: string;

@@ -3,6 +3,7 @@ import * as path from 'path';
 
 import NotInitializedError from './errors/notInitializedError';
 import IConfig from './interfaces/iConfig';
+import OutdatedConfigurationFileError from './errors/outdatedConfigurationFileError';
 
 export default class Config {
     public static exists(): boolean {
@@ -38,8 +39,29 @@ export default class Config {
     }
 
     public static ensureIsInitialized(): never | void {
-        if (! this.exists()) {
+        if (!this.exists()) {
             throw new NotInitializedError();
+        }
+    }
+
+    public static getLatestVersion(): number {
+        return require('../package.json').magma.latestConfigVersion;
+    }
+
+    public static getCurrentVersion(): number | undefined {
+        this.ensureIsInitialized();
+        const config = this.getAll();
+
+        if (config.version !== undefined) {
+            return config.version;
+        }
+    }
+
+    public static ensureIsLatestVersion(): never | void {
+        const version = this.getCurrentVersion();
+
+        if (version === undefined || version !== this.getLatestVersion()) {
+            throw new OutdatedConfigurationFileError();
         }
     }
 
