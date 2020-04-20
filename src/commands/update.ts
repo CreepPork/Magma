@@ -16,7 +16,7 @@ export default class ActivateCommand extends Command {
     public async run(): Promise<void> {
         // Filter for only installed mods
         const configMods = Config.get('mods');
-        const mods = configMods.filter(mod => mod.updatedAt !== undefined);
+        const mods: ISteamMod[] = Mod.filterSteamMods(configMods).filter(mod => mod.updatedAt !== undefined);
 
         if (mods.length === 0) {
             console.log('No installed mods.');
