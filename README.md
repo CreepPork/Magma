@@ -192,7 +192,7 @@ _See code: [src/commands/configure.ts](https://github.com/CreepPork/Magma/blob/v
 
 ## `magma cron`
 
-A command designed to be run in a time-based job scheduler to notify on social platforms for mod updates. Each time it is run, it will query the Steam Web API. Do not run this command frequently (6hrs, 12hrs should suffice) so not to get rate-limited.
+A command designed to be run in a time-based job scheduler to notify on social platforms for mod updates. Each time it is run, it will query the Steam Web API. Do not run this command too frequently so not to get rate-limited.
 
 ```
 USAGE
