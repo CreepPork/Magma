@@ -3,24 +3,18 @@ import * as _ from 'lodash';
 import * as path from 'path';
 
 import Config from './config';
-import CServer from './constants/server';
 import { EModType } from './enums/eModType';
 import Filesystem from './filesystem';
 import IMod from './interfaces/iMod';
+import Mod from './mod';
 
 export default class Processor {
-    public static getWorkshopModPath(id: number): string {
-        return path.join(
-            this.serverPath, `steamapps/workshop/content/${CServer.id}/${id}`,
-        );
-    }
-
     public static renameModsToLower(mods: IMod[]): void {
         // As only Linux we need to rename mods to lowercase, we can ignore this method for Windows
         if (process.platform === 'win32') { return; }
 
         for (const mod of mods) {
-            Filesystem.renameContentsToLowercase(this.getWorkshopModPath(mod.id));
+            Filesystem.renameContentsToLowercase(Mod.getInstalledPath(mod));
         }
     }
 
@@ -34,7 +28,7 @@ export default class Processor {
             mod.keys = [];
 
             // Find mod dir
-            const workshopDir = this.getWorkshopModPath(mod.id);
+            const workshopDir = Mod.getInstalledPath(mod);
 
             // Find keys
             const keys = Filesystem.findFilesWithExtension(workshopDir, '.bikey');
@@ -42,12 +36,13 @@ export default class Processor {
             // Move keys to /keys
             for (const key of keys) {
                 const keyName = Filesystem.getFilename(key);
+                const keyPath = path.join(serverPath, 'keys', keyName);
 
-                fs.copySync(key, path.join(serverPath, 'keys', keyName));
-
-                mod.keys.push(
-                    path.join(serverPath, 'keys', keyName),
-                );
+                // Don't copy duplicate keys
+                if (mod.keys.indexOf(keyPath) === -1) {
+                    fs.copySync(key, keyPath);
+                    mod.keys.push(keyPath);
+                }
             }
         }
 
@@ -78,7 +73,7 @@ export default class Processor {
                 ? 'mods'
                 : 'servermods';
 
-            const workshopDir = this.getWorkshopModPath(mod.id);
+            const workshopDir = Mod.getInstalledPath(mod);
 
             const a3ModDir = path.join(serverPath, modDir);
             fs.symlinkSync(workshopDir, path.join(a3ModDir, `@${_.snakeCase(mod.name)}`));
@@ -100,7 +95,7 @@ export default class Processor {
     }
 
     public static pruneWorkshopContents(mod: IMod): void {
-        const steamPath = this.getWorkshopModPath(mod.id);
+        const steamPath = Mod.getInstalledPath(mod);
 
         if (fs.existsSync(steamPath)) {
             fs.removeSync(steamPath);

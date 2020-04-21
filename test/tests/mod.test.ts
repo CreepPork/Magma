@@ -1,8 +1,8 @@
 import nock = require('nock');
 
-import IMod from '../../src/interfaces/iMod';
 import ISteamRemoteStorage from '../../src/interfaces/iSteamRemoteStorage';
 import Mod from '../../src/mod';
+import ISteamMod from '../../src/interfaces/iSteamMod';
 
 beforeAll(() => {
     const data: ISteamRemoteStorage = {
@@ -17,34 +17,19 @@ beforeAll(() => {
         .reply(200, data);
 });
 
-describe('Mod.getModFromApi()', () => {
-    test('Returns first item and calls .getModsFromApi()', async () => {
-        const mock = jest.spyOn(Mod, 'getModsFromApi').mockResolvedValue([{ id: 1234 } as any]);
-
-        expect(await Mod.getModFromApi(1234, 0)).toStrictEqual({ id: 1234 });
-        expect(mock).toHaveBeenCalledTimes(1);
-
-        mock.mockRestore();
-    });
-});
-
-describe('Mod.getModsFromApi()', () => {
-    test('If empty mod array was passed, then it exits', async () => {
-        expect(await Mod.getModsFromApi()).toStrictEqual([]);
-    });
-
+describe('Mod.generateModsFromApi()', () => {
     test('Given two mods it correctly forms the correct output', async () => {
-        const mods: IMod[] = [
-            { id: 12, name: 'Mod 1', type: 0, isActive: true},
-            { id: 23, name: 'Mod 2', type: 1, isActive: true }
+        const mods: ISteamMod[] = [
+            { id: 12, steamId: 12, name: 'Mod 1', type: 0, isActive: true, isLocal: false },
+            { id: 23, steamId: 23, name: 'Mod 2', type: 1, isActive: true, isLocal: false }
         ];
 
-        const fetched = await Mod.getModsFromApi(
-            ...mods.map(mod => ({ id: mod.id, type: mod.type })),
+        const fetched = await Mod.generateModsFromApi(
+            mods.map(mod => ({ id: mod.id, steamId: mod.steamId, type: mod.type })),
         );
 
         expect(fetched).toStrictEqual([
-            { id: 12, name: 'Mod 1', type: 0, isActive: true }, { id: 23, name: 'Mod 2', type: 1, isActive: true },
+            { id: 12, steamId: 12, name: 'Mod 1', type: 0, isActive: true, isLocal: false }, { id: 23, steamId: 23, name: 'Mod 2', type: 1, isActive: true, isLocal: false },
         ]);
     });
 });

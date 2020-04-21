@@ -7,6 +7,8 @@ import Config from '../config';
 import { nonInteractive } from '../flags';
 import Insurer from '../insurer';
 import Processor from '../processor';
+import ISteamMod from '../interfaces/iSteamMod';
+import Mod from '../mod';
 
 export default class ActivateCommand extends Command {
     public static description = 'Activates mods by adding their symlinks and keys back.';
@@ -27,11 +29,11 @@ export default class ActivateCommand extends Command {
 
     public async run(): Promise<void> {
         const { argv, flags } = this.parse(ActivateCommand);
-        let ids = argv.map(arg => parseInt(arg, 10));
+        let steamIds = argv.map(arg => parseInt(arg, 10));
 
-        // Get only those mods that are activated
+        // Get only those mods that are deactivated
         const mods = Config.get('mods');
-        const filteredMods = mods.filter(mod => mod.isActive === false);
+        const filteredMods: ISteamMod[] = Mod.filterSteamMods(mods) as ISteamMod[];
 
         if (filteredMods.length === 0) {
             console.log('There are no mods to activate.');
@@ -39,25 +41,25 @@ export default class ActivateCommand extends Command {
             return;
         }
 
-        if (ids.length === 0) {
+        if (steamIds.length === 0) {
             const insurer = new Insurer(flags.nonInteractive);
 
-            ids = await insurer.ensureValidIds(filteredMods, 'What mods would you like to activate?');
+            steamIds = await insurer.ensureValidIds(filteredMods, 'What mods would you like to activate?');
         }
 
-        for (const id of ids) {
-            const mod = mods[mods.findIndex(m => m.id === id)];
+        for (const steamId of steamIds) {
+            const mod = mods[mods.findIndex(m => m.steamId === steamId)];
 
             // If user gave a non-existant mod id
             if (mod === undefined) { continue; }
 
-            // Remove mod keys
+            // Add mod keys
             Processor.updateKeys([mod]);
 
-            // Remove symlink
+            // Add symlink
             Processor.linkMods([mod]);
 
-            // Remove from config
+            // Add to config
             mod.isActive = true;
         }
 

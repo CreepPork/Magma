@@ -7,6 +7,7 @@ import IMod from '../interfaces/iMod';
 import Mod from '../mod';
 import Processor from '../processor';
 import SteamCmd from '../steam/steamCmd';
+import ISteamMod from '../interfaces/iSteamMod';
 
 export default class InstallCommand extends Command {
     public static description = 'Downloads and installs mods that have not been previously installed.';
@@ -26,7 +27,29 @@ export default class InstallCommand extends Command {
             return;
         }
 
-        await SteamCmd.download(...mods.map(mod => mod.id));
+        const localMods = this.installLocalMods(Mod.filterLocalMods(mods));
+        const steamMods = await this.installSteamMods(Mod.filterSteamMods(mods));
+
+        mods = localMods.concat(...steamMods);
+
+        mods = Processor.updateKeys(mods);
+
+        this.updateConfigFile(mods);
+
+        // Update LinuxGSM config
+        Processor.updateServerConfigFile(Config.get('mods'));
+    }
+
+    private installLocalMods(mods: IMod[]): IMod[] {
+        mods = Mod.getLocalModUpdatedAt(mods);
+
+        Processor.renameModsToLower(mods);
+
+        return mods;
+    }
+
+    private async installSteamMods(mods: ISteamMod[]): Promise<IMod[]> {
+        await SteamCmd.download(mods.map(mod => mod.steamId));
 
         // Fetch updatedAt property
         mods = await Mod.getModUpdatedAtFromApi(mods);
@@ -37,12 +60,7 @@ export default class InstallCommand extends Command {
         // Create a symlink to the SW mod files
         Processor.linkMods(mods);
 
-        mods = Processor.updateKeys(mods);
-
-        this.updateConfigFile(mods);
-
-        // Update LinuxGSM config
-        Processor.updateServerConfigFile(Config.get('mods'));
+        return mods;
     }
 
     private updateConfigFile(mods: IMod[]): void {

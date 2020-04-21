@@ -23,32 +23,27 @@ export default class SteamCmd {
             this.runCommand(`+login ${credentials.username} ${password}`, async data => {
                 if (data.includes('Steam Guard code:')) {
                     if (guardCode) {
-                        if (this.process) {
-                            this.process.write(`${guardCode}\r`);
-                        }
+                        this.process?.write(`${guardCode}\r`);
                     } else if (onGuardPrompt) {
                         const code = await onGuardPrompt();
-
-                        if (this.process) {
-                            this.process.write(`${code}\r`);
-                        }
+                        this.process?.write(`${code}\r`);
                     } else {
                         resolve(false);
                     }
-                } else if (data === 'Logged in OK\r\nWaiting for user info...') {
+                } else if (data.includes('Waiting for user info...')) {
                     loginSuccessful = true;
-                } else if (loginSuccessful && data === 'OK\r\n') {
+                } else if (loginSuccessful && data.includes('OK')) {
                     resolve(true);
-                } else if (data.startsWith('FAILED login with result code')) {
+                } else if (data.includes('FAILED login with result code')) {
                     resolve(false);
-                } else if (data === 'exit\r\n') {
+                } else if (data.includes('exit\r\n')) {
                     resolve(false);
                 }
             }, exit, path);
         });
     }
 
-    public static download(...ids: number[]): Promise<void> {
+    public static download(ids: number[]): Promise<void> {
         return new Promise(async (resolve, reject) => {
             const serverPath = Config.get('serverPath');
 
@@ -61,7 +56,7 @@ export default class SteamCmd {
 
             console.log('Fetching API data');
 
-            const apiMods = await SteamApi.getPublishedItems(...ids);
+            const apiMods = await SteamApi.getPublishedItems(ids);
 
             if (this.process) {
                 const bar = new progress.SingleBar({
@@ -111,10 +106,9 @@ export default class SteamCmd {
         const shell = os.platform() === 'win32' ? 'powershell.exe' : 'bash';
         const steamCmd = path ?? Config.get('steamCmdPath');
 
-        const process = pty.spawn(shell, [],
-            // @ts-ignore Per the docs it exists, but it's not in the typings.
-            { handleFlowControl: true },
-        );
+        const process = pty.spawn(shell, [], {
+            handleFlowControl: true,
+        });
 
         this.process = process;
 

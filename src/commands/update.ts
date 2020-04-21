@@ -3,6 +3,9 @@ import Config from '../config';
 import Processor from '../processor';
 import SteamCmd from '../steam/steamCmd';
 import SteamApi from '../steam/steamApi';
+import ISteamMod from '../interfaces/iSteamMod';
+import Mod from '../mod';
+import CronCommand from './cron';
 
 export default class ActivateCommand extends Command {
     public static description = 'Updates currently downloaded mods from Steam Workshop.';
@@ -14,7 +17,7 @@ export default class ActivateCommand extends Command {
     public async run(): Promise<void> {
         // Filter for only installed mods
         const configMods = Config.get('mods');
-        const mods = configMods.filter(mod => mod.updatedAt !== undefined);
+        const mods: ISteamMod[] = Mod.filterSteamMods(configMods).filter(mod => mod.updatedAt !== undefined);
 
         if (mods.length === 0) {
             console.log('No installed mods.');
@@ -23,7 +26,7 @@ export default class ActivateCommand extends Command {
         }
 
         // Check for those mods that need updates from SteamAPI
-        const apiMods = await SteamApi.getPublishedItems(...mods.map(mod => mod.id));
+        const apiMods = await SteamApi.getPublishedItems(mods.map(mod => mod.steamId));
 
         const queuedMods = [];
 
@@ -46,7 +49,7 @@ export default class ActivateCommand extends Command {
         }
 
         // Run SteamCmd
-        await SteamCmd.download(...queuedMods.map(mod => mod.id));
+        await SteamCmd.download(queuedMods.map(mod => mod.steamId));
 
         // Update keys
         const updatedMods = Processor.updateKeys(queuedMods);
@@ -61,5 +64,8 @@ export default class ActivateCommand extends Command {
         console.log(`Updated ${updatedMods.map(mod => mod.name).join(', ')}`);
 
         Config.set('mods', configMods);
+
+        // Run the cron command to inform others that the mods have been updated
+        CronCommand.run([]);
     }
 }

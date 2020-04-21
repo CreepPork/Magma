@@ -11,6 +11,9 @@ Magma is a CLI tool for Arma 3 server mod managment that works both on Windows a
 
 <!-- toc -->
 * [Features](#features)
+* [Requirements](#requirements)
+  * [Windows](#windows)
+  * [Linux](#linux)
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
@@ -26,16 +29,36 @@ Magma is a CLI tool for Arma 3 server mod managment that works both on Windows a
 - Ability to update and remove mods
 - Supports mod activation and deactivation (doesn't remove them from disk)
 - Supports Steam Guard
+- Local mod support
+
+# Requirements
+
+- Node >= v10
+
+## Windows
+
+```bash
+npm install --global --production windows-build-tools
+```
+
+The following is also required:
+- [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk) - only the "Desktop C++ Apps" components are needed to be installed
+
+## Linux
+
+To build Magma on Linux, `make`, `python` and `build-essential` is required.
+
+```
+sudo apt install -y make python build-essential
+```
 
 # Usage
 <!-- usage -->
-```sh-session
+```bash
 $ npm install -g @creeppork/magma
-$ magma COMMAND
-running command...
-$ magma (-v|--version|version)
+$ magma --version
 @creeppork/magma/2.0.0 linux-x64 node-v10.16.0
-$ magma --help [COMMAND]
+$ magma help [COMMAND]
 USAGE
   $ magma COMMAND
 ...
@@ -43,17 +66,29 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`magma activate [ID]`](#magma-activate-id)
-* [`magma add ID`](#magma-add-id)
-* [`magma configure`](#magma-configure)
-* [`magma cron`](#magma-cron)
-* [`magma deactivate [ID]`](#magma-deactivate-id)
-* [`magma help [COMMAND]`](#magma-help-command)
-* [`magma initialize`](#magma-initialize)
-* [`magma install`](#magma-install)
-* [`magma list`](#magma-list)
-* [`magma remove [ID]`](#magma-remove-id)
-* [`magma update`](#magma-update)
+- [Magma](#magma)
+- [Features](#features)
+- [Requirements](#requirements)
+  - [Windows](#windows)
+  - [Linux](#linux)
+- [Usage](#usage)
+- [Commands](#commands)
+  - [`magma activate [ID]`](#magma-activate-id)
+  - [`magma add ID`](#magma-add-id)
+  - [`magma configure`](#magma-configure)
+  - [`magma cron`](#magma-cron)
+  - [`magma deactivate [ID]`](#magma-deactivate-id)
+  - [`magma help [COMMAND]`](#magma-help-command)
+  - [`magma initialize`](#magma-initialize)
+  - [`magma install`](#magma-install)
+  - [`magma list`](#magma-list)
+  - [`magma remove [ID]`](#magma-remove-id)
+  - [`magma update`](#magma-update)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [Security](#security)
+- [Credits](#credits)
+- [License](#license)
 
 ## `magma activate [ID]`
 
@@ -286,3 +321,26 @@ USAGE
 
 _See code: [src/commands/update.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/update.ts)_
 <!-- commandsstop -->
+
+# Testing
+
+```bash
+npm test
+```
+
+# Contributing
+
+Please see [CONTRIBUTING.md](https://github.com/CreepPork/Magma/blob/master/CONTRIBUTING.md) for details.
+
+# Security
+
+If you discover any security-related issues, please e-mail [security@garkaklis.com](mailto:security@garkaklis.com) instead of using the issue tracker.
+
+# Credits
+
+- [Ralfs Garkaklis](https://github.com/CreepPork)
+- [All Contributors](https://github.com/CreepPork/Magma/contributors)
+
+# License
+
+The MIT License (MIT). Please see the [License file](https://github.com/CreepPork/Magma/blob/master/LICENSE) for more information.
