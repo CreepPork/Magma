@@ -11,6 +11,9 @@ Magma is a CLI tool for Arma 3 server mod managment that works both on Windows a
 
 <!-- toc -->
 * [Features](#features)
+* [Requirements](#requirements)
+  * [Windows](#windows)
+  * [Linux](#linux)
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
@@ -34,16 +37,20 @@ Magma is a CLI tool for Arma 3 server mod managment that works both on Windows a
 
 ## Windows
 
-- Minimum of [PowerShell v7](https://github.com/PowerShell/PowerShell/releases/latest)
-- Windows build tools
 ```bash
 npm install --global --production windows-build-tools
 ```
+
+The following is also required:
 - [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk) - only the "Desktop C++ Apps" components are needed to be installed
 
 ## Linux
 
-- 
+To build Magma on Linux, `make`, `python` and `build-essential` is required.
+
+```
+sudo apt install -y make python build-essential
+```
 
 # Usage
 <!-- usage -->
@@ -77,6 +84,11 @@ USAGE
   - [`magma list`](#magma-list)
   - [`magma remove [ID]`](#magma-remove-id)
   - [`magma update`](#magma-update)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [Security](#security)
+- [Credits](#credits)
+- [License](#license)
 
 ## `magma activate [ID]`
 
@@ -309,3 +321,26 @@ USAGE
 
 _See code: [src/commands/update.ts](https://github.com/CreepPork/Magma/blob/v2.0.0/src/commands/update.ts)_
 <!-- commandsstop -->
+
+# Testing
+
+```bash
+npm test
+```
+
+# Contributing
+
+Please see [CONTRIBUTING.md](https://github.com/CreepPork/Magma/blob/master/CONTRIBUTING.md) for details.
+
+# Security
+
+If you discover any security-related issues, please e-mail [security@garkaklis.com](mailto:security@garkaklis.com) instead of using the issue tracker.
+
+# Credits
+
+- [Ralfs Garkaklis](https://github.com/CreepPork)
+- [All Contributors](https://github.com/CreepPork/Magma/contributors)
+
+# License
+
+The MIT License (MIT). Please see the [License file](https://github.com/CreepPork/Magma/blob/master/LICENSE) for more information.
