@@ -103,30 +103,18 @@ export default class SteamCmd {
     }
 
     private static runCommand(command: string, onData: (data: string) => void, exit = true, path?: string): void {
-        const shell = os.platform() === 'win32' ? 'bash.exe' : 'bash';
+        const shell = os.platform() === 'win32' ? 'powershell.exe' : 'bash';
         const steamCmd = path ?? Config.get('steamCmdPath');
 
         const process = pty.spawn(shell, [], {
-            name: 'xterm-color',
-            cols: 80,
-            rows: 30,
-            cwd: __dirname
+            handleFlowControl: true,
         });
 
         this.process = process;
 
-        process.on('data', d => global.process.stdout.write(d));
-
         process.on('data', onData);
 
-        setTimeout(() => {
-            console.log(process.handleFlowControl);
-            process.kill();
-            global.process.kill(process.pid, 'SIGKILL');
-        }, 10000);
-
-        process.write(`"${steamCmd}" "${command} ${exit ? '+exit"' : ''}\r`);
-        process.write('exit\r');
+        process.write(`${steamCmd} ${command} ${exit ? '+exit && exit 0' : ''}\r`);
     }
 
     private static exitTerminal(): void {
