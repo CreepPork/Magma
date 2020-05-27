@@ -1,14 +1,14 @@
+import * as progress from 'cli-progress';
 import * as pty from 'node-pty';
 import * as os from 'os';
-import * as progress from 'cli-progress';
-
 import Config from '../config';
 import CServer from '../constants/server';
 import Encrypter from '../encrypter';
-import SteamApi from './steamApi';
 import Filesystem from '../filesystem';
-import ISteamPublishedFile from '../interfaces/iSteamPublishedFile';
 import IProgressPayload from '../interfaces/iProgressPayload';
+import ISteamPublishedFile from '../interfaces/iSteamPublishedFile';
+import SteamApi from './steamApi';
+
 
 export default class SteamCmd {
     public static process?: pty.IPty;
@@ -45,6 +45,8 @@ export default class SteamCmd {
 
     public static download(ids: number[]): Promise<void> {
         return new Promise(async (resolve, reject) => {
+            if (ids.length === 0) { return resolve(); }
+
             const serverPath = Config.get('serverPath');
 
             console.log('Logging in...');

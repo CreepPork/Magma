@@ -1,13 +1,12 @@
-import * as _ from 'lodash';
-
 import Command from '@oclif/command';
-
 import Config from '../config';
 import IMod from '../interfaces/iMod';
+import ISteamMod from '../interfaces/iSteamMod';
 import Mod from '../mod';
 import Processor from '../processor';
 import SteamCmd from '../steam/steamCmd';
-import ISteamMod from '../interfaces/iSteamMod';
+
+
 
 export default class InstallCommand extends Command {
     public static description = 'Downloads and installs mods that have not been previously installed.';
@@ -41,6 +40,8 @@ export default class InstallCommand extends Command {
     }
 
     private installLocalMods(mods: IMod[]): IMod[] {
+        if (mods.length === 0) { return []; }
+
         mods = Mod.getLocalModUpdatedAt(mods);
 
         Processor.renameModsToLower(mods);
@@ -49,6 +50,8 @@ export default class InstallCommand extends Command {
     }
 
     private async installSteamMods(mods: ISteamMod[]): Promise<IMod[]> {
+        if (mods.length === 0) { return []; }
+
         await SteamCmd.download(mods.map(mod => mod.steamId));
 
         // Fetch updatedAt property
