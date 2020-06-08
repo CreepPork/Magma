@@ -1,10 +1,8 @@
 import Command, { flags as flag } from '@oclif/command';
-
 import Config from '../config';
 import Encrypter from '../encrypter';
-import Insurer from '../insurer';
-
 import * as setFlag from '../flags';
+import Insurer from '../insurer';
 
 import ora = require('ora');
 
@@ -63,6 +61,7 @@ export default class InitializeCommand extends Command {
 
         Config.setAll({
             version: Config.getLatestVersion(),
+            lastId: 0,
             credentials: {
                 password: new Encrypter(key).encrypt(credentials.password),
                 username: credentials.username,
