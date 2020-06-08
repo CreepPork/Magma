@@ -1,7 +1,6 @@
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
-
 import InitializeCommand from '../../../src/commands/initialize';
 import Config from '../../../src/config';
 import SteamCmd from '../../../src/steam/steamCmd';
@@ -61,6 +60,7 @@ describe('Initialize.run()', () => {
             steamCmdPath: cmdPath,
             cronMessages: [],
             version: Config.getLatestVersion(),
+            lastId: 0,
         });
 
         if (fs.existsSync(gsmPath)) { fs.removeSync(gsmPath); }

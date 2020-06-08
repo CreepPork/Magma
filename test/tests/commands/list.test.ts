@@ -1,15 +1,15 @@
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
-
 import ListCommand from '../../../src/commands/list';
 import Config from '../../../src/config';
 import { EModType } from '../../../src/enums/eModType';
 import NotInitializedError from '../../../src/errors/notInitializedError';
 import IMod from '../../../src/interfaces/iMod';
+import setupCommand from '../../setup';
+
 
 import nock = require('nock');
-import setupCommand from '../../setup';
 import Table = require('cli-table');
 
 let orgPath: any;
@@ -37,6 +37,7 @@ describe('List.run()', () => {
 
         // Table.toString() throws error for some reason
         tableMock = jest.spyOn(Table.prototype, 'toString').mockReturnValue('');
+        Config.ensureIsLatestVersion = jest.fn();
     });
 
     beforeEach(() => {
