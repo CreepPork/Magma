@@ -62,7 +62,7 @@ $ npm install -g @creeppork/magma
 $ magma COMMAND
 running command...
 $ magma (-v|--version|version)
-@creeppork/magma/3.0.0-beta.2 linux-x64 node-v10.16.0
+@creeppork/magma/3.0.0-beta.3 linux-x64 node-v10.16.0
 $ magma --help [COMMAND]
 USAGE
   $ magma COMMAND
@@ -105,7 +105,7 @@ EXAMPLES
   magma activate 450814997 723217262 713709341
 ```
 
-_See code: [src/commands/activate.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.2/src/commands/activate.ts)_
+_See code: [src/commands/activate.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.3/src/commands/activate.ts)_
 
 ## `magma add IDS`
 
@@ -127,7 +127,7 @@ EXAMPLES
   magma add 450814997 723217262 713709341 --type all client server
 ```
 
-_See code: [src/commands/add/index.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.2/src/commands/add/index.ts)_
+_See code: [src/commands/add/index.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.3/src/commands/add/index.ts)_
 
 ## `magma add:local PATHS`
 
@@ -149,7 +149,7 @@ EXAMPLES
   magma add:local /home/arma/@all /home/arma/@client /home/arma/@server --type all client server
 ```
 
-_See code: [src/commands/add/local.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.2/src/commands/add/local.ts)_
+_See code: [src/commands/add/local.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.3/src/commands/add/local.ts)_
 
 ## `magma configure`
 
@@ -188,7 +188,7 @@ EXAMPLES
   magma configure -n -u UserName
 ```
 
-_See code: [src/commands/configure.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.2/src/commands/configure.ts)_
+_See code: [src/commands/configure.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.3/src/commands/configure.ts)_
 
 ## `magma cron`
 
@@ -205,7 +205,7 @@ EXAMPLE
   magma cron
 ```
 
-_See code: [src/commands/cron.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.2/src/commands/cron.ts)_
+_See code: [src/commands/cron.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.3/src/commands/cron.ts)_
 
 ## `magma deactivate [ID]`
 
@@ -227,7 +227,7 @@ EXAMPLES
   magma deactivate 450814997 723217262 713709341
 ```
 
-_See code: [src/commands/deactivate.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.2/src/commands/deactivate.ts)_
+_See code: [src/commands/deactivate.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.3/src/commands/deactivate.ts)_
 
 ## `magma help [COMMAND]`
 
@@ -281,7 +281,7 @@ ALIASES
   $ magma init
 ```
 
-_See code: [src/commands/initialize.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.2/src/commands/initialize.ts)_
+_See code: [src/commands/initialize.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.3/src/commands/initialize.ts)_
 
 ## `magma install`
 
@@ -292,7 +292,7 @@ USAGE
   $ magma install
 ```
 
-_See code: [src/commands/install.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.2/src/commands/install.ts)_
+_See code: [src/commands/install.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.3/src/commands/install.ts)_
 
 ## `magma list`
 
@@ -303,7 +303,7 @@ USAGE
   $ magma list
 ```
 
-_See code: [src/commands/list.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.2/src/commands/list.ts)_
+_See code: [src/commands/list.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.3/src/commands/list.ts)_
 
 ## `magma remove [ID]`
 
@@ -328,7 +328,7 @@ EXAMPLES
   magma remove 14 3 9
 ```
 
-_See code: [src/commands/remove.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.2/src/commands/remove.ts)_
+_See code: [src/commands/remove.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.3/src/commands/remove.ts)_
 
 ## `magma update`
 
@@ -339,7 +339,7 @@ USAGE
   $ magma update
 ```
 
-_See code: [src/commands/update.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.2/src/commands/update.ts)_
+_See code: [src/commands/update.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.3/src/commands/update.ts)_
 
 ## `magma upgrade`
 
@@ -350,7 +350,7 @@ USAGE
   $ magma upgrade
 ```
 
-_See code: [src/commands/upgrade.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.2/src/commands/upgrade.ts)_
+_See code: [src/commands/upgrade.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.3/src/commands/upgrade.ts)_
 <!-- commandsstop -->
 
 # Testing
