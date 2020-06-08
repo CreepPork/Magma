@@ -1,12 +1,12 @@
 import * as fs from 'fs-extra';
 import * as _ from 'lodash';
 import * as path from 'path';
-
 import Config from './config';
 import { EModType } from './enums/eModType';
 import Filesystem from './filesystem';
 import IMod from './interfaces/iMod';
 import Mod from './mod';
+
 
 export default class Processor {
     public static renameModsToLower(mods: IMod[]): void {
@@ -19,7 +19,7 @@ export default class Processor {
     }
 
     public static updateKeys(mods: IMod[]): IMod[] {
-        const serverPath = this.serverPath;
+        const serverPath = Config.get('serverPath');
         fs.mkdirpSync(path.join(serverPath, 'keys'));
 
         for (const mod of mods) {
@@ -60,7 +60,7 @@ export default class Processor {
     }
 
     public static linkMods(mods: IMod[]): void {
-        const serverPath = this.serverPath;
+        const serverPath = Config.get('serverPath');
 
         fs.mkdirpSync(path.join(serverPath, 'mods'));
         fs.mkdirpSync(path.join(serverPath, 'servermods'));
@@ -83,7 +83,7 @@ export default class Processor {
     public static unlinkMod(mod: IMod): void {
         if (mod.type !== EModType.client) {
             const linkPath = path.join(
-                this.serverPath,
+                Config.get('serverPath'),
                 mod.type === EModType.all ? 'mods' : 'servermods',
                 `@${_.snakeCase(mod.name)}`,
             );
@@ -134,7 +134,7 @@ export default class Processor {
         let serverModStringAdded = false;
 
         for (const [index, line] of configText.entries()) {
-            // If the line is commented out, we ignore it (or is an empty line)
+            // If the line is commented out or empty, we ignore it
             if (line.charAt(0) === '#' || line === '') { continue; }
 
             if (line.startsWith('mods=')) {
@@ -157,7 +157,4 @@ export default class Processor {
 
         fs.writeFileSync(serverConfigPath, configText.join('\n'));
     }
-
-    // Fix error on npm pack if no magma.json file exists
-    private static serverPath = Config.exists() ? Config.get('serverPath') : '';
 }
