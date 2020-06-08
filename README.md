@@ -5,7 +5,7 @@ Magma is a CLI tool for Arma 3 server mod managment that works both on Windows a
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/@creeppork/magma.svg)](https://npmjs.org/package/@creeppork/magma)
-[![Codecov](https://codecov.io/gh/CreepPork/Magma/branch/rewrite/graph/badge.svg)](https://codecov.io/gh/CreepPork/Magma)
+[![Codecov](https://codecov.io/gh/CreepPork/Magma/branch/master/graph/badge.svg)](https://codecov.io/gh/CreepPork/Magma)
 [![Downloads/week](https://img.shields.io/npm/dw/@creeppork/magma.svg)](https://npmjs.org/package/@creeppork/magma)
 [![License](https://img.shields.io/npm/l/@creeppork/magma.svg)](https://github.com/CreepPork/Magma/blob/master/package.json)
 
