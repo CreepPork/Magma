@@ -89,6 +89,6 @@
   },
   "types": "lib/index.d.ts",
   "magma": {
-    "latestConfigVersion": 2
+    "latestConfigVersion": 3
   }
 }
