@@ -1,8 +1,6 @@
-import * as _ from 'lodash';
-
 import Command from '@oclif/command';
 import { IArg } from '@oclif/parser/lib/args';
-
+import * as _ from 'lodash';
 import Config from '../config';
 import { nonInteractive } from '../flags';
 import Insurer from '../insurer';
@@ -12,12 +10,12 @@ export default class RemoveCommand extends Command {
     public static description = 'Removes mod files from disk.';
     public static examples = [
         'magma remove',
-        'magma remove 723217262',
-        'magma remove 450814997 723217262 713709341',
+        'magma remove 1',
+        'magma remove 14 3 9',
     ];
     public static strict = false;
     public static aliases = ['uninstall'];
-    public static args = [{ description: 'Steam Workshop item IDs.', name: 'id' }] as IArg[];
+    public static args = [{ description: 'Item IDs.', name: 'id' }] as IArg[];
     public static flags = {
         nonInteractive,
     };

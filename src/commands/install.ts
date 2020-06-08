@@ -6,8 +6,6 @@ import Mod from '../mod';
 import Processor from '../processor';
 import SteamCmd from '../steam/steamCmd';
 
-
-
 export default class InstallCommand extends Command {
     public static description = 'Downloads and installs mods that have not been previously installed.';
 
