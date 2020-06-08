@@ -1,8 +1,6 @@
 import Command from '@oclif/command';
-import Config from '../config';
-
-import * as _ from 'lodash';
 import * as chalk from 'chalk';
+import Config from '../config';
 
 export default class ActivateCommand extends Command {
     public static description = 'Upgrades Magma configuration file to match the newest version.';
@@ -24,6 +22,10 @@ export default class ActivateCommand extends Command {
         switch (currentVersion) {
             case undefined:
                 this.performUpdateToVersion2();
+                break;
+
+            case 2:
+                this.performUpdateToVersion3();
                 break;
 
             default:
@@ -53,5 +55,15 @@ export default class ActivateCommand extends Command {
 
         // Update config version
         Config.set('version', 2);
+    }
+
+    private performUpdateToVersion3(): void {
+        const config = Config.getAll();
+
+        // Add lastId property
+        config.lastId = config.mods.length;
+
+        Config.setAll(config);
+        Config.set('version', 3);
     }
 }

@@ -1,13 +1,13 @@
 import * as path from 'path';
-
-import { EModType } from './enums/eModType';
-
+import Config from './config';
 import CServer from './constants/server';
+import { EModType } from './enums/eModType';
 import IMod from './interfaces/iMod';
+import ISteamMod from './interfaces/iSteamMod';
 import SteamApi from './steam/steamApi';
 import Time from './time';
-import Config from './config';
-import ISteamMod from './interfaces/iSteamMod';
+
+
 
 export default class Mod {
     public static async generateModsFromApi(mods: { id: number, steamId: number, type: EModType }[]): Promise<IMod[]> {
@@ -33,23 +33,14 @@ export default class Mod {
         return processed;
     }
 
-    public static getLastModId(): number {
-        Config.ensureIsInitialized();
-
-        const mods = Config.get('mods');
-        let id = 0;
-
-        for (const mod of mods) {
-            if (mod.id > id) {
-                id = mod.id;
-            }
-        }
-
-        return id;
-    }
-
     public static generateModId(): number {
-        return this.getLastModId() + 1;
+        Config.ensureIsInitialized();
+        const lastId = Config.get('lastId');
+
+        const newId = lastId === undefined ? 0 : lastId + 1;
+        Config.set('lastId', newId);
+
+        return newId;
     }
 
     public static getLocalModUpdatedAt(mods: IMod[]): IMod[] {
