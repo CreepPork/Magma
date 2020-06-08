@@ -314,7 +314,7 @@ USAGE
   $ magma remove [ID]
 
 ARGUMENTS
-  ID  Steam Workshop item IDs.
+  ID  Item IDs.
 
 OPTIONS
   -n, --nonInteractive  Do not prompt for any input.
@@ -324,8 +324,8 @@ ALIASES
 
 EXAMPLES
   magma remove
-  magma remove 723217262
-  magma remove 450814997 723217262 713709341
+  magma remove 1
+  magma remove 14 3 9
 ```
 
 _See code: [src/commands/remove.ts](https://github.com/CreepPork/Magma/blob/v3.0.0-beta.2/src/commands/remove.ts)_
