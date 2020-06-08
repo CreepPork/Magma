@@ -1,10 +1,10 @@
 import Command from '@oclif/command';
 import Config from '../config';
-import Processor from '../processor';
-import SteamCmd from '../steam/steamCmd';
-import SteamApi from '../steam/steamApi';
 import ISteamMod from '../interfaces/iSteamMod';
 import Mod from '../mod';
+import Processor from '../processor';
+import SteamApi from '../steam/steamApi';
+import SteamCmd from '../steam/steamCmd';
 import CronCommand from './cron';
 
 export default class ActivateCommand extends Command {
@@ -12,6 +12,7 @@ export default class ActivateCommand extends Command {
 
     public async init(): Promise<void> {
         Config.ensureIsInitialized();
+        Config.ensureIsLatestVersion();
     }
 
     public async run(): Promise<void> {

@@ -1,12 +1,10 @@
-import * as _ from 'lodash';
-
 import Command, { flags as flag } from '@oclif/command';
-
-import Config from '../config';
+import * as _ from 'lodash';
 import Discord from '../channels/discord';
-import SteamApi from '../steam/steamApi';
-import Mod from '../mod';
+import Config from '../config';
 import ISteamMod from '../interfaces/iSteamMod';
+import Mod from '../mod';
+import SteamApi from '../steam/steamApi';
 
 export default class CronCommand extends Command {
     public static description = 'A command designed to be run in a time-based job scheduler to notify on social platforms for mod updates. Each time it is run, it will query the Steam Web API. Do not run this command too frequently so not to get rate-limited.';
@@ -23,6 +21,7 @@ export default class CronCommand extends Command {
 
     public async init(): Promise<void> {
         Config.ensureIsInitialized();
+        Config.ensureIsLatestVersion();
     }
 
     public async run(): Promise<void> {

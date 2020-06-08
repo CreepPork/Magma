@@ -1,21 +1,20 @@
 import Command from '@oclif/command';
-import Config from '../config';
-
-import { EModType } from '../enums/eModType';
-
-import Table = require('cli-table');
-import Time from '../time';
-import SteamApi from '../steam/steamApi';
-import Mod from '../mod';
-
 import * as chalk from 'chalk';
 import * as _ from 'lodash';
+import Config from '../config';
+import { EModType } from '../enums/eModType';
+import Mod from '../mod';
+import SteamApi from '../steam/steamApi';
+import Time from '../time';
+
+import Table = require('cli-table');
 
 export default class ListCommand extends Command {
     public static description = 'Lists all mods that have been added or installed by Magma.';
 
     public async init(): Promise<void> {
         Config.ensureIsInitialized();
+        Config.ensureIsLatestVersion();
     }
 
     public async run(): Promise<void> {

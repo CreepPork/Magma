@@ -1,14 +1,11 @@
-import * as _ from 'lodash';
-
 import Command from '@oclif/command';
 import { IArg } from '@oclif/parser/lib/args';
-
 import Config from '../config';
 import { nonInteractive } from '../flags';
 import Insurer from '../insurer';
-import Processor from '../processor';
 import ISteamMod from '../interfaces/iSteamMod';
 import Mod from '../mod';
+import Processor from '../processor';
 
 export default class ActivateCommand extends Command {
     public static description = 'Activates mods by adding their symlinks and keys back.';
@@ -25,6 +22,7 @@ export default class ActivateCommand extends Command {
 
     public async init(): Promise<void> {
         Config.ensureIsInitialized();
+        Config.ensureIsLatestVersion();
     }
 
     public async run(): Promise<void> {

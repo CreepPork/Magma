@@ -22,6 +22,7 @@ export default class RemoveCommand extends Command {
 
     public async init(): Promise<void> {
         Config.ensureIsInitialized();
+        Config.ensureIsLatestVersion();
     }
 
     public async run(): Promise<void> {

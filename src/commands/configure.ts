@@ -1,17 +1,13 @@
-import * as _ from 'lodash';
-
-import ora = require('ora');
-
 import Command from '@oclif/command';
-
-import * as setFlag from '../flags';
-
 import Config from '../config';
+import ConfigEntries from '../constants/configEntries';
+import Encrypter from '../encrypter';
+import * as setFlag from '../flags';
 import Insurer from '../insurer';
 import IConfig from '../interfaces/iConfig';
 import IConfigEntry from '../interfaces/iConfigEntry';
-import Encrypter from '../encrypter';
-import ConfigEntries from '../constants/configEntries';
+
+import ora = require('ora');
 
 export default class ConfigureCommand extends Command {
     public static description = 'Allows to modify the existing configuration file. In interactive mode all flags will be ignored (except Steam Guard).';
@@ -34,6 +30,7 @@ export default class ConfigureCommand extends Command {
 
     public async init(): Promise<void> {
         Config.ensureIsInitialized();
+        Config.ensureIsLatestVersion();
     }
 
     private insurer?: Insurer;

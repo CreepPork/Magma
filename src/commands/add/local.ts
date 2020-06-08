@@ -1,16 +1,13 @@
-import * as _ from 'lodash';
-import * as path from 'path';
-
 import Command, { flags as flag } from '@oclif/command';
 import { IArg } from '@oclif/parser/lib/args';
 import { prompt } from 'inquirer';
-
-import { EModType } from '../../enums/eModType';
-import { nonInteractive } from '../../flags';
-
+import * as _ from 'lodash';
+import * as path from 'path';
 import Config from '../../config';
-import IMod from '../../interfaces/iMod';
+import { EModType } from '../../enums/eModType';
 import Filesystem from '../../filesystem';
+import { nonInteractive } from '../../flags';
+import IMod from '../../interfaces/iMod';
 import Mod from '../../mod';
 
 export default class AddLocalCommand extends Command {
@@ -33,6 +30,7 @@ export default class AddLocalCommand extends Command {
 
     public async init(): Promise<void> {
         Config.ensureIsInitialized();
+        Config.ensureIsLatestVersion();
     }
 
     public async run(): Promise<void> {

@@ -1,12 +1,12 @@
 import Command, { flags as flag } from '@oclif/command';
 import { IArg } from '@oclif/parser/lib/args';
 import { prompt } from 'inquirer';
-
 import Config from '../../config';
 import { EModType } from '../../enums/eModType';
 import { nonInteractive } from '../../flags';
 import Mod from '../../mod';
 import SteamApi from '../../steam/steamApi';
+
 
 import ora = require('ora');
 
@@ -30,6 +30,7 @@ export default class AddCommand extends Command {
 
     public async init(): Promise<void> {
         Config.ensureIsInitialized();
+        Config.ensureIsLatestVersion();
     }
 
     public async run(): Promise<void> {
