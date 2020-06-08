@@ -1,4 +1,5 @@
-import Command, { flags as flag } from '@oclif/command';
+import { flags as flag } from '@oclif/command';
+import Command from '../command';
 import Config from '../config';
 import Encrypter from '../encrypter';
 import * as setFlag from '../flags';

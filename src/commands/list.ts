@@ -1,6 +1,6 @@
-import Command from '@oclif/command';
 import * as chalk from 'chalk';
 import * as _ from 'lodash';
+import Command from '../command';
 import Config from '../config';
 import { EModType } from '../enums/eModType';
 import Mod from '../mod';

@@ -1,6 +1,7 @@
-import Command, { flags as flag } from '@oclif/command';
+import { flags as flag } from '@oclif/command';
 import * as _ from 'lodash';
 import Discord from '../channels/discord';
+import Command from '../command';
 import Config from '../config';
 import ISteamMod from '../interfaces/iSteamMod';
 import Mod from '../mod';

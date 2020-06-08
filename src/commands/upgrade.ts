@@ -1,5 +1,5 @@
-import Command from '@oclif/command';
 import * as chalk from 'chalk';
+import Command from '../command';
 import Config from '../config';
 
 export default class ActivateCommand extends Command {

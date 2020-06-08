@@ -1,4 +1,4 @@
-import Command from '@oclif/command';
+import Command from '../command';
 import Config from '../config';
 import IMod from '../interfaces/iMod';
 import ISteamMod from '../interfaces/iSteamMod';

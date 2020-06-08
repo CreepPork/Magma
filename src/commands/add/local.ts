@@ -1,8 +1,9 @@
-import Command, { flags as flag } from '@oclif/command';
+import { flags as flag } from '@oclif/command';
 import { IArg } from '@oclif/parser/lib/args';
 import { prompt } from 'inquirer';
 import * as _ from 'lodash';
 import * as path from 'path';
+import Command from '../../command';
 import Config from '../../config';
 import { EModType } from '../../enums/eModType';
 import Filesystem from '../../filesystem';

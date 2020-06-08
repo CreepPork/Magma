@@ -30,6 +30,10 @@ describe('Initialize.run()', () => {
         Config['path'] = orgPath;
     });
 
+    beforeEach(() => {
+        InitializeCommand.useSentry = false;
+    });
+
     test('Command runs in non interactive mode', async () => {
         const mock = jest.spyOn(SteamCmd, 'login').mockResolvedValue(true);
         const configMock = jest.spyOn(Config, 'setAll');

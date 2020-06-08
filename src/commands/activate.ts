@@ -1,5 +1,5 @@
-import Command from '@oclif/command';
 import { IArg } from '@oclif/parser/lib/args';
+import Command from '../command';
 import Config from '../config';
 import { nonInteractive } from '../flags';
 import Insurer from '../insurer';

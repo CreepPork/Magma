@@ -1,12 +1,12 @@
-import Command, { flags as flag } from '@oclif/command';
+import { flags as flag } from '@oclif/command';
 import { IArg } from '@oclif/parser/lib/args';
 import { prompt } from 'inquirer';
+import Command from '../../command';
 import Config from '../../config';
 import { EModType } from '../../enums/eModType';
 import { nonInteractive } from '../../flags';
 import Mod from '../../mod';
 import SteamApi from '../../steam/steamApi';
-
 
 import ora = require('ora');
 
