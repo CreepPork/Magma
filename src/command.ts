@@ -1,23 +1,24 @@
 import { Command as OclifCommand } from '@oclif/command';
 import * as Sentry from '@sentry/node';
 import Config from './config';
+import NotInitializedError from './errors/notInitializedError';
+import OutdatedConfigurationFileError from './errors/outdatedConfigurationFileError';
 
 export default abstract class Command extends OclifCommand {
     public static useSentry = true;
 
-    protected async init(): Promise<any> {
-        const response = super.init();
-
-        if (Command.useSentry) {
-            Sentry.init({
-                dsn: 'https://a40f7820b71947b4843450685d74be7a@o288394.ingest.sentry.io/1796112',
-            });
-        }
-
-        return response;
-    }
+    private static ignoredExceptions = [
+        typeof OutdatedConfigurationFileError,
+        typeof NotInitializedError
+    ];
 
     protected async catch(error: Error): Promise<any> {
+        this.initSentry();
+
+        if (Command.ignoredExceptions.includes(typeof error)) {
+            return super.catch(error);
+        }
+
         Sentry.captureException(error, scope => {
             try {
                 const config = Config.exists() ? Config.getAll() : undefined;
@@ -78,8 +79,20 @@ export default abstract class Command extends OclifCommand {
         });
 
         // Send the exception right now, otherwise it won't be sent
-        await Sentry.flush();
+        try {
+            await Sentry.flush();
+        } catch (error) {
+            console.warn('Sentry is not initalized, please notify the developer.');
+        }
 
         return super.catch(error);
+    }
+
+    private initSentry(): void {
+        if (Command.useSentry) {
+            Sentry.init({
+                dsn: 'https://a40f7820b71947b4843450685d74be7a@o288394.ingest.sentry.io/1796112',
+            });
+        }
     }
 }
