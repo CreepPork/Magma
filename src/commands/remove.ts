@@ -48,7 +48,11 @@ export default class RemoveCommand extends Command {
             const mod = mods[mods.findIndex(m => m.id === id)];
 
             // If user gave a non-existant mod id
-            if (mod === undefined) { continue; }
+            if (mod === undefined) {
+                console.warn(`The given mod with ID of ${id} hasn't been found.\nDid you enter the item ID a and not the Steam ID?`)
+
+                continue;
+            }
 
             // Remove mod keys
             Processor.removeKeysFromMod(mod);
