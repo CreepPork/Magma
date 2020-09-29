@@ -49,7 +49,7 @@ export default class RemoveCommand extends Command {
 
             // If user gave a non-existant mod id
             if (mod === undefined) {
-                console.warn(`The given mod with ID of ${id} hasn't been found.\nDid you enter the item ID a and not the Steam ID?`)
+                console.warn(`The given mod with ID of ${id} hasn't been found.\nDid you enter the item ID and not the Steam ID?`)
 
                 continue;
             }
