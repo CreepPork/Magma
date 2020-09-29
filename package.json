@@ -1,7 +1,7 @@
 {
   "name": "@creeppork/magma",
   "description": "Magma is a CLI tool for Arma 3 server mod managment that works both on Windows and Linux.",
-  "version": "3.0.0-beta.6",
+  "version": "3.0.0-beta.7",
   "author": "CreepPork",
   "bin": {
     "magma": "./bin/run"
