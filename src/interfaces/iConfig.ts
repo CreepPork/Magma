@@ -2,6 +2,7 @@ import IMod from './iMod';
 import ISteamCredentials from './iSteamCredentials';
 
 export default interface IConfig {
+    batchScript?: string;
     version: number;
     lastId: number;
     mods: IMod[];

@@ -11,6 +11,14 @@ export default class Filesystem {
         return false;
     }
 
+    public static hasExtension(filepath: string, extension: string): boolean {
+        if (fs.existsSync(filepath)) {
+            return path.parse(filepath).ext === extension;
+        }
+
+        return false;
+    }
+
     public static isDirectory(filepath: string, includeSymLinks?: boolean): boolean {
         if (fs.existsSync(filepath)) {
             const stats = fs.lstatSync(filepath);

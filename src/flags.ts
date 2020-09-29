@@ -11,6 +11,11 @@ export const linuxGsmInstanceConfig = flags.string({
     description: 'Absolute path to the LinuxGSM instance configuration file (where it handles mods/servermods) (only supported on Linux)',
 });
 
+export const batchScript = flags.string({
+    char: 'b',
+    description: 'Absolute path to the Batch script starting your server, where it has your mods (only supported on Windows)',
+});
+
 export const password = flags.string({
     char: 'p',
     description: 'Steam user password.',

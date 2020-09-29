@@ -103,8 +103,68 @@ export default class Processor {
     }
 
     public static updateServerConfigFile(mods: IMod[]): void {
-        if (process.platform === 'win32') { return; }
+        if (process.platform === 'win32') {
+            this.handleConfigForWindows(mods);
+        } else {
+            this.handleConfigForLinux(mods);
+        }
+    }
 
+    private static handleConfigForWindows(mods: IMod[]): void {
+        const requiredMods = mods.filter(mod => mod.type === EModType.all && mod.isActive === true);
+        const serverMods = mods.filter(mod => mod.type === EModType.server && mod.isActive === true);
+
+        const serverConfigPath = Config.get('batchScript');
+
+        if (!serverConfigPath) { return; }
+
+        let requiredModString = '-mod=';
+        let serverModString = '-serverMod=';
+
+        for (const mod of requiredMods) {
+            requiredModString += `mods\\@${_.snakeCase(mod.name)}`;
+
+            if (requiredMods.indexOf(mod) !== requiredMods.length - 1) {
+                requiredModString += ';';
+            }
+        }
+
+        for (const mod of serverMods) {
+            serverModString += `servermods\\@${_.snakeCase(mod.name)}`;
+
+            if (serverMods.indexOf(mod) !== serverMods.length - 1) {
+                serverModString += ';';
+            }
+        }
+
+        // Read config file and transform it into a line array
+        const configText = fs.readFileSync(serverConfigPath).toString().replace(/[\r]/g, '').trim().split('\n');
+
+        let requiredModStringAdded = false;
+        let serverModStringAdded = false;
+
+        const regexMod = /-mod=(([a-zA-Z]\w+\\@[a-zA-Z0-9_-]\w+[;]?)*|(@[a-zA-Z0-9_-]\w+[;]?))*/g;
+        const regexServerMod = /-serverMod=(([a-zA-Z]\w+\\@[a-zA-Z0-9_-]\w+[;]?)*|(@[a-zA-Z0-9_-]\w+[;]?))*/g;
+
+        for (const [index, line] of configText.entries()) {
+            // If the line is commented out or empty, we ignore it
+            if (line.charAt(0) === 'rem' || line === '') { continue; }
+
+            if (line.match(regexMod)) {
+                configText[index] = configText[index].replace(new RegExp(regexMod), requiredModString);
+                requiredModStringAdded = true;
+            }
+
+            if (line.match(regexServerMod)) {
+                configText[index] = configText[index].replace(regexServerMod, serverModString);
+                serverModStringAdded = true;
+            }
+        }
+
+        fs.writeFileSync(serverConfigPath, configText.join('\n'));
+    }
+
+    private static handleConfigForLinux(mods: IMod[]): void {
         const requiredMods = mods.filter(mod => mod.type === EModType.all && mod.isActive === true);
         const serverMods = mods.filter(mod => mod.type === EModType.server && mod.isActive === true);
 

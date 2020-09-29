@@ -1,12 +1,12 @@
 import { prompt } from 'inquirer';
+import ConfigEntries from './constants/configEntries';
+import Filesystem from './filesystem';
+import IConfigEntry from './interfaces/iConfigEntry';
+import ISteamCredentials from './interfaces/iSteamCredentials';
+import Validate from './validator';
 
 import ora = require('ora');
 
-import Filesystem from './filesystem';
-import Validate from './validator';
-import ConfigEntries from './constants/configEntries';
-import ISteamCredentials from './interfaces/iSteamCredentials';
-import IConfigEntry from './interfaces/iConfigEntry';
 
 export default class Prompt {
     private nonInteractive: boolean;
@@ -83,6 +83,17 @@ export default class Prompt {
             name: 'path',
             type: 'input',
             validate: Filesystem.isFile,
+        });
+
+        return response.path;
+    }
+
+    public async forBatchScript(): Promise<string> {
+        const response: { path: string } = await prompt({
+            message: 'Absolute path to the Batch script starting your server, where it has your mods',
+            name: 'path',
+            type: 'input',
+            validate: path => { return Filesystem.hasExtension(path, '.bat') }
         });
 
         return response.path;

@@ -34,7 +34,6 @@ export default class InstallCommand extends Command {
 
         this.updateConfigFile(mods);
 
-        // Update LinuxGSM config
         Processor.updateServerConfigFile(Config.get('mods'));
     }
 

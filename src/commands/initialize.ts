@@ -17,6 +17,7 @@ export default class InitializeCommand extends Command {
             description: 'Skip the check for the magma.json file. If it exists, it will be overwritten.',
         }),
         linuxGsmInstanceConfig: setFlag.linuxGsmInstanceConfig,
+        batchScript: setFlag.batchScript,
         nonInteractive: setFlag.nonInteractive,
         password: setFlag.password,
         server: setFlag.server,
@@ -57,6 +58,7 @@ export default class InitializeCommand extends Command {
         spinner.succeed('Logged in');
 
         const linuxGsm = await insurer.ensureValidLinuxGsm(flags.linuxGsmInstanceConfig);
+        const batchScript = await insurer.ensureValidBatchScript(flags.batchScript);
 
         const webhookUrl = await insurer.ensureValidWebhookUrl(flags.webhookUrl);
 
@@ -69,6 +71,7 @@ export default class InitializeCommand extends Command {
             },
             key,
             linuxGsm,
+            batchScript,
             mods: [],
             serverPath,
             steamCmdPath,

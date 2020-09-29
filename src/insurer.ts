@@ -1,13 +1,12 @@
 import { prompt } from 'inquirer';
-
-import ora = require('ora');
-
 import Config from './config';
 import Filesystem from './filesystem';
-import Prompt from './prompt';
-import Validate from './validator';
 import IMod from './interfaces/iMod';
 import ISteamCredentials from './interfaces/iSteamCredentials';
+import Prompt from './prompt';
+import Validate from './validator';
+
+import ora = require('ora');
 
 export default class Insurer {
     public validate: Validate;
@@ -163,6 +162,34 @@ export default class Insurer {
 
                 if (response.uses) {
                     return await this.prompt.forLinuxGsm();
+                }
+            }
+        }
+    }
+
+    public async ensureValidBatchScript(path?: string): Promise<string | undefined | never> {
+        if (process.platform === 'linux') { return; }
+
+        if (path) {
+            if (Filesystem.isFile(path)) {
+                return path;
+            } else {
+                if (this.nonInteractive) {
+                    throw new Error('The Batch script file path is invalid. Did you include the file?');
+                }
+
+                return await this.prompt.forBatchScript();
+            }
+        } else {
+            if (!this.nonInteractive) {
+                const response: { uses: boolean } = await prompt({
+                    message: 'Are you using a Batch script to start your server?',
+                    name: 'uses',
+                    type: 'confirm',
+                });
+
+                if (response.uses) {
+                    return await this.prompt.forBatchScript();
                 }
             }
         }

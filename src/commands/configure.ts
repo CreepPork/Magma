@@ -18,6 +18,7 @@ export default class ConfigureCommand extends Command {
         'magma configure -n -u UserName',
     ];
     public static flags = {
+        batchScript: setFlag.batchScript,
         linuxGsmInstanceConfig: setFlag.linuxGsmInstanceConfig,
         nonInteractive: setFlag.nonInteractive,
         password: setFlag.password,
@@ -62,6 +63,13 @@ export default class ConfigureCommand extends Command {
                     let value;
 
                     switch (key) {
+                        case 'batchScript':
+                            configKey = 'batchScript';
+                            value = await this.validateEntry(
+                                this.convertFlagToEntry('batchScript'), flags.batchScript
+                            );
+                            break;
+
                         case 'linuxGsmInstanceConfig':
                             configKey = 'linuxGsm';
                             value = await this.validateEntry(
@@ -152,6 +160,10 @@ export default class ConfigureCommand extends Command {
 
                 output = credentials as K;
 
+                break;
+
+            case 'batchScript':
+                output = await this.insurer.ensureValidBatchScript(...values) as K;
                 break;
 
             case 'linuxGsm':
