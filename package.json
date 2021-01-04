@@ -13,7 +13,7 @@
     "@oclif/plugin-help": "^2.2.3",
     "@oclif/plugin-warn-if-update-available": "^1.7.0",
     "@sentry/node": "^5.17.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "chalk": "^3.0.0",
     "cli-progress": "^3.7.0",
     "cli-table": "^0.3.1",
