@@ -1,22 +1,32 @@
 {
-    "name": "laravel-zero/laravel-zero",
-    "description": "The Laravel Zero Framework.",
-    "keywords": ["framework", "laravel", "laravel zero", "console", "cli"],
-    "homepage": "https://laravel-zero.com",
+    "name": "creeppork/magma",
+    "version": "4.0.0-alpha",
+    "description": "Magma is a CLI tool for Arma 3 server mod managment that works both on Windows and Linux.",
+    "keywords": [
+        "windows",
+        "linux",
+        "cli",
+        "updater",
+        "arma",
+        "arma3",
+        "magma",
+        "linuxgsm"
+    ],
+    "homepage": "https://github.com/CreepPork/Magma",
     "type": "project",
-    "license": "MIT",
+    "license": "GPL-3.0-only",
     "support": {
-        "issues": "https://github.com/laravel-zero/laravel-zero/issues",
-        "source": "https://github.com/laravel-zero/laravel-zero"
+        "issues": "https://github.com/CreepPork/Magma/issues",
+        "source": "https://github.com/CreepPork/Magma"
     },
     "authors": [
         {
-            "name": "Nuno Maduro",
-            "email": "enunomaduro@gmail.com"
+            "name": "Ralfs Garkaklis",
+            "email": "ralfs@garkaklis.com"
         }
     ],
     "require": {
-        "php": "^7.3|^8.0",
+        "php": "^8.0",
         "laravel-zero/framework": "^8.4"
     },
     "require-dev": {
@@ -40,5 +50,7 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "bin": ["magma"]
+    "bin": [
+        "magma"
+    ]
 }
