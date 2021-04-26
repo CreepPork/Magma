@@ -14,7 +14,7 @@
     "@oclif/plugin-warn-if-update-available": "^1.7.0",
     "@sentry/node": "^5.17.0",
     "axios": "^0.19.2",
-    "chalk": "^3.0.0",
+    "chalk": "^4.1.1",
     "cli-progress": "^3.7.0",
     "cli-table": "^0.3.1",
     "fs-extra": "^9.0.1",
