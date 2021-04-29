@@ -1,0 +1,55 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: weekly
+    time: "03:00"
+  open-pull-requests-limit: 10
+  target-branch: master
+  labels:
+  - dependencies
+  ignore:
+  - dependency-name: "@types/fs-extra"
+    versions:
+    - 9.0.10
+    - 9.0.6
+    - 9.0.7
+    - 9.0.8
+    - 9.0.9
+  - dependency-name: "@types/node"
+    versions:
+    - 14.14.22
+    - 14.14.25
+    - 14.14.28
+    - 14.14.31
+    - 14.14.32
+    - 14.14.34
+    - 14.14.35
+    - 14.14.37
+  - dependency-name: "@types/jest"
+    versions:
+    - 26.0.20
+    - 26.0.21
+  - dependency-name: "@types/cli-progress"
+    versions:
+    - 3.8.0
+    - 3.9.0
+  - dependency-name: "@oclif/plugin-help"
+    versions:
+    - 3.2.1
+  - dependency-name: "@types/qs"
+    versions:
+    - 6.9.5
+  - dependency-name: lodash
+    versions:
+    - 4.17.20
+  - dependency-name: inquirer
+    versions:
+    - 7.3.3
+  - dependency-name: chalk
+    versions:
+    - 4.1.0
+  - dependency-name: y18n
+    versions:
+    - 4.0.1
