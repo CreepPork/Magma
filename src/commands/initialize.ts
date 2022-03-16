@@ -25,6 +25,7 @@ export default class InitializeCommand extends Command {
         steamGuard: setFlag.steamGuard,
         username: setFlag.username,
         webhookUrl: setFlag.webhookUrl,
+        verbose: setFlag.verbose,
     };
 
     public async run(): Promise<void> {
@@ -45,17 +46,17 @@ export default class InitializeCommand extends Command {
 
         const key = Encrypter.generateKey();
 
-        spinner.start();
+        flags.verbose ? undefined : spinner.start();
 
-        while (await insurer.validate.credentials(credentials, key, steamCmdPath, flags.steamGuard) === false) {
-            spinner.fail('Failed to login');
+        while (await insurer.validate.credentials(credentials, key, steamCmdPath, flags.steamGuard, flags.verbose) === false) {
+            flags.verbose ? console.error('Failed to login') : spinner.fail('Failed to login');
 
             credentials = await insurer.prompt.forCredentials();
 
-            spinner.start();
+            flags.verbose ? undefined : spinner.start();
         }
 
-        spinner.succeed('Logged in');
+        flags.verbose ? console.info('Logged in') : spinner.succeed('Logged in');
 
         const linuxGsm = await insurer.ensureValidLinuxGsm(flags.linuxGsmInstanceConfig);
         const batchScript = await insurer.ensureValidBatchScript(flags.batchScript);

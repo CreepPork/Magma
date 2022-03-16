@@ -10,7 +10,7 @@ import SteamCmdWindows from './cmd/windows';
 export default class SteamCmd {
     public static process?: pty.IPty;
 
-    public static async login(credentials = Config.get('credentials'), key = Config.get('key'), exit?: boolean, path?: string, onGuardPrompt?: () => Promise<string>, guardCode?: string):
+    public static async login(credentials = Config.get('credentials'), key = Config.get('key'), exit?: boolean, path?: string, onGuardPrompt?: () => Promise<string>, guardCode?: string, verbose = false):
         Promise<boolean> {
         if (os.platform() === 'win32') {
             return await (new SteamCmdWindows()).login(
@@ -19,7 +19,8 @@ export default class SteamCmd {
                 exit,
                 path,
                 onGuardPrompt,
-                guardCode
+                guardCode,
+                verbose
             );
         } else {
             return await (new SteamCmdLinux()).login(
@@ -28,7 +29,8 @@ export default class SteamCmd {
                 exit,
                 path,
                 onGuardPrompt,
-                guardCode
+                guardCode,
+                verbose
             );
         }
     }

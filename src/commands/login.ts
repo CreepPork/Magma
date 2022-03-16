@@ -18,6 +18,7 @@ export default class LoginCommand extends Command {
         password: setFlag.password,
         steamGuard: setFlag.steamGuard,
         username: setFlag.username,
+        verbose: setFlag.verbose,
     };
 
     public async init(): Promise<void> {
@@ -33,19 +34,22 @@ export default class LoginCommand extends Command {
 
         // Try to login to verify if the credentials are working
         try {
-            spinner.start();
+            flags.verbose ? undefined : spinner.start();
 
-            const loggedIn = await SteamCmd.login();
+            const loggedIn = await SteamCmd.login(
+                undefined, undefined, undefined, undefined, undefined, undefined,
+                flags.verbose
+            );
 
             if (loggedIn) {
-                spinner.succeed(`Steam login is working properly and there's nothing more to do.`);
+                flags.verbose ? console.info('Logged in') : spinner.succeed(`Steam login is working properly and there's nothing more to do.`);
 
                 return;
             } else {
                 throw new Error();
             }
         } catch (error) {
-            spinner.fail(`Failed to login into Steam. We'll try to log you back in.`);
+            flags.verbose ? console.error('Failed to login') : spinner.fail(`Failed to login into Steam. We'll try to log you back in.`);
         }
 
         // Prompt for credentials

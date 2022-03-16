@@ -1,11 +1,11 @@
 import ora = require('ora');
 
-import Filesystem from './filesystem';
-import Encrypter from './encrypter';
 import Server from './constants/server';
+import Encrypter from './encrypter';
+import Filesystem from './filesystem';
 import ISteamCredentials from './interfaces/iSteamCredentials';
-import SteamCmd from './steam/steamCmd';
 import Prompt from './prompt';
+import SteamCmd from './steam/steamCmd';
 
 export default class Validator {
     private nonInteractive: boolean;
@@ -32,7 +32,7 @@ export default class Validator {
         return false;
     }
 
-    public async credentials(credentials: ISteamCredentials, key: string, steamCmdPath: string, guardCode?: string): Promise<boolean> {
+    public async credentials(credentials: ISteamCredentials, key: string, steamCmdPath: string, guardCode?: string, verbose = false): Promise<boolean> {
         const password = new Encrypter(key).encrypt(credentials.password);
 
         const prompt = new Prompt(this.nonInteractive, this.spinner);
@@ -41,7 +41,13 @@ export default class Validator {
         const promptForSteamGuard = prompt.forSteamGuard.bind(this);
 
         const successfulLogin = await SteamCmd.login(
-            { username: credentials.username, password }, key, undefined, steamCmdPath, promptForSteamGuard, guardCode
+            { username: credentials.username, password },
+            key,
+            undefined,
+            steamCmdPath,
+            promptForSteamGuard,
+            guardCode,
+            verbose
         );
 
         if (!successfulLogin) {

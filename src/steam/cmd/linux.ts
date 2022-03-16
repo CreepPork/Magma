@@ -14,7 +14,7 @@ export default class SteamCmdLinux implements ISteamCmdPlatform {
         //
     }
 
-    public login(credentials = Config.get('credentials'), key = Config.get('key'), exit?: boolean, path?: string, onGuardPrompt?: () => Promise<string>, guardCode?: string):
+    public login(credentials = Config.get('credentials'), key = Config.get('key'), exit?: boolean, path?: string, onGuardPrompt?: () => Promise<string>, guardCode?: string, verbose = false):
         Promise<boolean> {
         return new Promise(resolve => {
             const password = new Encrypter(key).decrypt(credentials.password);
@@ -22,6 +22,10 @@ export default class SteamCmdLinux implements ISteamCmdPlatform {
             let loginSuccessful = false;
 
             this.runCommand(`+login ${credentials.username} ${password}`, async data => {
+                if (verbose) {
+                    console.log(`DEBUG: ${JSON.stringify(data)}`);
+                }
+
                 if (data.includes('Steam Guard code:')) {
                     if (guardCode) {
                         this.process?.write(`${guardCode}\r`);
@@ -31,9 +35,9 @@ export default class SteamCmdLinux implements ISteamCmdPlatform {
                     } else {
                         resolve(false);
                     }
-                } else if (data.includes('Waiting for user info...')) {
+                } else if (data === 'OK\r\n') {
                     loginSuccessful = true;
-                } else if (loginSuccessful && data.includes('OK')) {
+                } else if (loginSuccessful && data.includes('Waiting for user info...OK')) {
                     resolve(true);
                 } else if (data.includes('FAILED login with result code')) {
                     resolve(false);

@@ -45,3 +45,9 @@ export const webhookUrl = flags.string({
     char: 'w',
     description: 'Webhook URL to which the magma cron command will respond to.',
 });
+
+export const verbose = flags.boolean({
+    char: 'v',
+    default: false,
+    description: 'Output additional information for debugging purposes.',
+});
