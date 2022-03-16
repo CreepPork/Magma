@@ -1,7 +1,7 @@
 {
   "name": "@creeppork/magma",
   "description": "Magma is a CLI tool for Arma 3 server mod managment that works both on Windows and Linux.",
-  "version": "3.0.0-beta.8",
+  "version": "3.0.0-beta.9",
   "author": "CreepPork",
   "bin": {
     "magma": "./bin/run"
@@ -86,7 +86,8 @@
     "posttest": "tslint -p test -t stylish",
     "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
     "test": "./node_modules/.bin/jest",
-    "version": "oclif-dev readme && git add README.md"
+    "version": "oclif-dev readme && git add README.md",
+    "watch": "tsc -b --watch"
   },
   "types": "lib/index.d.ts",
   "magma": {

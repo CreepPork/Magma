@@ -19,8 +19,6 @@ export default class SteamCmdWindows implements ISteamCmdPlatform {
         return new Promise(resolve => {
             const password = new Encrypter(key).decrypt(credentials.password);
 
-            let loginSuccessful = false;
-
             this.runCommand(`+login ${credentials.username} ${password}`, async data => {
                 if (verbose) {
                     console.log(`DEBUG: ${JSON.stringify(data)}`);
@@ -39,9 +37,7 @@ export default class SteamCmdWindows implements ISteamCmdPlatform {
 
                         resolve(false);
                     }
-                } else if (data === 'OK\r\n') {
-                    loginSuccessful = true;
-                } else if (loginSuccessful && data.includes('Waiting for user info...OK')) {
+                } else if (data.startsWith('OK') && data.includes('Waiting for user info...OK')) {
                     if (exit) {
                         this.process?.kill();
                     }
